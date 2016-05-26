@@ -95,7 +95,7 @@ fpi2=4.
 !      fpi2=(48./7)/(pi*pi)
 alsaix=(45.*fpi2*pi*pi-272.)/(2.*(45.*fpi2*pi*pi-208.))
 asix  =((6.-9.*alsaix)/4.)/dx2
-bsix  =((-3.+24*alsaix)/5.)/(4.*dx2)
+bsix  =((-3.+24.*alsaix)/5.)/(4.*dx2)
 csix  =((2.-11.*alsaix)/20.)/(9.*dx2)
 !      stop
 !if (nrank==0) then
@@ -105,7 +105,7 @@ csix  =((2.-11.*alsaix)/20.)/(9.*dx2)
 !      write(*,*) bsix*4*dx2
 !      write(*,*) csix*9*dx2
 !      write(*,*) '============='
-
+!endif
 alfa1y= 2.
 af1y  =-(5./2.  )/dy
 bf1y  = (   2.  )/dy
@@ -151,7 +151,7 @@ bsty  = (3./44. )/dy2
 
 alsajy=(45.*fpi2*pi*pi-272.)/(2.*(45.*fpi2*pi*pi-208.))
 asjy  =((6.-9.*alsajy)/4.)/dy2
-bsjy  =((-3.+24*alsajy)/5.)/(4.*dy2)
+bsjy  =((-3.+24.*alsajy)/5.)/(4.*dy2)
 csjy  =((2.-11.*alsajy)/20.)/(9.*dy2)
 !if (nrank==0) then
 !      write(*,*) '=== deryy ==='
@@ -211,11 +211,12 @@ do i=3,nx-3
    cbi6(i)=alcaix6 
 enddo
 
-ailcaix6=3./10. 
-aicix6=1./128.*(75.+70.*ailcaix6)
-bicix6=1./256.*(126.*ailcaix6-25.)
-cicix6=1./256.*(-10.*ailcaix6+3.)
-if (nrank==0) print *,'New coef Inter X',aicix6,bicix6,cicix6
+ailcaix6=3./10.!0.461658
+dicix6=0.!00293016/2.!0.
+aicix6=1./128.*(75.+70.*ailcaix6-320.*2.*dicix6)
+bicix6=1./256.*(126.*ailcaix6-25.+1152.*2.*dicix6)
+cicix6=1./256.*(-10.*ailcaix6+3.-640.*2.*dicix6)
+if (nrank==0) print *,'New coef Inter X',aicix6,bicix6,cicix6,dicix6
 cifx6(1)=ailcaix6 
 cifx6(2)=ailcaix6 
 cifx6(nxm-2)=ailcaix6 
@@ -308,11 +309,12 @@ do j=3,ny-3
    cci6y(j)=1. 
    cbi6y(j)=alcaiy6 
 enddo
-ailcaiy6=3./10.
-aiciy6=1./128.*(75.+70.*ailcaiy6)
-biciy6=1./256.*(126.*ailcaiy6-25.)
-ciciy6=1./256.*(-10.*ailcaiy6+3.)
-if (nrank==0) print *,'New coef Inter Y',aiciy6,biciy6,ciciy6
+ailcaiy6=3./10.!0.461658
+diciy6=0.!00293016/2.!0.
+aiciy6=1./128.*(75.+70.*ailcaiy6-320.*2.*diciy6)
+biciy6=1./256.*(126.*ailcaiy6-25.+1152.*2.*diciy6)
+ciciy6=1./256.*(-10.*ailcaiy6+3.-640.*2.*diciy6)
+if (nrank==0) print *,'New coef Inter Y',aiciy6,biciy6,ciciy6,diciy6
 cify6(1)=ailcaiy6 
 cify6(2)=ailcaiy6 
 cify6(nym-2)=ailcaiy6 
@@ -406,11 +408,12 @@ enddo
       cci6z(k)=1. 
       cbi6z(k)=alcaiz6 
    enddo
-   ailcaiz6=3./10.
-   aiciz6=1./128.*(75.+70.*ailcaiz6)
-   biciz6=1./256.*(126.*ailcaiz6-25.)
-   ciciz6=1./256.*(-10.*ailcaiz6+3.)
-   if (nrank==0) print *,'New coef Inter Z',aiciz6,biciz6,ciciz6
+   ailcaiz6=3./10.!0.461658
+   diciz6=0.!00293016/2.!0.
+   aiciz6=1./128.*(75.+70.*ailcaiz6-320.*2.*diciz6)
+   biciz6=1./256.*(126.*ailcaiz6-25.+1152.*2.*diciz6)
+   ciciz6=1./256.*(-10.*ailcaiz6+3.-640.*2.*diciz6)
+   if (nrank==0) print *,'New coef Inter Z',aiciz6,biciz6,ciciz6,diciz6
    cifz6(1)=ailcaiz6 
    cifz6(2)=ailcaiz6 
    cifz6(nzm-2)=ailcaiz6 
@@ -499,7 +502,7 @@ enddo
 !   cskz  = 0.
          alsakz=(45.*fpi2*pi*pi-272.)/(2.*(45.*fpi2*pi*pi-208.))
          askz  =((6.-9.*alsakz)/4.)/dz2
-         bskz  =((-3.+24*alsakz)/5.)/(4.*dz2)
+         bskz  =((-3.+24.*alsakz)/5.)/(4.*dz2)
          cskz  =((2.-11.*alsakz)/20.)/(9.*dz2)
 !if (nrank==0) then
 !         write(*,*) '=== derzz ==='

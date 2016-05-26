@@ -1623,17 +1623,23 @@ do k = sp%yst(3), sp%yen(3)
 do j = sp%yst(2), sp%yen(2)
 do i = sp%yst(1), sp%yen(1)
    xtt=cmplx((bicix6*2.*cos(real(exs(i))*3.*dx/2.)+&
-        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)),&
+        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+        dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)),&
         (bicix6*2.*cos(real(exs(i), kind=mytype)*3.*dx/2.)+&
-        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)), kind=mytype)
+        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+        dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)), kind=mytype)
    ytt=cmplx((biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)),&
+        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+        diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)),&
         (biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)), kind=mytype)
+        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+        diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)), kind=mytype)
    ztt=cmplx((biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-        ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)),&
+        ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+        diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)),&
         (biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-        ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)), kind=mytype)
+        ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+        diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)), kind=mytype)
    xtt1=cmplx((aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)),&
         (aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)), kind=mytype)
    ytt1=cmplx((aiciy6*2.*cos(real(eys(j), kind=mytype)*dy/2.)),&
@@ -1661,17 +1667,23 @@ else
       do j = sp%xst(2),sp%xen(2)
       do i = sp%xst(1),sp%xen(1)
          xtt=cmplx((bicix6*2.*cos(real(exs(i), kind=mytype)*3.*dx/2.)+&
-              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)),&
+              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+              dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)),&
               (bicix6*2.*cos(real(exs(i), kind=mytype)*3.*dx/2.)+&
-              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)), kind=mytype)
+              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+              dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)), kind=mytype)
          ytt=cmplx((biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)),&
+              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+              diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)),&
               (biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)), kind=mytype)
+              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+              diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)), kind=mytype)
          ztt=cmplx((biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-              ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)),&
+              ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+              diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)),&
               (biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-              ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)), kind=mytype)
+              ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+              diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)), kind=mytype)
          xtt1=cmplx((aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)),&
               (aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)), kind=mytype)
          ytt1=cmplx((aiciy6*2.*cos(real(eys(j), kind=mytype)*dy/2.)),&
@@ -1698,18 +1710,24 @@ else
       do j = sp%xst(2),sp%xen(2)
       do i = sp%xst(1),sp%xen(1)  
          xtt=cmplx((bicix6*2.*cos(real(exs(i), kind=mytype)*3.*dx/2.)+&
-              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)),&
+              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+              dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)),&
               (bicix6*2.*cos(real(exs(i), kind=mytype)*3.*dx/2.)+&
-              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)), kind=mytype)
+              cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+              dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)), kind=mytype)
          ytt=cmplx((biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)),&
+              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+              diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)),&
               (biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)), kind=mytype)
+              ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+              diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)), kind=mytype)
          !
          ztt=cmplx((biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-              ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)),&
+              ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+              diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)),&
               (biciz6*2.*cos(aimag(ezs(k))*3.*dz/2.)+&
-              ciciz6*2.*cos(aimag(ezs(k))*5.*dz/2.)), kind=mytype)
+              ciciz6*2.*cos(aimag(ezs(k))*5.*dz/2.)+&
+              diciz6*2.*cos(aimag(ezs(k))*7.*dz/2.)), kind=mytype)
          !
          xtt1=cmplx((aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)),&
               (aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)), kind=mytype)
@@ -1789,9 +1807,11 @@ complex(mytype) :: xtt1,ytt1,ztt1,zt1,zt2,tmp1,tmp2,tmp3
 
 do i = sp%yst(1),sp%yen(1)
    xtt=cmplx((bicix6*2.*cos(real(exs(i), kind=mytype)*3.*dx/2.)+&
-        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)),&
+        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+        dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)),&
         (bicix6*2.*cos(real(exs(i), kind=mytype)*3.*dx/2.)+&
-        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)), kind=mytype)
+        cicix6*2.*cos(real(exs(i), kind=mytype)*5.*dx/2.)+&
+        dicix6*2.*cos(real(exs(i), kind=mytype)*7.*dx/2.)), kind=mytype)
    xtt1=cmplx((aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)),&
         (aicix6*2.*cos(real(exs(i), kind=mytype)*dx/2.)), kind=mytype)
    xt1=cmplx((1.+2.*ailcaix6*cos(real(exs(i), kind=mytype)*dx)),&
@@ -1801,9 +1821,11 @@ do i = sp%yst(1),sp%yen(1)
 enddo
 do j = sp%yst(2),sp%yen(2)
    ytt=cmplx((biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)),&
+        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+        diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)),&
         (biciy6*2.*cos(real(eys(j), kind=mytype)*3.*dy/2.)+&
-        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)), kind=mytype)
+        ciciy6*2.*cos(real(eys(j), kind=mytype)*5.*dy/2.)+&
+        diciy6*2.*cos(real(eys(j), kind=mytype)*7.*dy/2.)), kind=mytype)
    ytt1=cmplx((aiciy6*2.*cos(real(eys(j), kind=mytype)*dy/2.)),&
         (aiciy6*2.*cos(real(eys(j), kind=mytype)*dy/2.)), kind=mytype)
    yt1=cmplx((1.+2.*ailcaiy6*cos(real(eys(j), kind=mytype)*dy)),&
@@ -1814,9 +1836,11 @@ enddo
 if (nclz==0) then
    do k = sp%yst(3),sp%yen(3)
       ztt=cmplx((biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-           ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)),&
+           ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+           diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)),&
            (biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-           ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)), kind=mytype)
+           ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+           diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)), kind=mytype)
       ztt1=cmplx((aiciz6*2.*cos(real(ezs(k), kind=mytype)*dz/2.)),&
            (aiciz6*2.*cos(real(ezs(k), kind=mytype)*dz/2.)), kind=mytype)
       zt1=cmplx((1.+2.*ailcaiz6*cos(real(ezs(k), kind=mytype)*dz)),&
@@ -1827,9 +1851,11 @@ if (nclz==0) then
 else
    do k = sp%yst(3),sp%yen(3)
       ztt=cmplx((biciz6*2.*cos(real(ezs(k), kind=mytype)*3.*dz/2.)+&
-           ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)),&
+           ciciz6*2.*cos(real(ezs(k), kind=mytype)*5.*dz/2.)+&
+           diciz6*2.*cos(real(ezs(k), kind=mytype)*7.*dz/2.)),&
            (biciz6*2.*cos(aimag(ezs(k))*3.*dz/2.)+&
-           ciciz6*2.*cos(aimag(ezs(k))*5.*dz/2.)), kind=mytype)
+           ciciz6*2.*cos(aimag(ezs(k))*5.*dz/2.)+&
+           diciz6*2.*cos(aimag(ezs(k))*7.*dz/2.)), kind=mytype)
       ztt1=cmplx((aiciz6*2.*cos(real(ezs(k), kind=mytype)*dz/2.)),&
            (aiciz6*2.*cos(aimag(ezs(k))*dz/2.)), kind=mytype)
       zt1=cmplx((1.+2.*ailcaiz6*cos(real(ezs(k), kind=mytype)*dz)),&

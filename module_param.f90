@@ -161,7 +161,7 @@ module derivX
 use decomp_2d, only : mytype
 
   real(mytype) :: alcaix6,acix6,bcix6
-  real(mytype) :: ailcaix6,aicix6,bicix6,cicix6
+  real(mytype) :: ailcaix6,aicix6,bicix6,cicix6,dicix6
   real(mytype) :: alfa1x,af1x,bf1x,cf1x,df1x,alfa2x,af2x,alfanx,afnx,bfnx
   real(mytype) :: cfnx,dfnx,alfamx,afmx,alfaix,afix,bfix,alsa1x,as1x,bs1x
   real(mytype) :: cs1x,ds1x,alsa2x,as2x,alsanx,asnx,bsnx,csnx,dsnx,alsamx
@@ -173,7 +173,7 @@ module derivY
 use decomp_2d, only : mytype
 
   real(mytype) :: alcaiy6,aciy6,bciy6
-  real(mytype) :: ailcaiy6,aiciy6,biciy6,ciciy6 
+  real(mytype) :: ailcaiy6,aiciy6,biciy6,ciciy6,diciy6
   real(mytype) :: alfa1y,af1y,bf1y,cf1y,df1y,alfa2y,af2y,alfany,afny,bfny
   real(mytype) :: cfny,dfny,alfamy,afmy,alfajy,afjy,bfjy,alsa1y,as1y,bs1y
   real(mytype) :: cs1y,ds1y,alsa2y,as2y,alsany,asny,bsny,csny,dsny,alsamy
@@ -185,7 +185,7 @@ module derivZ
 use decomp_2d, only : mytype
 
   real(mytype) :: alcaiz6,aciz6,bciz6
-  real(mytype) :: ailcaiz6,aiciz6,biciz6,ciciz6
+  real(mytype) :: ailcaiz6,aiciz6,biciz6,ciciz6,diciz6
   real(mytype) :: alfa1z,af1z,bf1z,cf1z,df1z,alfa2z,af2z,alfanz,afnz,bfnz
   real(mytype) :: cfnz,dfnz,alfamz,afmz,alfakz,afkz,bfkz,alsa1z,as1z,bs1z
   real(mytype) :: cs1z,ds1z,alsa2z,as2z,alsanz,asnz,bsnz,csnz,dsnz,alsamz
