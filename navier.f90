@@ -927,6 +927,10 @@ if (itime==1) then
    dpdzx1=0.
    dpdyxn=0.
    dpdzxn=0.
+   dpdxy1=0.
+   dpdzy1=0.
+   dpdxyn=0.
+   dpdzyn=0.
 endif
 
 
