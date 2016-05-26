@@ -759,8 +759,8 @@ do k=1,xsize(3)
 do j=1,xsize(2)
    dpdyx1(j,k)=tb1(1,j,k)/gdt(itr)
    dpdzx1(j,k)=tc1(1,j,k)/gdt(itr)
-   dpdyxn(j,k)=tb1(nx,j,k)/gdt(itr)
-   dpdzxn(j,k)=tc1(nx,j,k)/gdt(itr)
+   dpdyxn(j,k)=tb1(xsize(1),j,k)/gdt(itr)
+   dpdzxn(j,k)=tc1(xsize(1),j,k)/gdt(itr)
 enddo
 enddo
 
