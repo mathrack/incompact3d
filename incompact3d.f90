@@ -192,6 +192,11 @@ do itime=ifirst,ilast
    endif
 enddo
 
+if (mod(itime,isave).ne.0) then
+   call restart(ux1,uy1,uz1,ep1,pp3,phi1,gx1,gy1,gz1,&
+        px1,py1,pz1,phis1,hx1,hy1,hz1,phiss1,phG,1)
+endif
+
 t2=MPI_WTIME()-t1
 call MPI_ALLREDUCE(t2,t1,1,MPI_REAL8,MPI_SUM, &
                    MPI_COMM_WORLD,code)
