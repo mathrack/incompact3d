@@ -34,11 +34,23 @@
           deallocate(wk2)
        end if
        allocate(wk2d(1,decomp%xsz(2),decomp%xsz(3)))
-       do k=1,decomp%xsz(3)
-          do j=1,decomp%xsz(2)
-             wk2d(1,j,k)=wk(n,j,k)
+       if (n.eq.0) then
+          wk2d=0.
+          do k=1,decomp%xsz(3)
+             do j=1,decomp%xsz(2)
+                do i=1,decomp%xsz(1)
+                  wk2d(1,j,k)=wk2d(1,j,k)+wk(i,j,k)
+                enddo
+             end do
           end do
-       end do
+          wk2d=wk2d/(1.*decomp%xsz(1))
+       else
+          do k=1,decomp%xsz(3)
+             do j=1,decomp%xsz(2)
+                wk2d(1,j,k)=wk(n,j,k)
+             end do
+          end do
+       endif
        sizes(1) = 1
        sizes(2) = decomp%ysz(2)
        sizes(3) = decomp%zsz(3)
@@ -59,11 +71,23 @@
           call transpose_z_to_y(var,wk,decomp)
        end if
        allocate(wk2d(decomp%ysz(1),1,decomp%ysz(3)))
-       do k=1,decomp%ysz(3)
-          do i=1,decomp%ysz(1)
-             wk2d(i,1,k)=wk(i,n,k)
+       if (n.eq.0) then
+          wk2d=0.
+          do k=1,decomp%ysz(3)
+             do j=1,decomp%ysz(2)
+                do i=1,decomp%ysz(1)
+                   wk2d(i,1,k)=wk2d(i,1,k)+wk(i,j,k)
+                end do
+             end do
           end do
-       end do
+          wk2d=wk2d/(1.*decomp%ysz(2))
+       else
+          do k=1,decomp%ysz(3)
+             do i=1,decomp%ysz(1)
+                wk2d(i,1,k)=wk(i,n,k)
+             end do
+          end do
+       end if
        sizes(1) = decomp%xsz(1)
        sizes(2) = 1
        sizes(3) = decomp%zsz(3)
@@ -87,11 +111,23 @@
           wk = var
        end if
        allocate(wk2d(decomp%zsz(1),decomp%zsz(2),1))
-       do j=1,decomp%zsz(2)
-          do i=1,decomp%zsz(1) 
-             wk2d(i,j,1)=wk(i,j,n)
+       if (n.eq.0) then
+          wk2d=0.
+          do k=1,decomp%zsz(3)
+             do j=1,decomp%zsz(2)
+                do i=1,decomp%zsz(1) 
+                   wk2d(i,j,1)=wk2d(i,j,1)+wk(i,j,k)
+                end do
+             end do
           end do
-       end do
+          wk2d=wk2d/(1.*decomp%zsz(3))
+       else
+          do j=1,decomp%zsz(2)
+             do i=1,decomp%zsz(1) 
+                wk2d(i,j,1)=wk(i,j,n)
+             end do
+          end do
+       end if
        sizes(1) = decomp%xsz(1)
        sizes(2) = decomp%ysz(2)
        sizes(3) = 1
