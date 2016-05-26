@@ -137,6 +137,63 @@
        starts(1) = decomp%zst(1)-1
        starts(2) = decomp%zst(2)-1
        starts(3) = 0
+    else if (iplane==4) then
+       allocate(wk(1,1,1))
+       allocate(wk2d(n,decomp%xsz(2),decomp%xsz(3)))
+       do k=1,decomp%xsz(3)
+         do j=1,decomp%xsz(2)
+           do i=1,n
+             wk2d(i,j,k)=var(i,j,k)
+           end do
+         end do
+       end do
+       sizes(1) = n
+       sizes(2) = decomp%ysz(2)
+       sizes(3) = decomp%zsz(3)
+       subsizes(1) = n
+       subsizes(2) = decomp%xsz(2)
+       subsizes(3) = decomp%xsz(3)
+       starts(1) = 0
+       starts(2) = decomp%xst(2)-1
+       starts(3) = decomp%xst(3)-1
+    else if (iplane==5) then
+       allocate(wk(1,1,1))
+       allocate(wk2d(decomp%ysz(1),n,decomp%ysz(3)))
+       do k=1,decomp%ysz(3)
+         do j=1,n
+           do i=1,decomp%ysz(1)
+             wk2d(i,j,k)=var(i,j,k)
+           end do
+         end do
+       end do
+       sizes(1) = decomp%xsz(1)
+       sizes(2) = n
+       sizes(3) = decomp%zsz(3)
+       subsizes(1) = decomp%ysz(1)
+       subsizes(2) = n
+       subsizes(3) = decomp%ysz(3)
+       starts(1) = decomp%yst(1)-1
+       starts(2) = 0
+       starts(3) = decomp%yst(3)-1
+    else if (iplane==6) then
+       allocate(wk(1,1,1))
+       allocate(wk2d(decomp%zsz(1),decomp%zsz(2),n))
+       do k=1,n
+         do j=1,decomp%zsz(2)
+           do i=1,decomp%zsz(1)
+             wk2d(i,j,k)=var(i,j,k)
+           end do
+         end do
+       end do
+       sizes(1) = decomp%xsz(1)
+       sizes(2) = decomp%ysz(2)
+       sizes(3) = n
+       subsizes(1) = decomp%zsz(1)
+       subsizes(2) = decomp%zsz(2)
+       subsizes(3) = n
+       starts(1) = decomp%zst(1)-1
+       starts(2) = decomp%zst(2)-1
+       starts(3) = 0
     end if
 
     call MPI_TYPE_CREATE_SUBARRAY(3, sizes, subsizes, starts,  &
