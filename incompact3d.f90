@@ -82,6 +82,12 @@ endif
 call decomp_2d_poisson_init(bcx,bcy,bcz)
 
 call decomp_info_init(nxm,nym,nzm,phG)
+!div: nx ny nz --> nxm ny nz --> nxm nym nz --> nxm nym nzm
+!gradp: nxm nym nzm -> nxm nym nz --> nxm ny nz --> nx ny nz
+call decomp_info_init(nxm,nym,nzm,ph1)
+call decomp_info_init(nxm, ny, nz,ph2)
+call decomp_info_init(nxm,nym, nz,ph3)
+call decomp_info_init(nxm, ny, nz,ph4)
 
 !if you want to collect 100 snapshots randomly on XXXXX time steps
 !call collect_data() !it will generate 100 random time steps
@@ -99,15 +105,6 @@ uvmean=0.;uwmean=0.;vwmean=0.
 phimean=0.;phiphimean=0.
 
 t1 = MPI_WTIME()
-
-!div: nx ny nz --> nxm ny nz --> nxm nym nz --> nxm nym nzm
-call decomp_info_init(nxm, nym, nzm, ph1)
-call decomp_info_init(nxm, ny, nz, ph4)
-
-!gradp: nxm nym nzm -> nxm nym nz --> nxm ny nz --> nx ny nz
-call decomp_info_init(nxm, ny, nz, ph2)  
-call decomp_info_init(nxm, nym, nz, ph3) 
-
 
 do itime=ifirst,ilast
    t=(itime-1)*dt
