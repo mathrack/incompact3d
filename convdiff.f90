@@ -370,8 +370,18 @@ endif
 endif
 
 if (nscheme.eq.3) then 
-if (nrank==0) print *,'Not ready'
-stop 
+   if (adt(itr)==0.) then
+      do ijk=1,nxyz
+         phis1(ijk,1,1)=dt*ta1(ijk,1,1)
+      enddo
+   else
+      do ijk=1,nxyz
+         phis1(ijk,1,1)=adt(itr)*phis1(ijk,1,1)+dt*ta1(ijk,1,1)
+      enddo
+   endif
+   do ijk=1,nxyz
+      phi1(ijk,1,1)=phi1(ijk,1,1)+bdt(itr)*phis1(ijk,1,1)
+   enddo
 endif
 
 if (nscheme==4) then
