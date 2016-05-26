@@ -133,7 +133,7 @@ write(*,1106) dt
 if (nscheme.eq.1) print *,'Temporal scheme   : Adams-bashforth 2'
 if (nscheme.eq.2) print *,'Temporal scheme   : Runge-Kutta 3'
 if (nscheme.eq.3) print *,'Temporal scheme   : Runge-Kutta 4'
-if (nscheme.eq.4) print *,'Temporal scheme   : Adams-bashforth 4'
+if (nscheme.eq.4) print *,'Temporal scheme   : Adams-bashforth 3'
 if (iscalar.eq.0) print *,'Passive scalar    : off'
 if (iscalar.eq.1) then
    print *,'Passive scalar : on'
