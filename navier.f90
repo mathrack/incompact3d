@@ -221,7 +221,7 @@ integer  :: k,j
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux,uy,uz,phi
 real(mytype) :: r1,r2,r3,y,um
 
-call ecoule(ux,uy,uz)
+call ecoule(ux,uy,uz,phi)
 
 call random_number(bxo)
 call random_number(byo)
@@ -316,7 +316,7 @@ end subroutine outflow
 
 !**********************************************************************
 !
-subroutine ecoule(ux1,uy1,uz1)
+subroutine ecoule(ux1,uy1,uz1,phi1)
 !
 !**********************************************************************
 
@@ -328,7 +328,7 @@ USE decomp_2d
 implicit none
 
 integer  :: i,j,k,jj1,jj2 
-real(mytype), dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1
+real(mytype), dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,phi1
 real(mytype) :: x,y,z,ym
 real(mytype) :: r1,r2,r3,r
 real(mytype) :: uh,ud,um,xv,bruit1
@@ -530,7 +530,7 @@ if (iin.eq.2) then !read a correlated noise generated before
 endif
 
 !MEAN FLOW PROFILE
-call ecoule(ux1,uy1,uz1)
+call ecoule(ux1,uy1,uz1,phi1)
 !INIT FOR G AND U=MEAN FLOW + NOISE
 do k=1,xsize(3)
 do j=1,xsize(2)
