@@ -365,7 +365,9 @@ if (itype.eq.2) then
       if (istret.ne.0) y=yp(j+xstart(2)-1)-yly/2.
 !      print *,nrank,j+xstart(2)-1,yp(j+xstart(2)-1),1.-y*y
       do i=1,xsize(1)
-         ux1(i,j,k)=ux1(i,j,k)+1.-y*y
+         bxx1(j,k)=(1.-y*y)*(3./2.)
+         bxy1(j,k)=0.
+         bxz1(j,k)=0.
       enddo
    enddo
    
