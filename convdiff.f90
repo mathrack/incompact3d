@@ -293,8 +293,8 @@ nvect3=zsize(1)*zsize(2)*zsize(3)
 do ijk=1,nvect1
    ta1(ijk,1,1)=ux1(ijk,1,1)*phi1(ijk,1,1)
 enddo
-call derx (tb1,ta1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
-call derxx (ta1,phi1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+call derx (tb1,ta1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)
+call derxx (ta1,phi1,di1,sx,sfx,ssx,swx,xsize(1),xsize(2),xsize(3),0)
 
 call transpose_x_to_y(phi1,phi2)
 call transpose_x_to_y(uy1,uy2)
@@ -304,9 +304,9 @@ call transpose_x_to_y(uz1,uz2)
 do ijk=1,nvect2
    ta2(ijk,1,1)=uy2(ijk,1,1)*phi2(ijk,1,1)
 enddo
-call dery (tb2,ta2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
 if (istret.ne.0) then 
-   call deryy (ta2,phi2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
+   call deryy (ta2,phi2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
    call dery (tc2,phi2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
    do k=1,ysize(3)
    do j=1,ysize(2)
@@ -316,7 +316,7 @@ if (istret.ne.0) then
    enddo
    enddo
 else
-   call deryy (ta2,phi2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1) 
+   call deryy (ta2,phi2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
 endif
 
 call transpose_y_to_z(phi2,phi3)
@@ -326,8 +326,8 @@ call transpose_y_to_z(uz2,uz3)
 do ijk=1,nvect3
    ta3(ijk,1,1)=uz3(ijk,1,1)*phi3(ijk,1,1)
 enddo
-call derz (tb3,ta3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
-call derzz (ta3,phi3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)
+call derzz (ta3,phi3,di3,sz,sfz,ssz,swz,zsize(1),zsize(2),zsize(3),0)
 
 call transpose_z_to_y(ta3,tc2)
 call transpose_z_to_y(tb3,td2)
