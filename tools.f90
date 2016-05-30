@@ -53,6 +53,12 @@ real(mytype) :: phimax1,phimin1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: phi
 integer :: code
 
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: phi_obj
+real(mytype) :: x, y, z
+real(mytype) :: mysx, mysy, mysz
+integer, dimension(3) :: mymax
+real(mytype) :: tx, ty
+
 phimax=-1609.
 phimin=1609.
 do k=1,xsize(3)
@@ -72,6 +78,45 @@ if (nrank==0) then
    print *,'PHI min=',phimin1
 endif
 
+if (itype.eq.6) then
+
+  do k=1,xsize(3)
+    z=(k-1+xstart(3)-1)*dz
+    mysz=sin(twopi*z)
+  do j=1,xsize(2)
+    y=yp(j)
+    mysy=sin(twopi*y)
+  do i=1,xsize(1)
+    x=(i-1+xstart(1)-1)*dx
+    mysx=sin(twopi*x)
+    phi_obj(i,j,k)= mysx*mysy
+  enddo
+  enddo
+  enddo
+  ! Expression valid only for explicit AB2 time-scheme
+  if (t.gt.0.d0) then
+    tx=dt*(twopi**2)*xnu/(2.d0*sc)
+    ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+    ty=ty-6.d0*tx+1.d0
+    ty=ty/2.d0
+    do i=1,itime
+      phi_obj=phi_obj*ty
+    enddo
+  endif
+
+  ! Norme L_infinie
+  phimax=maxval(abs(phi-phi_obj))
+  call MPI_ALLREDUCE(phimax,phimax1,1,real_type,MPI_MAX,MPI_COMM_WORLD,i)
+  if (nrank.eq.0) print *,'Norme T infinie = ',phimax1
+  mymax=maxloc(abs(phi-phi_obj))
+  if (phimax.eq.phimax1) print *,' at ',mymax+xstart,' on ',nrank
+  ! Norme L2
+  phimax=sum((phi-phi_obj)**2)
+  call MPI_REDUCE(phimax,phimax1,1,real_type,MPI_SUM,0,MPI_COMM_WORLD,i)
+  if (nrank.eq.0) phimax1=phimax1/(nx*nz*ny)
+  if (nrank.eq.0) print *,'Norme T2 (**1/2)= ',sqrt(phimax1)
+
+endif
 
 return
 end subroutine test_scalar_min_max
@@ -98,6 +143,12 @@ real(mytype) :: uxmax1,uymax1,uzmax1,uxmin1,uymin1,uzmin1
 
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux,uy,uz
 integer :: code
+
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux_obj,uy_obj,uz_obj
+real(mytype) :: x, y, z
+real(mytype) :: mysx, mycx, mysy, mycy
+integer, dimension(3) :: mymax
+real(mytype) :: tx, ty
 
 uxmax=-1609.
 uymax=-1609.
@@ -130,6 +181,71 @@ if (nrank==0) then
    print *,'U,V,W min=',uxmin1,uymin1,uzmin1
 endif
 
+if (itype.eq.6) then
+
+  do k=1,xsize(3)
+    z=(k-1+xstart(3)-1)*dz
+  do j=1,xsize(2)
+    y=yp(j)
+    mysy=sin(twopi*y)
+    mycy=cos(twopi*y)
+  do i=1,xsize(1)
+    x=(i-1+xstart(1)-1)*dx
+    mysx=sin(twopi*x)
+    mycx=cos(twopi*x)
+    ux_obj(i,j,k)= mysx*mycy
+    uy_obj(i,j,k)=-mysy*mycx
+    uz_obj(i,j,k)=0.d0
+  enddo
+  enddo
+  enddo
+  ! Expression valid only for explicit AB2 time-scheme
+  if (t.gt.0.d0) then
+    tx=dt*(twopi**2)*xnu/2.d0
+    ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+    ty=ty-6.d0*tx+1.d0
+    ty=ty/2.d0
+    do i=1,itime
+      ux_obj=ux_obj*ty
+      uy_obj=uy_obj*ty
+      uz_obj=uz_obj*ty
+    enddo
+  endif
+
+  ! Norme L_infinie vitesse
+  uxmax=maxval(abs(ux-ux_obj))
+  call MPI_ALLREDUCE(uxmax,uxmax1,1,real_type,MPI_MAX,MPI_COMM_WORLD,i)
+  mymax=maxloc(abs(ux-ux_obj))
+  if (nrank.eq.0) print *,'Norme Lix infinie = ',uxmax1
+  if (uxmax.eq.uxmax1) print *,' at ',mymax(1),mymax(2),mymax(3)
+  uymax=maxval(abs(uy-uy_obj))
+  call MPI_ALLREDUCE(uymax,uymax1,1,real_type,MPI_MAX,MPI_COMM_WORLD,i)
+  mymax=maxloc(abs(uy-uy_obj))
+  if (nrank.eq.0) print *,'Norme Liy infinie = ',uymax1
+  if (uymax.eq.uymax1) print *,' at ',mymax(1),mymax(2),mymax(3)
+  uzmax=maxval(abs(uz-uz_obj))
+  call MPI_ALLREDUCE(uzmax,uzmax1,1,real_type,MPI_MAX,MPI_COMM_WORLD,i)
+  mymax=maxloc(abs(uz-uz_obj))
+  if (nrank.eq.0) print *,'Norme Liz infinie = ',uzmax1
+  if (uzmax.eq.uzmax1) print *,' at ',mymax(1),mymax(2),mymax(3)
+  uxmax=maxval(abs(ux-ux_obj)+abs(uy-uy_obj)+abs(uz-uz_obj))
+  call MPI_ALLREDUCE(uxmax,uxmax1,1,real_type,MPI_MAX,MPI_COMM_WORLD,i)
+  mymax=maxloc(abs(ux-ux_obj)+abs(uy-uy_obj)+abs(uz-uz_obj))
+  if (nrank.eq.0) print *,'Norme Liw infinie = ',uxmax1
+  if (uxmax.eq.uxmax1) print *,' at ',mymax(1),mymax(2),mymax(3)
+  ! Norme L2 vitesse
+  uxmax=sum((ux-ux_obj)**2)/(nx*ny*nz)
+  call MPI_REDUCE(uxmax,uxmax1,1,real_type,MPI_SUM,0,MPI_COMM_WORLD,i)
+  if (nrank.eq.0) print *,'Norme L2x (**1/2) = ',sqrt(uxmax1)
+  uymax=sum((uy-uy_obj)**2)/(nx*ny*nz)
+  call MPI_REDUCE(uymax,uymax1,1,real_type,MPI_SUM,0,MPI_COMM_WORLD,i)
+  if (nrank.eq.0) print *,'Norme L2y (**1/2) = ',sqrt(uymax1)
+  uzmax=sum((uz-uz_obj)**2)/(nx*ny*nz)
+  call MPI_REDUCE(uzmax,uzmax1,1,real_type,MPI_SUM,0,MPI_COMM_WORLD,i)
+  if (nrank.eq.0) print *,'Norme L2z (**1/2) = ',sqrt(uzmax1)
+  if (nrank.eq.0) print *,'Norme L2w (**1/2) = ',sqrt(uxmax1+uymax1+uzmax1)
+
+endif
 
 return
 end subroutine test_speed_min_max

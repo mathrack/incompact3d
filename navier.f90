@@ -333,6 +333,8 @@ real(mytype) :: x,y,z,ym
 real(mytype) :: r1,r2,r3,r
 real(mytype) :: uh,ud,um,xv,bruit1
 
+real(mytype) :: mysx, mycx, mysy, mycy, mysz, mycz
+
 bxx1=0.;bxy1=0.;bxz1=0.
 byx1=0.;byy1=0.;byz1=0.
 bzx1=0.;bzy1=0.;bzz1=0. 
@@ -407,25 +409,28 @@ if (itype.eq.5) then
 endif
 
 if (itype.eq.6) then
-   t=0.
-   xv=1./100.
-   xxk1=twopi/xlx
-   xxk2=twopi/yly
-   do k=1,xsize(3)
-      z=(k+xstart(3)-1-1)*dz
-   do j=1,xsize(2)
-      y=(j+xstart(2)-1-1)*dy
-      do i=1,xsize(1)
-         x=(i-1)*dx
-         ux1(i,j,k)=sin(2.*pi*x)*cos(2.*pi*y)*cos(2.*pi*z)
-         uy1(i,j,k)=sin(2.*pi*y)*cos(2.*pi*x)*cos(2.*pi*z)
-         uz1(i,j,k)=sin(2.*pi*z)*cos(2.*pi*x)*cos(2.*pi*y)
-         bxx1(j,k)=0.
-         bxy1(j,k)=0.
-         bxz1(j,k)=0.
-      enddo
-   enddo
-   enddo   
+  do k=1,xsize(3)
+    z=(k-1+xstart(3)-1)*dz
+    mysz=sin(twopi*z)
+    mycz=cos(twopi*z)
+  do j=1,xsize(2)
+    y=yp(j)
+    mysy=sin(twopi*y)
+    mycy=cos(twopi*y)
+  do i=1,xsize(1)
+    x=(i-1+xstart(1)-1)*dx
+    mysx=sin(twopi*x)
+    mycx=cos(twopi*x)
+    ux1(i,j,k)= mysx*mycy
+    uy1(i,j,k)=-mysy*mycx
+    uz1(i,j,k)=0.
+    if (iscalar.eq.1) phi1(i,j,k)= mysx*mysy
+    bxx1(j,k)=0.
+    bxy1(j,k)=0.
+    bxz1(j,k)=0.
+  enddo
+  enddo
+  enddo  
 endif
 
 if (itype.eq.7) then
@@ -476,6 +481,7 @@ real(mytype) :: y,r,um,r1,r2,r3
 integer :: k,j,i,fh,ierror,ii
 integer :: code
 integer (kind=MPI_OFFSET_KIND) :: disp
+real(mytype) :: tx, ty
 
 if (iin.eq.1) then !generation of a random noise
 
@@ -549,6 +555,30 @@ do i=1,xsize(1)
 enddo
 enddo
 enddo
+
+! Exact time history for the Taylor-Green benchmark
+if (itype.eq.6) then
+   ! Explicit AB2 time-scheme
+   !
+   ! Scalar
+   tx=dt*(twopi**2)*xnu/(2.d0*sc)
+   ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+   ty=ty-6.d0*tx+1.d0
+   ty=ty/2.d0
+   phis1=-4.d0*tx*phi1/ty/dt
+   !
+   ! Velocity
+   tx=dt*(twopi**2)*xnu/2.d0
+   ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+   ty=ty-6.d0*tx+1.d0
+   ty=ty/2.d0
+   gx1=-4.d0*tx*gx1/ty/dt
+   gy1=-4.d0*tx*gy1/ty/dt
+   gz1=-4.d0*tx*gz1/ty/dt
+   !
+   ! Avoid explicit Euler time scheme at first time step
+   ilit=1
+endif
 
 if (ivirt==2) then
    call MPI_FILE_OPEN(MPI_COMM_WORLD, 'epsilon.dat', &

@@ -92,9 +92,12 @@ call decomp_info_init(nxm, ny, nz,ph4)
 !if you want to collect 100 snapshots randomly on XXXXX time steps
 !call collect_data() !it will generate 100 random time steps
 
-if (ilit==0) call init(ux1,uy1,uz1,ep1,phi1,gx1,gy1,gz1,phis1,hx1,hy1,hz1,phiss1)  
-if (ilit==1) call restart(ux1,uy1,uz1,ep1,pp3,phi1,gx1,gy1,gz1,&
+if (ilit.eq.1) then
+   call restart(ux1,uy1,uz1,ep1,pp3,phi1,gx1,gy1,gz1,&
         px1,py1,pz1,phis1,hx1,hy1,hz1,phiss1,phG,0)
+else
+   call init(ux1,uy1,uz1,ep1,phi1,gx1,gy1,gz1,phis1,hx1,hy1,hz1,phiss1)  
+endif
 call test_speed_min_max(ux1,uy1,uz1)
 if (iscalar==1) call test_scalar_min_max(phi1)
 
@@ -163,6 +166,7 @@ do itime=ifirst,ilast
            td2,te2,tf2,di2,ta2,tb2,tc2,ta3,tb3,tc3,di3,td3,te3,tf3,dv3,&
            nxmsize,nymsize,nzmsize,ph1,ph3,ph4,2)
 
+      if (itr==iadvance_time) t=itime*dt
       call test_speed_min_max(ux1,uy1,uz1)
       if (iscalar==1) call test_scalar_min_max(phi1)
 
