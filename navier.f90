@@ -435,6 +435,22 @@ endif
 
 if (itype.eq.7) then
 
+  do k=1,xsize(3)
+    z=(k-1+xstart(3)-1)*dz
+  do j=1,xsize(2)
+    y=yp(j)
+  do i=1,xsize(1)
+    x=(i-1+xstart(1)-1)*dx
+    ux1(i,j,k)= 8.*(x**4-2.*x**3+x**2)*(4.*y**3-2.*y)
+    uy1(i,j,k)=-8.*(4.*x**3-6.*x**2+2.*x)*(y**4-y**2)
+    uz1(i,j,k)=0.
+    bxx1(j,k)=0.
+    bxy1(j,k)=0.
+    bxz1(j,k)=0.
+  enddo
+  enddo
+  enddo
+
 endif
 
 if (itype.eq.8) then
@@ -953,6 +969,7 @@ integer :: i,j,k,code
 real(mytype) :: ut,ut1,utt,ut11
 integer, dimension(2) :: dims, dummy_coords
 logical, dimension(2) :: dummy_periods
+real(mytype) :: x
 
 if (itime==1) then
    dpdyx1=0.
@@ -1027,7 +1044,7 @@ endif
 !****************************************************
 !WE ARE IN X PENCIL!!!!!!
 if (ncly==2) then
-   if (itype.eq.2) then
+   if ((itype.eq.2).or.(itype.eq.7)) then
 
    ! determine the processor grid in use
    call MPI_CART_GET(DECOMP_2D_COMM_CART_X, 2, &
@@ -1082,6 +1099,14 @@ if (ncly==2) then
          uz(i,xsize(2),k)=0.+dpdzyn(i,k)
       enddo
       enddo
+      if (itype.eq.7) then
+         do k=1,xsize(3)
+         do i=1,xsize(1)
+            x=(i-1+xstart(1)-1)*dx
+            ux(i,xsize(2),k)=ux(i,xsize(2),k)+16.*(x**4-2*x**3+x**2)
+         enddo
+         enddo
+      endif
    else
 !find j=1 and j=ny
       if (xstart(2)==1) then
@@ -1102,6 +1127,14 @@ if (ncly==2) then
             uz(i,xsize(2),k)=0.+dpdzyn(i,k)
          enddo
          enddo
+         if (itype.eq.7) then
+            do k=1,xsize(3)
+            do i=1,xsize(1)
+               x=(i-1+xstart(1)-1)*dx
+               ux(i,xsize(2),k)=ux(i,xsize(2),k)+16.*(x**4-2*x**3+x**2)
+            enddo
+            enddo
+         endif
       endif
  
    endif

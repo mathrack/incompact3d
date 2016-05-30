@@ -53,8 +53,7 @@ real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,tc3,td3,te3,tf3,tg
 
 integer :: ijk,nvect1,nvect2,nvect3,i,j,k
 real(mytype) :: x,y,z
-
-
+real(mytype) :: g0, g1, g2, g3, g4, h0, h1, h2, h3
 
 nvect1=xsize(1)*xsize(2)*xsize(3)
 nvect2=ysize(1)*ysize(2)*ysize(3)
@@ -254,6 +253,30 @@ tc1(:,:,:)=tc1(:,:,:)+tf1(:,:,:)
 !tg1(:,:,:)=tg1(:,:,:)-2./18.*uy1(:,:,:)
 !th1(:,:,:)=th1(:,:,:)-2./18.*ux1(:,:,:)
 
+! Source term for Burgraff flow
+if (itype.eq.7) then
+  do k=1,xsize(3)
+    z=(k-1+xstart(3)-1)*dz
+  do j=1,xsize(2)
+    y=yp(j)
+  do i=1,xsize(1)
+    x=(i-1+xstart(1)-1)*dx
+    g0=(x**5)/5.-(x**4)/2.+(x**3)/3.
+    g1=(x**4)   -2.*(x**3)+(x**2)
+    g2=4.*(x**3)-6.*(x**2)+2.*x
+    g3=12.*(x**2)-12.*x+2
+    g4=24.*x-12
+    h0=y**4-y**2
+    h1=4.*(y**3)-2.*y
+    h2=12.*(y**2)-2
+    h3=24.*y
+    tg1(i,j,k)=tg1(i,j,k) &
+              -8.*xnu*(24.*g0+2.*g2*h2+g4*h0) &
+              +64.*(((g1**2)/2.)*(h0*h3-h1*h2)-h0*h1*(g1*g3-g2**2))
+  enddo
+  enddo
+  enddo
+endif
 
 !FINAL SUM: DIFF TERMS + CONV TERMS
 ta1(:,:,:)=xnu*ta1(:,:,:)-tg1(:,:,:)

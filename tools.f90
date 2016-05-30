@@ -181,34 +181,49 @@ if (nrank==0) then
    print *,'U,V,W min=',uxmin1,uymin1,uzmin1
 endif
 
-if (itype.eq.6) then
+if ((itype.eq.6).or.(itype.eq.7)) then
 
-  do k=1,xsize(3)
-    z=(k-1+xstart(3)-1)*dz
-  do j=1,xsize(2)
-    y=yp(j)
-    mysy=sin(twopi*y)
-    mycy=cos(twopi*y)
-  do i=1,xsize(1)
-    x=(i-1+xstart(1)-1)*dx
-    mysx=sin(twopi*x)
-    mycx=cos(twopi*x)
-    ux_obj(i,j,k)= mysx*mycy
-    uy_obj(i,j,k)=-mysy*mycx
-    uz_obj(i,j,k)=0.d0
-  enddo
-  enddo
-  enddo
-  ! Expression valid only for explicit AB2 time-scheme
-  if (t.gt.0.d0) then
-    tx=dt*(twopi**2)*xnu/2.d0
-    ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-    ty=ty-6.d0*tx+1.d0
-    ty=ty/2.d0
-    do i=1,itime
-      ux_obj=ux_obj*ty
-      uy_obj=uy_obj*ty
-      uz_obj=uz_obj*ty
+  if (itype.eq.6) then
+    do k=1,xsize(3)
+      z=(k-1+xstart(3)-1)*dz
+    do j=1,xsize(2)
+      y=yp(j)
+      mysy=sin(twopi*y)
+      mycy=cos(twopi*y)
+    do i=1,xsize(1)
+      x=(i-1+xstart(1)-1)*dx
+      mysx=sin(twopi*x)
+      mycx=cos(twopi*x)
+      ux_obj(i,j,k)= mysx*mycy
+      uy_obj(i,j,k)=-mysy*mycx
+      uz_obj(i,j,k)=0.d0
+    enddo
+    enddo
+    enddo
+    ! Expression valid only for explicit AB2 time-scheme
+    if (t.gt.0.d0) then
+      tx=dt*(twopi**2)*xnu/2.d0
+      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+      ty=ty-6.d0*tx+1.d0
+      ty=ty/2.d0
+      do i=1,itime
+        ux_obj=ux_obj*ty
+        uy_obj=uy_obj*ty
+        uz_obj=uz_obj*ty
+      enddo
+    endif
+  else
+    do k=1,xsize(3)
+      z=(k-1+xstart(3)-1)*dz
+    do j=1,xsize(2)
+      y=yp(j)
+    do i=1,xsize(1)
+      x=(i-1+xstart(1)-1)*dx
+      ux_obj(i,j,k)= 8.*(x**4-2.*x**3+x**2)*(4.*y**3-2.*y)
+      uy_obj(i,j,k)=-8.*(4.*x**3-6.*x**2+2.*x)*(y**4-y**2)
+      uz_obj(i,j,k)=0.
+    enddo
+    enddo
     enddo
   endif
 
