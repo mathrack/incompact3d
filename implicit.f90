@@ -698,9 +698,6 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
 
    endif
 
-endif
-   
-
 end subroutine multmatrix7
 
 !********************************************************************

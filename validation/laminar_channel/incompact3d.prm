@@ -21,7 +21,7 @@
 1      #iin    # Inflow condition (1: classic, 2: turbinit)
 1      #ifirst # First iteration   
 30      #ilast  # Last iteration 
-2      #nscheme# Temporal scheme (1:AB2, 2: RK3, 3:RK4, 4:AB3)
+1      #nscheme# Temporal scheme (1:AB2, 2: RK3, 3:RK4, 4:AB3)
 2      #istret # y mesh refinement (0:no, 1:center, 2:both sides, 3:bottom)
 0.259065151  #beta   # Refinement parameter (beta) 
 1      #iskew  # (0:urotu, 1:skew, for the convective terms)
