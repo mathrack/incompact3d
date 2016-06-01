@@ -1,6 +1,6 @@
  In auto-tuning mode......
  factors:            1
- processor grid           1  by            1  time=   9.3936920166015625E-005
+ processor grid           1  by            1  time=   7.2002410888671875E-005
  the best processor grid is probably            1  by            1
  ===========================================================
  ===========================================================
@@ -25,6 +25,7 @@
  Passive scalar : on
  Schmidt number    :   0.20
  Immersed boundary : off
+ Parametre implicite :            0
  New coef Inter X  0.75000000000000000        4.9999999999999996E-002   4.3368086899420177E-019   0.0000000000000000     
  New coef Inter Y  0.75000000000000000        4.9999999999999996E-002   4.3368086899420177E-019   0.0000000000000000     
  New coef Inter Z  0.75000000000000000        4.9999999999999996E-002   4.3368086899420177E-019   0.0000000000000000     
@@ -74,6 +75,6 @@ Time step =      1, Time unit =    0.000
  Norme T infinie =    2.0416246471199884E-010
   at            6           6           2  on            0
  Norme T2 (**1/2)=    9.6076453414838723E-011
- time per time_step:    1.0258197784423828E-002  seconds
+ time per time_step:    8.7430477142333984E-003  seconds
  simulation with nx*ny*nz=          17          17          10 mesh nodes
  Mapping p_row*p_col=           0           0

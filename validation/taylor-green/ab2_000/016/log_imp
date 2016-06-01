@@ -1,0 +1,80 @@
+ In auto-tuning mode......
+ factors:            1
+ processor grid           1  by            1  time=   6.8902969360351562E-005
+ the best processor grid is probably            1  by            1
+ ===========================================================
+ ===========================================================
+ ===========================================================
+ ======================Incompact3d==========================
+ ===Copyright (c) 2012 Eric Lamballais and Sylvain Laizet===
+ eric.lamballais@univ-poitiers.fr / sylvain.laizet@gmail.com
+ ===========================================================
+ ===========================================================
+ ===========================================================
+ 
+ 
+ 
+ Taylor Green vortices
+ Spatial Resolution: (nx,ny,nz)=(  16,  16,  10)
+ Domain dimension  : (lx,ly,lz)=(   1.0,   1.0,   1.0)
+ Boundary condition: (nclx,ncly,nclz)=(0,0,0)
+ High and low speed: u1=  1.00 and u2=  1.00
+ Reynolds number Re:   1000.00000000
+ Time step dt      :      0.00010000
+ Temporal scheme   : Adams-bashforth 2
+ Passive scalar : on
+ Schmidt number    :   0.20
+ Immersed boundary : off
+ Parametre implicite :            1
+ New coef Inter X  0.75000000000000000        4.9999999999999996E-002   4.3368086899420177E-019   0.0000000000000000     
+ New coef Inter Y  0.75000000000000000        4.9999999999999996E-002   4.3368086899420177E-019   0.0000000000000000     
+ New coef Inter Z  0.75000000000000000        4.9999999999999996E-002   4.3368086899420177E-019   0.0000000000000000     
+ U,V,W max=   1.0000000000000000        1.0000000000000000        0.0000000000000000     
+ U,V,W min=  -1.0000000000000000       -1.0000000000000000        0.0000000000000000     
+ Norme Lix infinie =    0.0000000000000000     
+  at            1           1           1
+ Norme Liy infinie =    0.0000000000000000     
+  at            1           1           1
+ Norme Liz infinie =    0.0000000000000000     
+  at            1           1           1
+ Norme Liw infinie =    0.0000000000000000     
+  at            1           1           1
+ Norme L2x (**1/2) =    0.0000000000000000     
+ Norme L2y (**1/2) =    0.0000000000000000     
+ Norme L2z (**1/2) =    0.0000000000000000     
+ Norme L2w (**1/2) =    0.0000000000000000     
+ PHI max=   1.0000000000000000     
+ PHI min=  -1.0000000000000000     
+ Norme T infinie =    0.0000000000000000     
+  at            2           2           2  on            0
+ Norme T2 (**1/2)=    0.0000000000000000     
+Time step =      1, Time unit =    0.000
+ DIV U* Max=   1.0940827583108464E-002
+ DIV U* Moyy=   4.6692978761383470E-003
+  
+ ***** Using the generic FFT engine *****
+  
+ DIV U final Max=   1.3124800255179339E-014
+ DIV U final Moy=   2.1150378438098291E-015
+ U,V,W max=  0.99999210432755470       0.99999210432755459        6.4770641592575357E-017
+ U,V,W min= -0.99999210432755470      -0.99999210432755459       -7.0716034831068807E-017
+ Norme Lix infinie =    2.0095813901832571E-011
+  at            5           9           1
+ Norme Liy infinie =    2.0095813901832571E-011
+  at            9           5           1
+ Norme Liz infinie =    7.0716034831068807E-017
+  at           10          10           9
+ Norme Liw infinie =    2.0096130024507344E-011
+  at           15          15           5
+ Norme L2x (**1/2) =    1.0047824755854287E-011
+ Norme L2y (**1/2) =    1.0047827130054009E-011
+ Norme L2z (**1/2) =    1.4097464053524949E-017
+ Norme L2w (**1/2) =    1.4209771720897081E-011
+ PHI max=  0.99996052226119170     
+ PHI min= -0.99996052226119170     
+ Norme T infinie =    1.0047673804081114E-010
+  at            6          14           2  on            0
+ Norme T2 (**1/2)=    5.0238155953431736E-011
+ time per time_step:    9.7880363464355469E-003  seconds
+ simulation with nx*ny*nz=          16          16          10 mesh nodes
+ Mapping p_row*p_col=           0           0

@@ -46,7 +46,7 @@ USE var
 implicit none
 
 integer  :: i,j,k
-real(mytype) :: fpi2
+real(mytype) :: fpi2, fpi2t
 
 alfa1x= 2.
 af1x  =-(5./2.  )/dx
@@ -91,7 +91,8 @@ bstx  = (3./44. )/dx2
 !bsix  = (3./44. )/dx2
 !csix  = 0.
 !NUMERICAL DISSIPATION (see publications for help)
-fpi2=4.
+fpi2=1.
+fpi2t=1.
 !      fpi2=(48./7)/(pi*pi)
 alsaix=(45.*fpi2*pi*pi-272.)/(2.*(45.*fpi2*pi*pi-208.))
 asix  =((6.-9.*alsaix)/4.)/dx2
@@ -1139,6 +1140,9 @@ endif
       call prepare (sbz,scz,sfz ,ssz ,swz ,nz)
    endif
 #endif
+
+call implicit_schemes()
+call scalar_schemes(fpi2t)
 
 return
 end subroutine schemes

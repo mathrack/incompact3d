@@ -181,6 +181,7 @@ th2(:,:,:)=te2(:,:,:)
 ti2(:,:,:)=tf2(:,:,:)
 
 !DIFFUSIVE TERMS IN Y
+if (iimplicit==0) then ! EXPLICITE
 !-->for ux
 if (istret.ne.0) then 
    call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
@@ -222,6 +223,45 @@ if (istret.ne.0) then
    enddo
 else
    call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1) 
+endif
+else ! IMPLICIT
+if (istret.ne.0) then
+
+!-->for ux
+   call dery (te2,ux2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)                                         
+   do k=1,ysize(3)                                                                                                    
+   do j=1,ysize(2)                                                                                                    
+   do i=1,ysize(1)
+      td2(i,j,k)=-pp4y(j)*te2(i,j,k)                                                                
+   enddo                                                                                                              
+   enddo                                                                                                              
+   enddo                                                                                                              
+!-->for uy
+   call dery (tf2,uy2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)                                            
+   do k=1,ysize(3)                                                                                                    
+   do j=1,ysize(2)                                                                                                    
+   do i=1,ysize(1)
+      te2(i,j,k)=-pp4y(j)*tf2(i,j,k)                                                                
+   enddo                                                                                                              
+   enddo                                                                                                              
+   enddo                                                                                                              
+!-->for uz
+   call dery (tj2,uz2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)                                         
+   do k=1,ysize(3)                                                                                                    
+   do j=1,ysize(2)                                                                                                    
+   do i=1,ysize(1)
+      tf2(i,j,k)=-pp4y(j)*tj2(i,j,k)                                                                
+   enddo                                                                                                              
+   enddo                                                                                                              
+   enddo                                                                                                              
+
+else
+
+   td2=0.
+   te2=0.
+   tf2=0.
+
+endif
 endif
 
 ta2(:,:,:)=ta2(:,:,:)+td2(:,:,:)
@@ -317,7 +357,8 @@ do ijk=1,nvect1
    ta1(ijk,1,1)=ux1(ijk,1,1)*phi1(ijk,1,1)
 enddo
 call derx (tb1,ta1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)
-call derxx (ta1,phi1,di1,sx,sfx,ssx,swx,xsize(1),xsize(2),xsize(3),0)
+!call derxx (ta1,phi1,di1,sx,sfx,ssx,swx,xsize(1),xsize(2),xsize(3),0)
+call derxxt (ta1,phi1,di1,sx,sfxt,ssxt,swxt,xsize(1),xsize(2),xsize(3),0) ! npaire=0
 
 call transpose_x_to_y(phi1,phi2)
 call transpose_x_to_y(uy1,uy2)
@@ -329,7 +370,8 @@ do ijk=1,nvect2
 enddo
 call dery (tb2,ta2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
 if (istret.ne.0) then 
-   call deryy (ta2,phi2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+!   call deryy (ta2,phi2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+   call deryyt(ta2,phi2,di2,sy,sfyt,ssyt,swyt,ysize(1),ysize(2),ysize(3),0) ! npaire=0
    call dery (tc2,phi2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
    do k=1,ysize(3)
    do j=1,ysize(2)
@@ -339,7 +381,8 @@ if (istret.ne.0) then
    enddo
    enddo
 else
-   call deryy (ta2,phi2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+!   call deryy (ta2,phi2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+   call deryyt(ta2,phi2,di2,sy,sfyt,ssyt,swyt,ysize(1),ysize(2),ysize(3),0) ! npaire=0
 endif
 
 call transpose_y_to_z(phi2,phi3)
@@ -350,7 +393,8 @@ do ijk=1,nvect3
    ta3(ijk,1,1)=uz3(ijk,1,1)*phi3(ijk,1,1)
 enddo
 call derz (tb3,ta3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)
-call derzz (ta3,phi3,di3,sz,sfz,ssz,swz,zsize(1),zsize(2),zsize(3),0)
+!call derzz (ta3,phi3,di3,sz,sfz,ssz,swz,zsize(1),zsize(2),zsize(3),0)
+call derzzt (ta3,phi3,di3,sz,sfzt,sszt,swzt,zsize(1),zsize(2),zsize(3),0) ! npaire=0
 
 call transpose_z_to_y(ta3,tc2)
 call transpose_z_to_y(tb3,td2)

@@ -58,6 +58,7 @@ real(mytype) :: x, y, z
 real(mytype) :: mysx, mysy, mysz
 integer, dimension(3) :: mymax
 real(mytype) :: tx, ty
+real(mytype) :: ta,tl,tb,tc
 
 phimax=-1609.
 phimin=1609.
@@ -96,12 +97,31 @@ if (itype.eq.6) then
   ! Expression valid only for explicit AB2 time-scheme
   if (t.gt.0.d0) then
     tx=dt*(twopi**2)*xnu/(2.d0*sc)
-    ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-    ty=ty-6.d0*tx+1.d0
-    ty=ty/2.d0
+    if (iimplicit.eq.0) then
+      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+      ty=ty-6.d0*tx+1.d0
+      ty=ty/2.d0
+    else
+      if (istret.eq.0) then
+        ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
+        ty=ty-4.d0*tx+1.d0
+        ty=ty/2.d0/(tx+1.d0)
+      else
+        ty=1.d0
+      endif
+    endif
     do i=1,itime
       phi_obj=phi_obj*ty
     enddo
+    if ((iimplicit.eq.1).and.(istret.ne.0)) then
+      ta=dt*(twopi**2)*xnu/(2.d0*sc)
+      tl=(6.d0*ta+1.d0)/(2.d0*ta+1.d0)
+      do j=1,xsize(2)
+        tb=dt*twopi*xnu*pp4y(j-1+xstart(2))/(2.d0*sc)
+        tc=( (1.d0+ta)*(1.d0-4.d0*ta+ta*tl)+(tb**2)*(2.d0-tl) )/( (1.d0+ta)**2+tb**2 )
+        phi_obj(:,j,:)=phi_obj(:,j,:)*tc
+      enddo
+    endif
   endif
 
   ! Norme L_infinie
@@ -149,6 +169,7 @@ real(mytype) :: x, y, z
 real(mytype) :: mysx, mycx, mysy, mycy
 integer, dimension(3) :: mymax
 real(mytype) :: tx, ty
+real(mytype) :: ta,tl,tb,tc
 
 uxmax=-1609.
 uymax=-1609.
@@ -203,14 +224,35 @@ if ((itype.eq.6).or.(itype.eq.7)) then
     ! Expression valid only for explicit AB2 time-scheme
     if (t.gt.0.d0) then
       tx=dt*(twopi**2)*xnu/2.d0
-      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-      ty=ty-6.d0*tx+1.d0
-      ty=ty/2.d0
+      if (iimplicit.eq.0) then
+        ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+        ty=ty-6.d0*tx+1.d0
+        ty=ty/2.d0
+      else
+        if (istret.eq.0) then
+          ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
+          ty=ty-4.d0*tx+1.d0
+          ty=ty/2.d0/(tx+1.d0)
+        else
+          ty=1.d0
+        endif
+      endif
       do i=1,itime
         ux_obj=ux_obj*ty
         uy_obj=uy_obj*ty
         uz_obj=uz_obj*ty
       enddo
+      if ((iimplicit.eq.1).and.(istret.ne.0)) then
+        ta=dt*(twopi**2)*xnu/2.d0
+        tl=(6.d0*ta+1.d0)/(2.d0*ta+1.d0)
+        do j=1,xsize(2)
+          tb=dt*twopi*xnu*pp4y(j-1+xstart(2))/2.d0
+          tc=( (1.d0+ta)*(1.d0-4.d0*ta+ta*tl)+(tb**2)*(2.d0-tl) )/( (1.d0+ta)**2+tb**2 )
+          ux_obj(:,j,:)=ux_obj(:,j,:)*tc
+          uy_obj(:,j,:)=uy_obj(:,j,:)*tc
+          uz_obj(:,j,:)=uz_obj(:,j,:)*tc
+        enddo
+      endif
     endif
   else
     do k=1,xsize(3)

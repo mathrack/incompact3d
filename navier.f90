@@ -428,6 +428,10 @@ if (itype.eq.6) then
     bxx1(j,k)=0.
     bxy1(j,k)=0.
     bxz1(j,k)=0.
+    ! Temporary storing y-derivative of ux1, uy1 and phi1 in uz1...
+    uz1(i,j,1) = - twopi*mysx*mysy ! dyux
+    uz1(i,j,2) = - twopi*mycx*mycy ! dyuy
+    uz1(i,j,3) = twopi*mysx*mycy ! dyphi
   enddo
   enddo
   enddo  
@@ -578,19 +582,62 @@ if (itype.eq.6) then
    !
    ! Scalar
    tx=dt*(twopi**2)*xnu/(2.d0*sc)
-   ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-   ty=ty-6.d0*tx+1.d0
-   ty=ty/2.d0
-   phis1=-4.d0*tx*phi1/ty/dt
+   if (iimplicit.eq.0) then
+      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+      ty=ty-6.d0*tx+1.d0
+      ty=ty/2.d0
+      phis1=-4.d0*tx*phi1/ty/dt
+   else
+      if (istret.eq.0) then
+         ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
+         ty=ty-4.d0*tx+1.d0
+         ty=ty/2.d0/(tx+1.d0)
+         phis1=-2.d0*tx*phi1/ty/dt
+      else
+         do k=1,xsize(3)
+         do j=1,xsize(2)
+         do i=1,xsize(1)
+            phis1(i,j,k)=xnu*( -(twopi**2)*phi1(i,j,k)-pp4y(j)*uz1(i,j,3) )/sc
+         enddo
+         enddo
+         enddo
+         phis1=phis1*(1.d0+6.d0*tx)/(1.d0+2.d0*tx)
+         ilast=ifirst
+      endif
+   endif
    !
    ! Velocity
    tx=dt*(twopi**2)*xnu/2.d0
-   ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-   ty=ty-6.d0*tx+1.d0
-   ty=ty/2.d0
-   gx1=-4.d0*tx*gx1/ty/dt
-   gy1=-4.d0*tx*gy1/ty/dt
-   gz1=-4.d0*tx*gz1/ty/dt
+   if (iimplicit.eq.0) then
+      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
+      ty=ty-6.d0*tx+1.d0
+      ty=ty/2.d0
+      gx1=-4.d0*tx*gx1/ty/dt
+      gy1=-4.d0*tx*gy1/ty/dt
+   else
+      if (istret.eq.0) then
+         ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
+         ty=ty-4.d0*tx+1.d0
+         ty=ty/2.d0/(tx+1.d0)
+         gx1=-2.d0*tx*gx1/ty/dt
+         gy1=-2.d0*tx*gy1/ty/dt
+      else
+         do k=1,xsize(3)
+         do j=1,xsize(2)
+         do i=1,xsize(1)
+            gx1(i,j,k)=xnu*( -(twopi**2)*ux1(i,j,k)-pp4y(j)*uz1(i,j,1) )
+            gy1(i,j,k)=xnu*( -(twopi**2)*uy1(i,j,k)-pp4y(j)*uz1(i,j,2) )
+         enddo
+         enddo
+         enddo
+         gx1=gx1*(1.d0+6.d0*tx)/(1.d0+2.d0*tx)
+         gy1=gy1*(1.d0+6.d0*tx)/(1.d0+2.d0*tx)
+         ilast=ifirst
+      endif
+   endif
+   uz1=0.d0
+   gz1=0.d0
+   hz1=0.d0
    !
    ! Avoid explicit Euler time scheme at first time step
    ilit=1

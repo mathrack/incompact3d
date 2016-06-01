@@ -929,6 +929,7 @@ if (ncly==0) then
       ry(i,ny  ,k)=alsajy
    enddo
    enddo
+if (iimplicit.eq.1) return
    do k=1,nz
    do j=2,ny
    do i=1,nx
@@ -1024,6 +1025,7 @@ if (ncly==1) then
               -uy(i,ny  ,k)+uy(i,ny-3,k))
       enddo
       enddo   
+if (iimplicit.eq.1) return
       do k=1,nz
       do j=2,ny         
       do i=1,nx
@@ -1091,6 +1093,7 @@ if (ncly==1) then
          ty(i,ny  ,k)=0.
       enddo
       enddo   
+if (iimplicit.eq.1) return
       do k=1,nz
       do j=2,ny
       do i=1,nx
@@ -1150,6 +1153,7 @@ if (ncly==2) then
            +csny*uy(i,ny-2,k)+dsny*uy(i,ny-3,k)
    enddo
    enddo    
+if (iimplicit.eq.1) return
    do k=1,nz
    do j=2,ny
    do i=1,nx
