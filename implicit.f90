@@ -352,6 +352,7 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: td1,te1,tf1
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ux2,uy2,uz2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2,tb2,tc2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: td2,te2,tf2,di2
+real(mytype) :: x, y, z
 
 td1=0.;te1=0.;tf1=0.
 ta2=0.;tb2=0.;tc2=0.;td2=0.;te2=0.;tf2=0.
@@ -516,6 +517,19 @@ endif
 ta2(:,:,:)=td2(:,:,:)+ta2(:,:,:)
 tb2(:,:,:)=te2(:,:,:)+tb2(:,:,:)
 tc2(:,:,:)=tf2(:,:,:)+tc2(:,:,:)
+! CL Burgraff
+if (itype.eq.7) then
+  do k=1,ysize(3)
+    z=(k-1+ystart(3)-1)*dz
+  j=ysize(2)
+    y=(j-1+ystart(2)-1)*dy
+  do i=1,ysize(1)
+    x=(i-1+ystart(1)-1)*dx
+    ta2(i,ysize(2),k)= 8.*(x**4-2.*x**3+x**2)*(4.*y**3-2.*y)
+  enddo
+  enddo
+endif
+
 !
 !Inversion systeme lineaire Mx=b: (A-xcst.B)u^n+1=uhat+(A+xcst.B)u^n
 ux2=0.; uy2=0.; uz2=0.;
