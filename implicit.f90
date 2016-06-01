@@ -35,8 +35,6 @@ module ludecomp
       real(mytype),dimension(ny), intent(out) :: ggm,hhm,ssm
       real(mytype),dimension(ny), intent(out) :: vvm,wwm,zzm
 
-real(mytype), dimension(ny,ny) :: mata, matl, matu, prod
-
       ggm=0.;hhm=0.;ssm=0.
       vvm=0.;wwm=0.;zzm=0.
   
@@ -64,153 +62,6 @@ real(mytype), dimension(ny,ny) :: mata, matl, matu, prod
          ssm(j)=ccm(j)-zzm(j)*rrm(j-1)
       enddo
 
-#ifdef DEBUG
-if (.false.) then
-  print *,'aam,bbm,ccm,ddm,eem,qqm,rrm'
-  do k=1,ny
-    print *,aam(k),bbm(k),ccm(k),ddm(k),eem(k),qqm(k),rrm(k)
-  enddo
-  print *,'ggm,hhm,ssm,rrm'
-  do k=1,ny
-    print *,ggm(k),hhm(k),ssm(k),rrm(k)
-  enddo
-  print *,'vvm,wwm,zzm'
-  do k=1,ny
-    print *,vvm(k),wwm(k),zzm(k)
-  enddo
-  mata=0.
-  matl=0.
-  matu=0.
-  j=1
-  mata(j,ny-2)=qqm(j)
-  mata(j,ny-1)=eem(j)
-  mata(j,ny  )=ddm(j)
-  mata(j,j   )=aam(j)
-  mata(j,j+1 )=bbm(j)
-  mata(j,j+2 )=ccm(j)
-  mata(j,j+3 )=rrm(j)
-  matl(j,j)=1.
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-   matu(j,j+3)=rrm(j)
-  j=2
-  mata(j,ny-1)=qqm(j)
-  mata(j,ny  )=eem(j)
-  mata(j,j-1 )=ddm(j)
-  mata(j,j   )=aam(j)
-  mata(j,j+1 )=bbm(j)
-  mata(j,j+2 )=ccm(j)
-  mata(j,j+3 )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-  matu(j,j+3)=rrm(j)
-  j=3
-  mata(j,ny  )=qqm(j)
-  mata(j,j-2 )=eem(j)
-  mata(j,j-1 )=ddm(j)
-  mata(j,j   )=aam(j)
-  mata(j,j+1 )=bbm(j)
-  mata(j,j+2 )=ccm(j)
-  mata(j,j+3 )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-  matu(j,j+3)=rrm(j)
-  do j=4,ny-3
-    mata(j,j-3)=qqm(j)
-    mata(j,j-2)=eem(j)
-    mata(j,j-1)=ddm(j)
-    mata(j,j  )=aam(j)
-    mata(j,j+1)=bbm(j)
-    mata(j,j+2)=ccm(j)
-    mata(j,j+3)=rrm(j)
-    matl(j,j)=1.
-    matl(j,j-1)=zzm(j)
-    matl(j,j-2)=wwm(j)
-    matl(j,j-3)=vvm(j)
-    matu(j,j)=ggm(j)
-    matu(j,j+1)=hhm(j)
-    matu(j,j+2)=ssm(j)
-    matu(j,j+3)=rrm(j)
-  enddo
-  j=ny-2
-  mata(j,j-3)=qqm(j)
-  mata(j,j-2)=eem(j)
-  mata(j,j-1)=ddm(j)
-  mata(j,j  )=aam(j)
-  mata(j,j+1)=bbm(j)
-  mata(j,j+2)=ccm(j)
-  mata(j,1  )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matl(j,j-3)=vvm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-  j=ny-1
-  mata(j,j-3)=qqm(j)
-  mata(j,j-2)=eem(j)
-  mata(j,j-1)=ddm(j)
-  mata(j,j  )=aam(j)
-  mata(j,j+1)=bbm(j)
-  mata(j,1  )=ccm(j)
-  mata(j,2  )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matl(j,j-3)=vvm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  j=ny
-  mata(j,j-3)=qqm(j)
-  mata(j,j-2)=eem(j)
-  mata(j,j-1)=ddm(j)
-  mata(j,j  )=aam(j)
-  mata(j,1  )=bbm(j)
-  mata(j,2  )=ccm(j)
-  mata(j,3  )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matl(j,j-3)=vvm(j)
-  matu(j,j)=ggm(j)
-
-  print *,'A = '
-  do j=1,ny
-    print *,mata(j,:)
-  enddo
-  print *,'L = '
-  do j=1,ny
-    print *,matl(j,:)
-  enddo
-  print *,'U = '
-  do j=1,ny
-    print *,matu(j,:)
-  enddo
-
-  do i=1,ny
-  do j=1,ny
-    prod(i,j)=0.
-    do k=1,ny
-      prod(i,j)=prod(i,j)+matl(i,k)*matu(k,j)
-    enddo
-  enddo
-  enddo
-  print *,'A-L*U', maxval(abs(mata-prod)), maxloc(abs(mata-prod))
-  do j=1,ny
-    print *,mata(j,:)-prod(j,:)
-  enddo
-endif
-#endif
-
    end subroutine ludecomp7_12
    !
 
@@ -229,8 +80,6 @@ endif
       real(mytype),dimension(ny), intent(out) :: vvm,wwm,zzm
       real(mytype),dimension(ny), intent(out) :: l1m,l2m,l3m
       real(mytype),dimension(ny), intent(out) :: u1m,u2m,u3m
-
-real(mytype), dimension(ny,ny) :: mata, matl, matu, prod
 
       ! a=diag, b=diag+1, c=diag+2, r=diag+3
       !         d=diag-1, e=diag-2, q=diag-3
@@ -335,170 +184,6 @@ real(mytype), dimension(ny,ny) :: mata, matl, matu, prod
       do k=1,j-1
          u1m(j)=u1m(j) - u1m(k)*l1m(k)
       enddo
-
-#ifdef DEBUG
-if (.false.) then
-  print *,'aam,bbm,ccm,ddm,eem,qqm,rrm'
-  do k=1,ny
-    print *,aam(k),bbm(k),ccm(k),ddm(k),eem(k),qqm(k),rrm(k)
-  enddo
-  print *,'ggm,hhm,ssm,rrm,u1m,u2m,u3m'
-  do k=1,ny
-    print *,ggm(k),hhm(k),ssm(k),rrm(k),u1m(k),u2m(k),u3m(k)
-  enddo
-  print *,'vvm,wwm,zzm,l1m,l2m,l3m'
-  do k=1,ny
-    print *,vvm(k),wwm(k),zzm(k),l1m(k),l2m(k),l3m(k)
-  enddo
-  mata=0.
-  matl=0.
-  matu=0.
-  j=1
-  mata(j,ny-2)=qqm(j)
-  mata(j,ny-1)=eem(j)
-  mata(j,ny  )=ddm(j)
-  mata(j,j   )=aam(j)
-  mata(j,j+1 )=bbm(j)
-  mata(j,j+2 )=ccm(j)
-  mata(j,j+3 )=rrm(j)
-  matl(j,j)=1.
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-   matu(j,j+3)=rrm(j)
-  j=2
-  mata(j,ny-1)=qqm(j)
-  mata(j,ny  )=eem(j)
-  mata(j,j-1 )=ddm(j)
-  mata(j,j   )=aam(j)
-  mata(j,j+1 )=bbm(j)
-  mata(j,j+2 )=ccm(j)
-  mata(j,j+3 )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-  matu(j,j+3)=rrm(j)
-  j=3
-  mata(j,ny  )=qqm(j)
-  mata(j,j-2 )=eem(j)
-  mata(j,j-1 )=ddm(j)
-  mata(j,j   )=aam(j)
-  mata(j,j+1 )=bbm(j)
-  mata(j,j+2 )=ccm(j)
-  mata(j,j+3 )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-  matu(j,j+3)=rrm(j)
-  do j=4,ny-3
-    mata(j,j-3)=qqm(j)
-    mata(j,j-2)=eem(j)
-    mata(j,j-1)=ddm(j)
-    mata(j,j  )=aam(j)
-    mata(j,j+1)=bbm(j)
-    mata(j,j+2)=ccm(j)
-    mata(j,j+3)=rrm(j)
-    matl(j,j)=1.
-    matl(j,j-1)=zzm(j)
-    matl(j,j-2)=wwm(j)
-    matl(j,j-3)=vvm(j)
-    matu(j,j)=ggm(j)
-    matu(j,j+1)=hhm(j)
-    matu(j,j+2)=ssm(j)
-    matu(j,j+3)=rrm(j)
-  enddo
-  j=ny-2
-  mata(j,j-3)=qqm(j)
-  mata(j,j-2)=eem(j)
-  mata(j,j-1)=ddm(j)
-  mata(j,j  )=aam(j)
-  mata(j,j+1)=bbm(j)
-  mata(j,j+2)=ccm(j)
-  mata(j,1  )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matl(j,j-3)=vvm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  matu(j,j+2)=ssm(j)
-  j=ny-1
-  mata(j,j-3)=qqm(j)
-  mata(j,j-2)=eem(j)
-  mata(j,j-1)=ddm(j)
-  mata(j,j  )=aam(j)
-  mata(j,j+1)=bbm(j)
-  mata(j,1  )=ccm(j)
-  mata(j,2  )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matl(j,j-3)=vvm(j)
-  matu(j,j)=ggm(j)
-  matu(j,j+1)=hhm(j)
-  j=ny
-  mata(j,j-3)=qqm(j)
-  mata(j,j-2)=eem(j)
-  mata(j,j-1)=ddm(j)
-  mata(j,j  )=aam(j)
-  mata(j,1  )=bbm(j)
-  mata(j,2  )=ccm(j)
-  mata(j,3  )=rrm(j)
-  matl(j,j)=1.
-  matl(j,j-1)=zzm(j)
-  matl(j,j-2)=wwm(j)
-  matl(j,j-3)=vvm(j)
-  matu(j,j)=ggm(j)
-  do j=1,ny
-    matu(j,ny)=matu(j,ny)+u1m(j)
-  enddo
-  do j=1,ny-1
-    matu(j,ny-1)=matu(j,ny-1)+u2m(j)
-  enddo
-  do j=1,ny-2
-    matu(j,ny-2)=matu(j,ny-2)+u3m(j)
-  enddo
-  do j=1,ny-1
-    matl(ny,j)=matl(ny,j)+l1m(j)
-  enddo
-  do j=1,ny-2
-    matl(ny-1,j)=matl(ny-1,j)+l2m(j)
-  enddo
-  do j=1,ny-3
-    matl(ny-2,j)=matl(ny-2,j)+l3m(j)
-  enddo
-  print *,'A = '
-  do j=1,ny
-    print *,mata(j,:)
-  enddo
-  print *,'L = '
-  do j=1,ny
-    print *,matl(j,:)
-  enddo
-  print *,'U = '
-  do j=1,ny
-    print *,matu(j,:)
-  enddo
-
-  do i=1,ny
-  do j=1,ny
-    prod(i,j)=0.
-    do k=1,ny
-      prod(i,j)=prod(i,j)+matl(i,k)*matu(k,j)
-    enddo
-  enddo
-  enddo
-  print *,'A-L*U', maxval(abs(mata-prod)), maxloc(abs(mata-prod))
-  do j=1,ny
-    print *,mata(j,:)-prod(j,:)
-  enddo
-endif
-#endif
 
 end subroutine ludecomp7_0
    !
@@ -852,46 +537,6 @@ call transpose_y_to_x(ux2,ux1)
 call transpose_y_to_x(uy2,uy1)
 call transpose_y_to_x(uz2,uz1)
 
-#ifdef DEBUG
-if (.false.) then
-   !VERIFICATION INVERSION CORRECTE, CAS NCLY=1
-   !Mx-b=0 ?
-   ! ux
-   if (nrank.eq.0) print *,'Check matrix inversion for ux - NCLY=1'
-   call deryy(td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-   td2(:,1,:)=ux2(:,1,:)+alsajy*(2.*ux2(:,2,:)) - xcst*td2(:,1,:)*pp2y(1)
-   do j=2,ysize(2)-1
-      td2(:,j,:)=alsajy*ux2(:,j-1,:) + ux2(:,j,:) + alsajy*ux2(:,j+1,:) - xcst*td2(:,j,:)*pp2y(j)
-   enddo
-   td2(:,ysize(2),:)=ux2(:,ysize(2),:)+alsajy*(2.*ux2(:,ysize(2)-1,:)) - xcst*td2(:,ysize(2),:)*pp2y(ysize(2))
-   td2=td2-ta2
-   call transpose_y_to_x(td2,td1)
-   call  test_scalar_min_max(td1)
-   ! uy
-   if (nrank.eq.0) print *,'Check matrix inversion for uy - NCLY=1'
-   call deryy(td2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
-   td2(:,1,:)=uy2(:,1,:)+0.*alsajy*(uy2(:,2,:)+uy2(:,ysize(2),:)) - xcst*td2(:,j,:)*pp2y(1)
-   do j=2,ysize(2)-1
-      td2(:,j,:)=alsajy*uy2(:,j-1,:) + uy2(:,j,:) + alsajy*uy2(:,j+1,:) - xcst*td2(:,j,:)*pp2y(j)
-   enddo
-   td2(:,ysize(2),:)=uy2(:,ysize(2),:)+0.*alsajy*(uy2(:,ysize(2)-1,:)+uy2(:,1,:)) - xcst*td2(:,ysize(2),:)*pp2y(ysize(2))
-   td2=td2-tb2
-   call transpose_y_to_x(td2,td1)
-   call  test_scalar_min_max(td1)
-   ! uz
-   if (nrank.eq.0) print *,'Check matrix inversion for uz - NCLY=1'
-   call deryy(td2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-   td2(:,1,:)=uz2(:,1,:)+alsajy*(2.*uz2(:,2,:)) - xcst*td2(:,1,:)*pp2y(1)
-   do j=2,ysize(2)-1
-      td2(:,j,:)=alsajy*uz2(:,j-1,:) + uz2(:,j,:) + alsajy*uz2(:,j+1,:) - xcst*td2(:,j,:)*pp2y(j)
-   enddo
-   td2(:,ysize(2),:)=uz2(:,ysize(2),:)+alsajy*(2.*uz2(:,ysize(2)-1,:)) - xcst*td2(:,ysize(2),:)*pp2y(ysize(2))
-   td2=td2-tc2
-   call transpose_y_to_x(td2,td1)
-   call  test_scalar_min_max(td1)
-endif
-#endif
-
 ! IF ab2 OR ab3
 if ((nscheme.eq.1).or.(nscheme.eq.4)) then
    ! IF NOT (first time step with no restart)
@@ -927,8 +572,6 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
 !xcst= xnu*gdt(itr)*0.5
 
 !A.uhat
-if (.true.) then
-
    if (istret.ne.0) then
       do j=1,ysize(2)
          ta2(:,j,:)=ta2(:,j,:)/pp2y(j)
@@ -978,36 +621,8 @@ if (.true.) then
 
    endif
 
-else
-
-do k=1,ysize(3)
-   do i=1,ysize(1)
-      td2(i,1,k)=0.!
-      td2(i,2,k)=alsa2y*ta2(i,1,k)+ta2(i,2,k)+alsa2y*ta2(i,3,k)
-      td2(i,3,k)=alsa3y*ta2(i,2,k)+ta2(i,3,k)+alsa3y*ta2(i,4,k)
-      do j=4,ysize(2)-3
-         td2(i,j,k)=alsajy*ta2(i,j-1,k)+ta2(i,j,k)+alsajy*ta2(i,j+1,k)
-      enddo
-      td2(i,ysize(2)-2,k)=alsaty*ta2(i,ysize(2)-3,k)+ta2(i,ysize(2)-2,k)+alsaty*ta2(i,ysize(2)-1,k)
-      td2(i,ysize(2)-1,k)=alsamy*ta2(i,ysize(2)-2,k)+ta2(i,ysize(2)-1,k)+alsamy*ta2(i,ysize(2),k)
-      td2(i,ysize(2),k)=0.!
-   enddo
-enddo
-
-do k=1,ysize(3)
-   do j=1,ysize(2)
-      do i=1,ysize(1)
-         ta2(i,j,k)=td2(i,j,k)         
-      enddo
-   enddo
-enddo
-
-endif
 
 !(A+nu*dt.B).un
-
-if (.true.) then
-
    if (ncly.eq.0) then
 
       call deryy(td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
@@ -1082,70 +697,6 @@ if (.true.) then
       td2(:,ysize(2),:) = 0.
 
    endif
-
-else
-
-if(istret==0) then
-
-   do k=1,ysize(3)
-      do i=1,ysize(1)
-         
-         !for ux
-         td2(i,1,k)= 0.!
-         td2(i,2,k)=(alsa2y+xcst*as2y)*ux2(i,1,k)+(1.-xcst*2.*as2y)*ux2(i,2,k)+(alsa2y+xcst*as2y)*ux2(i,3,k)
-         td2(i,3,k)=xcst*bs3y*ux2(i,1,k)+(alsa3y+xcst*as3y)*ux2(i,2,k) &
-                 + (1.-xcst*2.*(as3y+bs3y))*ux2(i,3,k) + (alsa3y+xcst*as3y)*ux2(i,4,k) &
-                 +xcst*bs3y*ux2(i,5,k)
-         do j=4,ysize(2)-3
-            td2(i,j,k)=xcst*csjy*ux2(i,j-3,k)+xcst*bsjy*ux2(i,j-2,k)+(alsajy+xcst*asjy)*ux2(i,j-1,k) &
-                 + (1.-xcst*2.*(asjy+bsjy+csjy))*ux2(i,j,k) + (alsajy+xcst*asjy)*ux2(i,j+1,k) &
-                 +xcst*bsjy*ux2(i,j+2,k)+xcst*csjy*ux2(i,j+3,k)
-         enddo
-         td2(i,ysize(2)-2,k)=xcst*bsty*ux2(i,ysize(2)-4,k)+(alsaty+xcst*asty)*ux2(i,ysize(2)-3,k) &
-                 + (1.-xcst*2.*(asty+bsty))*ux2(i,ysize(2)-2,k) + (alsaty+xcst*asty)*ux2(i,ysize(2)-1,k) &
-                 +xcst*bsty*ux2(i,ysize(2),k)
-         td2(i,ysize(2)-1,k)=(alsamy+xcst*asmy)*ux2(i,ysize(2)-2,k)+(1.-xcst*2.*asmy)*ux2(i,ysize(2)-1,k) &
-              +(alsamy+xcst*asmy)*ux2(i,ysize(2),k)
-         td2(i,ysize(2),k)=0.!xcst*csny*ux2(i,ysize(2)-2,k)+(alsany+xcst*bsny)*ux2(i,ysize(2)-1,k) &
-         !+(1.+xcst*asny)*ux2(i,ysize(2),k)
-         
-      enddo
-   enddo
-
-else 
-
-   do k=1,ysize(3)
-      do i=1,ysize(1)
-         
-         !for ux
-         td2(i,1,k)= 0.!(1.+xcst*as1y)*ux2(i,1,k)+(alsa1y+xcst*bs1y)*ux2(i,2,k) &
-         !+ xcst*cs1y*ux2(i,3,k)
-         td2(i,2,k)=(alsa2y+xcst*as2y*pp2y(2))*ux2(i,1,k)+(1.-xcst*2.*as2y*pp2y(2))*ux2(i,2,k)& 
-              +(alsa2y+xcst*as2y*pp2y(2))*ux2(i,3,k)
-         td2(i,3,k)=xcst*bs3y*ux2(i,1,k)*pp2y(3)+(alsa3y+xcst*as3y*pp2y(3))*ux2(i,2,k) &
-                 + (1.-xcst*2.*(as3y+bs3y)*pp2y(3))*ux2(i,3,k) + (alsa3y+xcst*as3y*pp2y(3))*ux2(i,4,k) &
-                 +xcst*bs3y*ux2(i,5,k)*pp2y(3)
-         do j=4,ysize(2)-3
-            td2(i,j,k)=xcst*csjy*ux2(i,j-3,k)*pp2y(j)+xcst*bsjy*ux2(i,j-2,k)*pp2y(j) &
-                 +(alsajy+xcst*asjy*pp2y(j))*ux2(i,j-1,k) &
-                 + (1.-xcst*2.*(asjy+bsjy+csjy)*pp2y(j))*ux2(i,j,k) + (alsajy+xcst*asjy*pp2y(j))*ux2(i,j+1,k) &
-                 +xcst*bsjy*ux2(i,j+2,k)*pp2y(j)+xcst*csjy*ux2(i,j+3,k)*pp2y(j)
-         enddo
-         td2(i,ysize(2)-2,k)=xcst*bsty*ux2(i,ysize(2)-4,k)*pp2y(ysize(2)-2)+ &
-              (alsaty+xcst*asty*pp2y(ysize(2)-2))*ux2(i,ysize(2)-3,k) &
-                 + (1.-xcst*2.*(asty+bsty)*pp2y(ysize(2)-2))*ux2(i,ysize(2)-2,k) &
-                 + (alsaty+xcst*asty*pp2y(ysize(2)-2))*ux2(i,ysize(2)-1,k) &
-                 +xcst*bsty*ux2(i,ysize(2),k)*pp2y(ysize(2)-2)
-         td2(i,ysize(2)-1,k)=(alsamy+xcst*asmy*pp2y(ysize(2)-1))*ux2(i,ysize(2)-2,k)+ &
-              (1.-xcst*2.*asmy*pp2y(ysize(2)-1))*ux2(i,ysize(2)-1,k) &
-              +(alsamy+xcst*asmy*pp2y(ysize(2)-1))*ux2(i,ysize(2),k)
-         td2(i,ysize(2),k)=0.!xcst*csny*ux2(i,ysize(2)-2,k)+(alsany+xcst*bsny)*ux2(i,ysize(2)-1,k) &
-         !+(1.+xcst*asny)*ux2(i,ysize(2),k)
-         
-      enddo
-   enddo
-  
-endif
 
 endif
    
@@ -1754,69 +1305,6 @@ endif
 
 call transpose_y_to_x(phi2,phi1)
 
-#ifdef DEBUG
-if (.false.) then
-   !VERIFICATION INVERSION CORRECTE, CAS NCLY=0
-   !Mx-b=0 ?
-   ! T
-   if (nrank.eq.0) print *,'Check matrix inversion for T - NCLY=0'
-   call deryy(td2,phi2,di2,sy,sfyt,ssyt,swyt,ysize(1),ysize(2),ysize(3),0)
-   td2(:,1,:)=phi2(:,1,:)+alsajy*(phi2(:,2,:)+phi2(:,ysize(2),:)) - xcst*td2(:,1,:)
-   do j=2,ysize(2)-1
-      td2(:,j,:)=alsajy*phi2(:,j-1,:) + phi2(:,j,:) + alsajy*phi2(:,j+1,:) - xcst*td2(:,j,:)
-   enddo
-   td2(:,ysize(2),:)=phi2(:,ysize(2),:)+alsajy*(phi2(:,ysize(2)-1,:)+phi2(:,1,:)) - xcst*td2(:,ysize(2),:)
-   td2=td2-ta2
-   call transpose_y_to_x(td2,td1)
-   call  test_scalar_min_max(td1)
-endif
-#endif
-
-!!!!!!!!!!!!!!!!!
-!!CL THERMIQUE !!
-!!!!!!!!!!!!!!!!!
-
-!SORTIES CONVECTIVE  
-!call outflow(ux1,uy1,uz1,phi1)
-
-!!$call outflow(ux1,uy1,uz1,phisauv)
-!!$do k=1,xsize(3)
-!!$   do j=1,xsize(2)
-!!$      phi1(1,j,k)= phisauv(1,j,k)
-!!$      phi1(xsize(1),j,k)= phisauv(xsize(1),j,k)
-!!$   enddo
-!!$enddo
-!!$
-!!$if(xstart(3)==1) then
-!!$   do i=1,xsize(1)
-!!$      do j=1,xsize(2)
-!!$         phi1(i,j,1)= phisauv(i,j,1)     
-!!$      enddo
-!!$   enddo
-!!$
-!!$endif
-!!$if(xend(3)==nz) then
-!!$   do i=1,xsize(1)
-!!$      do j=1,xsize(2)
-!!$         phi1(i,j,xsize(3))= phisauv(i,j,xsize(3))     
-!!$      enddo
-!!$   enddo
-!!$endif
-
-!CLIPPING
-!do k=1,xsize(3)
-!   do j=1,xsize(2)
-!      do i=1,xsize(1)
-!         if(phi1(i,j,k).lt.1) then
-!            phi1(i,j,k)=1.
-!         end if
-!      enddo
-!   enddo
-!enddo
-!
-
-!!FIN CL THERMIQUE 
-
 end subroutine scalarimp
 
 !********************************************************************
@@ -1840,8 +1328,6 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
 !xcst= xnu*gdt(itr)*0.5
 
 !A.uhat
-if (.true.) then
-
    if (istret.ne.0) then
       do j=1,ysize(2)
          ta2(:,j,:)=ta2(:,j,:)/pp2y(j)
@@ -1883,34 +1369,8 @@ if (.true.) then
 
    endif
 
-else
-   do k=1,ysize(3)
-      do i=1,ysize(1)
-   
-         td2(i,1,k)= 0.
-         td2(i,2,k)=alsa2y*ta2(i,1,k)+ta2(i,2,k)+alsa2y*ta2(i,3,k)
-         td2(i,3,k)=alsa3y*ta2(i,2,k)+ta2(i,3,k)+alsa3y*ta2(i,4,k)
-         do j=4,ysize(2)-3
-            td2(i,j,k)=alsajyt*ta2(i,j-1,k)+ta2(i,j,k)+alsajyt*ta2(i,j+1,k)
-         enddo
-         td2(i,ysize(2)-2,k)=alsaty*ta2(i,ysize(2)-3,k)+ta2(i,ysize(2)-2,k)+alsaty*ta2(i,ysize(2)-1,k)
-         td2(i,ysize(2)-1,k)=alsamy*ta2(i,ysize(2)-2,k)+ta2(i,ysize(2)-1,k)+alsamy*ta2(i,ysize(2),k)
-         td2(i,ysize(2),k)=0.!
-
-      enddo
-   enddo
-   do k=1,ysize(3)
-      do j=1,ysize(2)
-         do i=1,ysize(1)
-            ta2(i,j,k)=td2(i,j,k)         
-         enddo
-      enddo
-   enddo
-endif
 
 !(A+nu*dt.B).un
-if (.true.) then
-
    if (ncly.eq.0) then
 
       call deryyt(td2,ux2,di2,sy,sfyt,ssyt,swyt,ysize(1),ysize(2),ysize(3),0)
@@ -1974,72 +1434,6 @@ if (.true.) then
       td2(:,ysize(2),:) = 0.
 
    endif
-
-else
-
-   if(istret==0) then
-
-      do k=1,ysize(3)
-         do i=1,ysize(1)
-         
-         !for ux
-         td2(i,1,k)= 0.
-         
-         td2(i,2,k)= (alsa2y+xcst_pr*as2y)*ux2(i,1,k)+(1.-xcst_pr*2.*as2y)*ux2(i,2,k)+(alsa2y+xcst_pr*as2y)*ux2(i,3,k) 
-         
-         td2(i,3,k)=xcst_pr*bs3y*ux2(i,1,k)+(alsa3y+xcst_pr*as3y)*ux2(i,2,k) &
-                 + (1.-xcst_pr*2.*(as3y+bs3y))*ux2(i,3,k) + (alsa3y+xcst_pr*as3y)*ux2(i,4,k) &
-                 +xcst_pr*bs3y*ux2(i,5,k)
-         do j=4,ysize(2)-3
-            td2(i,j,k)=xcst_pr*csjyt*ux2(i,j-3,k)+xcst_pr*bsjyt*ux2(i,j-2,k)+(alsajyt+xcst_pr*asjyt)*ux2(i,j-1,k) &
-                 + (1.-xcst_pr*2.*(asjyt+bsjyt+csjyt))*ux2(i,j,k) + (alsajyt+xcst_pr*asjyt)*ux2(i,j+1,k) &
-                 +xcst_pr*bsjyt*ux2(i,j+2,k)+xcst_pr*csjyt*ux2(i,j+3,k)
-         enddo
-         td2(i,ysize(2)-2,k)=xcst_pr*bsty*ux2(i,ysize(2)-4,k)+(alsaty+xcst_pr*asty)*ux2(i,ysize(2)-3,k) &
-                 + (1.-xcst_pr*2.*(asty+bsty))*ux2(i,ysize(2)-2,k) + (alsaty+xcst_pr*asty)*ux2(i,ysize(2)-1,k) &
-                 +xcst_pr*bsty*ux2(i,ysize(2),k)
-         td2(i,ysize(2)-1,k)=(alsamy+xcst_pr*asmy)*ux2(i,ysize(2)-2,k)+(1.-xcst_pr*2.*asmy)*ux2(i,ysize(2)-1,k) &
-              +(alsamy+xcst_pr*asmy)*ux2(i,ysize(2),k)
-         td2(i,ysize(2),k)=0.
-
-         enddo
-      enddo
-
-   else 
-
-      do k=1,ysize(3)
-         do i=1,ysize(1)
-         
-         !for ux
-         td2(i,1,k)= 0.
-         td2(i,2,k)=(alsa2y+xcst_pr*as2y*pp2y(2))*ux2(i,1,k)+(1.-xcst_pr*2.*as2y*pp2y(2))*ux2(i,2,k)& 
-              +(alsa2y+xcst_pr*as2y*pp2y(2))*ux2(i,3,k)
-         td2(i,3,k)=xcst_pr*bs3y*ux2(i,1,k)*pp2y(3)+(alsa3y+xcst_pr*as3y*pp2y(3))*ux2(i,2,k) &
-                 + (1.-xcst_pr*2.*(as3y+bs3y)*pp2y(3))*ux2(i,3,k) + (alsa3y+xcst_pr*as3y*pp2y(3))*ux2(i,4,k) &
-                 +xcst_pr*bs3y*ux2(i,5,k)*pp2y(3)
-         do j=4,ysize(2)-3
-            td2(i,j,k)=xcst_pr*csjyt*ux2(i,j-3,k)*pp2y(j)+xcst_pr*bsjyt*ux2(i,j-2,k)*pp2y(j) &
-                 +(alsajyt+xcst_pr*asjyt*pp2y(j))*ux2(i,j-1,k) &
-                 + (1.-xcst_pr*2.*(asjyt+bsjyt+csjyt)*pp2y(j))*ux2(i,j,k) + (alsajyt+xcst_pr*asjyt*pp2y(j))*ux2(i,j+1,k) &
-                 +xcst_pr*bsjyt*ux2(i,j+2,k)*pp2y(j)+xcst_pr*csjyt*ux2(i,j+3,k)*pp2y(j)
-         enddo
-         td2(i,ysize(2)-2,k)=xcst_pr*bsty*ux2(i,ysize(2)-4,k)*pp2y(ysize(2)-2)+ &
-              (alsaty+xcst_pr*asty*pp2y(ysize(2)-2))*ux2(i,ysize(2)-3,k) &
-                 + (1.-xcst_pr*2.*(asty+bsty)*pp2y(ysize(2)-2))*ux2(i,ysize(2)-2,k) &
-                 + (alsaty+xcst_pr*asty*pp2y(ysize(2)-2))*ux2(i,ysize(2)-1,k) &
-                 +xcst_pr*bsty*ux2(i,ysize(2),k)*pp2y(ysize(2)-2)
-         td2(i,ysize(2)-1,k)=(alsamy+xcst_pr*asmy*pp2y(ysize(2)-1))*ux2(i,ysize(2)-2,k)+ &
-              (1.-xcst_pr*2.*asmy*pp2y(ysize(2)-1))*ux2(i,ysize(2)-1,k) &
-              +(alsamy+xcst_pr*asmy*pp2y(ysize(2)-1))*ux2(i,ysize(2),k)
-         td2(i,ysize(2),k)=0.
-         
-         enddo
-      enddo
-  
-   endif
-
-endif
-   
 
 end subroutine multmatrix7T
 
