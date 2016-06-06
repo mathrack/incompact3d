@@ -42,6 +42,8 @@ USE variables
 USE param
 USE var
 USE MPI
+use derivX, only : alsaixt, asixt, bsixt, csixt
+use derivY, only : alsajyt, asjyt, bsjyt, csjyt
 
 
 implicit none
@@ -57,7 +59,7 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: phi_obj
 real(mytype) :: x, y, z
 real(mytype) :: mysx, mysy, mysz
 integer, dimension(3) :: mymax
-real(mytype) :: tx, ty
+real(mytype) :: tx, ty, w
 real(mytype) :: ta,tl,tb,tc
 
 phimax=-1609.
@@ -94,24 +96,39 @@ if (itype.eq.6) then
   enddo
   enddo
   enddo
-  ! Expression valid only for explicit AB2 time-scheme
+  ! Expression valid only for AB2 time-scheme
   if (t.gt.0.d0) then
     tx=dt*(twopi**2)*xnu/(2.d0*sc)
+    ty=dt*(twopi**2)*xnu/(2.d0*sc)
+    w=twopi*dx
+    tx = tx * &
+         ( (2.d0*asixt*dx2*(1.d0-cos(w)) + &
+            2.d0*bsixt*dx2*(1.d0-cos(2.d0*w)) + &
+            2.d0*csixt*dx2*(1.d0-cos(3.d0*w)) &
+            ) / (1.d0+2.d0*alsaixt*cos(w)) &
+          )/(w**2)
+    w=twopi*dy
+    ty = ty * &
+         ( (2.d0*asjyt*dy2*(1.d0-cos(w)) + &
+            2.d0*bsjyt*dy2*(1.d0-cos(2.d0*w)) + &
+            2.d0*csjyt*dy2*(1.d0-cos(3.d0*w)) &
+            ) / (1.d0+2.d0*alsajyt*cos(w)) &
+          )/(w**2)
     if (iimplicit.eq.0) then
-      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-      ty=ty-6.d0*tx+1.d0
-      ty=ty/2.d0
+      tc=sqrt( 9.d0*((tx+ty)**2)-2.d0*(tx+ty)+1.d0 )
+      tc=tc-3.d0*tx-3.d0*ty+1.d0
+      tc=tc/2.d0
     else
       if (istret.eq.0) then
-        ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
-        ty=ty-4.d0*tx+1.d0
-        ty=ty/2.d0/(tx+1.d0)
+        tc=sqrt( (3.d0*tx+ty-1)**2+4.d0*tx*(1.d0+ty) )
+        tc=tc-3.d0*tx-ty+1.d0
+        tc=tc/2.d0/(ty+1.d0)
       else
-        ty=1.d0
+        tc=1.d0
       endif
     endif
     do i=1,itime
-      phi_obj=phi_obj*ty
+      phi_obj=phi_obj*tc
     enddo
     if ((iimplicit.eq.1).and.(istret.ne.0)) then
       ta=dt*(twopi**2)*xnu/(2.d0*sc)
@@ -153,7 +170,8 @@ USE variables
 USE param
 USE var
 USE MPI
-
+use derivX, only : alsaix, asix, bsix, csix
+use derivY, only : alsajy, asjy, bsjy, csjy
 
 implicit none
 
@@ -168,7 +186,7 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux_obj,uy_obj,uz_obj
 real(mytype) :: x, y, z
 real(mytype) :: mysx, mycx, mysy, mycy
 integer, dimension(3) :: mymax
-real(mytype) :: tx, ty
+real(mytype) :: tx, ty, w
 real(mytype) :: ta,tl,tb,tc
 
 uxmax=-1609.
@@ -221,26 +239,41 @@ if ((itype.eq.6).or.(itype.eq.7)) then
     enddo
     enddo
     enddo
-    ! Expression valid only for explicit AB2 time-scheme
+    ! Expression valid only for AB2 time-scheme
     if (t.gt.0.d0) then
       tx=dt*(twopi**2)*xnu/2.d0
+      ty=dt*(twopi**2)*xnu/2.d0
+      w=twopi*dx
+      tx = tx * &
+           ( (2.d0*asix*dx2*(1.d0-cos(w)) + &
+              2.d0*bsix*dx2*(1.d0-cos(2.d0*w)) + &
+              2.d0*csix*dx2*(1.d0-cos(3.d0*w)) &
+              ) / (1.d0+2.d0*alsaix*cos(w)) &
+            )/(w**2)
+      w=twopi*dy
+      ty = ty * &
+           ( (2.d0*asjy*dy2*(1.d0-cos(w)) + &
+              2.d0*bsjy*dy2*(1.d0-cos(2.d0*w)) + &
+              2.d0*csjy*dy2*(1.d0-cos(3.d0*w)) &
+              ) / (1.d0+2.d0*alsajy*cos(w)) &
+            )/(w**2)
       if (iimplicit.eq.0) then
-        ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-        ty=ty-6.d0*tx+1.d0
-        ty=ty/2.d0
+        tc=sqrt( 9.d0*((tx+ty)**2)-2.d0*(tx+ty)+1.d0 )
+        tc=tc-3.d0*tx-3.d0*ty+1.d0
+        tc=tc/2.d0
       else
         if (istret.eq.0) then
-          ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
-          ty=ty-4.d0*tx+1.d0
-          ty=ty/2.d0/(tx+1.d0)
+          tc=sqrt( (3.d0*tx+ty-1)**2+4.d0*tx*(1.d0+ty) )
+          tc=tc-3.d0*tx-ty+1.d0
+          tc=tc/2.d0/(ty+1.d0)
         else
-          ty=1.d0
+          tc=1.d0
         endif
       endif
       do i=1,itime
-        ux_obj=ux_obj*ty
-        uy_obj=uy_obj*ty
-        uz_obj=uz_obj*ty
+        ux_obj=ux_obj*tc
+        uy_obj=uy_obj*tc
+        uz_obj=uz_obj*tc
       enddo
       if ((iimplicit.eq.1).and.(istret.ne.0)) then
         ta=dt*(twopi**2)*xnu/2.d0

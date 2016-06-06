@@ -1,6 +1,6 @@
  In auto-tuning mode......
  factors:            1
- processor grid           1  by            1  time=   2.2809505462646484E-003
+ processor grid           1  by            1  time=   2.9370784759521484E-003
  the best processor grid is probably            1  by            1
  ===========================================================
  ===========================================================
@@ -75,6 +75,6 @@ Time step =      1, Time unit =    0.000
  Norme T infinie =    1.9746321244795695E-010
   at           38          53           2  on            0
  Norme T2 (**1/2)=    3.9649039644117847E-011
- time per time_step:   0.31598305702209473       seconds
+ time per time_step:   0.36205291748046875       seconds
  simulation with nx*ny*nz=          97          97          10 mesh nodes
  Mapping p_row*p_col=           0           0

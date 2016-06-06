@@ -490,6 +490,10 @@ USE decomp_2d_io
 USE variables
 USE param
 USE MPI
+use derivX, only : alsaix, asix, bsix, csix
+use derivX, only : alsaixt, asixt, bsixt, csixt
+use derivY, only : alsajy, asjy, bsjy, csjy
+use derivY, only : alsajyt, asjyt, bsjyt, csjyt
 
 implicit none
 
@@ -501,7 +505,7 @@ real(mytype) :: y,r,um,r1,r2,r3
 integer :: k,j,i,fh,ierror,ii
 integer :: code
 integer (kind=MPI_OFFSET_KIND) :: disp
-real(mytype) :: tx, ty
+real(mytype) :: tx, ty, w, tc
 
 if (iin.eq.1) then !generation of a random noise
 
@@ -582,17 +586,32 @@ if (itype.eq.6) then
    !
    ! Scalar
    tx=dt*(twopi**2)*xnu/(2.d0*sc)
+   ty=dt*(twopi**2)*xnu/(2.d0*sc)
+   w=twopi*dx
+   tx = tx * &
+        ( (2.d0*asixt*dx2*(1.d0-cos(w)) + &
+           2.d0*bsixt*dx2*(1.d0-cos(2.d0*w)) + &
+           2.d0*csixt*dx2*(1.d0-cos(3.d0*w)) &
+           ) / (1.d0+2.d0*alsaixt*cos(w)) &
+         )/(w**2)
+   w=twopi*dy
+   ty = ty * &
+        ( (2.d0*asjyt*dy2*(1.d0-cos(w)) + &
+           2.d0*bsjyt*dy2*(1.d0-cos(2.d0*w)) + &
+           2.d0*csjyt*dy2*(1.d0-cos(3.d0*w)) &
+           ) / (1.d0+2.d0*alsajyt*cos(w)) &
+         )/(w**2)
    if (iimplicit.eq.0) then
-      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-      ty=ty-6.d0*tx+1.d0
-      ty=ty/2.d0
-      phis1=-4.d0*tx*phi1/ty/dt
+      tc=sqrt( 9.d0*((tx+ty)**2)-2.d0*(tx+ty)+1.d0 )
+      tc=tc-3.d0*tx-3.d0*ty+1.d0
+      tc=tc/2.d0
+      phis1=-2.d0*(tx+ty)*phi1/tc/dt
    else
       if (istret.eq.0) then
-         ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
-         ty=ty-4.d0*tx+1.d0
-         ty=ty/2.d0/(tx+1.d0)
-         phis1=-2.d0*tx*phi1/ty/dt
+         tc=sqrt( (3.d0*tx+ty-1)**2+4.d0*tx*(1.d0+ty) )
+         tc=tc-3.d0*tx-ty+1.d0
+         tc=tc/2.d0/(ty+1.d0)
+         phis1=-2.d0*tx*phi1/tc/dt
       else
          do k=1,xsize(3)
          do j=1,xsize(2)
@@ -608,19 +627,34 @@ if (itype.eq.6) then
    !
    ! Velocity
    tx=dt*(twopi**2)*xnu/2.d0
+   ty=dt*(twopi**2)*xnu/2.d0
+   w=twopi*dx
+   tx = tx * &
+        ( (2.d0*asix*dx2*(1.d0-cos(w)) + &
+           2.d0*bsix*dx2*(1.d0-cos(2.d0*w)) + &
+           2.d0*csix*dx2*(1.d0-cos(3.d0*w)) &
+           ) / (1.d0+2.d0*alsaix*cos(w)) &
+         )/(w**2)
+   w=twopi*dy
+   ty = ty * &
+        ( (2.d0*asjy*dy2*(1.d0-cos(w)) + &
+           2.d0*bsjy*dy2*(1.d0-cos(2.d0*w)) + &
+           2.d0*csjy*dy2*(1.d0-cos(3.d0*w)) &
+           ) / (1.d0+2.d0*alsajy*cos(w)) &
+         )/(w**2)
    if (iimplicit.eq.0) then
-      ty=sqrt( 36.d0*(tx**2)-4.d0*tx+1.d0 )
-      ty=ty-6.d0*tx+1.d0
-      ty=ty/2.d0
-      gx1=-4.d0*tx*gx1/ty/dt
-      gy1=-4.d0*tx*gy1/ty/dt
+      tc=sqrt( 9.d0*((tx+ty)**2)-2.d0*(tx+ty)+1.d0 )
+      tc=tc-3.d0*tx-3.d0*ty+1.d0
+      tc=tc/2.d0
+      gx1=-2.d0*(tx+ty)*gx1/tc/dt
+      gy1=-2.d0*(tx+ty)*gy1/tc/dt
    else
       if (istret.eq.0) then
-         ty=sqrt( 20.d0*(tx**2)-4.d0*tx+1.d0 )
-         ty=ty-4.d0*tx+1.d0
-         ty=ty/2.d0/(tx+1.d0)
-         gx1=-2.d0*tx*gx1/ty/dt
-         gy1=-2.d0*tx*gy1/ty/dt
+         tc=sqrt( (3.d0*tx+ty-1)**2+4.d0*tx*(1.d0+ty) )
+         tc=tc-3.d0*tx-ty+1.d0
+         tc=tc/2.d0/(ty+1.d0)
+         gx1=-2.d0*tx*gx1/tc/dt
+         gy1=-2.d0*tx*gy1/tc/dt
       else
          do k=1,xsize(3)
          do j=1,xsize(2)
