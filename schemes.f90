@@ -1141,6 +1141,13 @@ endif
    endif
 #endif
 
+alpha_0 =1.
+beta_0  =0.
+g_0     =0.
+alpha_n =1.
+beta_n  =0.
+g_n     =0.
+
 call implicit_schemes()
 call scalar_schemes(fpi2t)
 

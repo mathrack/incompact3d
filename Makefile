@@ -85,7 +85,7 @@ endif
 
 # library path
 ifeq ($(FFT),generic)
-   LIBFFT=
+   LIBFFT= -llapack
 else ifeq ($(FFT),fftw3)
    LIBFFT=$(FFTW3_LIB)
 else ifeq ($(FFT),essl)

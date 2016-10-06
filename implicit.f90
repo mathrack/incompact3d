@@ -1,3 +1,4 @@
+!#define my_mod_solide
 
 module ludecomp
 
@@ -1095,6 +1096,9 @@ USE decomp_2d
 USE derivY
 USE MPI
 use matinv
+#ifdef my_mod_solide
+use conjugate_ht, only : temp_bot,temp_top,ny_sol_bot,cl_bot,cl_top,update_temp_solide
+#endif
 
 implicit none
 
@@ -1107,9 +1111,13 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: uy2,uz2,phi2,ta2,tb2,tc2,t
 
 real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: uz3,phi3,di3,ta3,tb3
 integer :: ijk,nvect1,nvect2,nvect3,i,j,k,nxyz,code
+
 !parametres CL
 real(mytype) :: x,y,z,r,lambda,phislbda,adiab,tjet,liss
-!
+
+#ifdef my_mod_solide
+real(mytype),dimension(ysize(1),2,ysize(3)) :: mytmptemp
+#endif
 
 tg1=0.;th1=0.;ti1=0.;td1=0.
 ta2=0.;tb2=0.;tc2=0.;td2=0.
@@ -1293,6 +1301,11 @@ endif
 call transpose_x_to_y(phi1,phi2)
 call transpose_x_to_y(td1,ta2)
 
+#ifdef my_mod_solide
+mytmptemp(:,1,:)=phi2(:,1,:)
+mytmptemp(:,2,:)=phi2(:,ysize(2),:)
+#endif
+
 !ta2: A.T_hat
 !td2:(A+xcstB).Tn
 call multmatrix7T(td2,ta2,phi2)
@@ -1300,8 +1313,13 @@ call multmatrix7T(td2,ta2,phi2)
 !right hand side
 ta2(:,:,:) = ta2(:,:,:) + td2(:,:,:)
 if (ncly==2) then
-   ta2(:,1,:)=g_0
+#ifdef my_mod_solide
+   ta2(:,1,:) = 0.5*(mytmptemp(:,1,:)+temp_bot(:,ny_sol_bot+3,:))
+   ta2(:,ysize(2),:) = 0.5*(mytmptemp(:,2,:)+temp_top(:,1,:))
+#else
+   ta2(:,1       ,:)=g_0
    ta2(:,ysize(2),:)=g_n
+#endif
 endif
 
 !Inversion systeme lineaire Mx=b: (A-xcst.B)u^n+1=uhat+(A+xcst.B)u^n
@@ -1313,6 +1331,13 @@ elseif (ncly==1) then
 elseif (ncly==2) then
   call septinv(phi2,ta2,ggmt,hhmt,ssmt,rrmt,vvmt,wwmt,zzmt,ysize(1),ysize(2),ysize(3))
 endif
+
+#ifdef my_mod_solide
+   call dery (tc2,phi2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0) ! npaire=0
+   cl_bot(:,1,:)=tc2(:,1       ,:)
+   cl_top(:,1,:)=tc2(:,ysize(2),:)
+   call update_temp_solide()
+#endif
 
 call transpose_y_to_x(phi2,phi1)
 
@@ -2377,7 +2402,6 @@ subroutine scalar_schemes(fpi2t)
    askzt  =((6.-9.*alsakzt)/4.)/dz2
    bskzt  =((-3.+24.*alsakzt)/5.)/(4.*dz2)
    cskzt  =((2.-11.*alsakzt)/20.)/(9.*dz2)
-   alsakzt=alsakz; askzt=askz; bskzt=bskz; cskzt=cskz;
 
    if (nclx.eq.0) then
       sfxt(1)   =alsaixt
@@ -2655,8 +2679,13 @@ else
    aamt = 1./pp2y-xcst_pr*aamt
 endif
 !CL sur aamt
-aamt(1 )=1.
-aamt(ny)=1.
+if (istret==0) then
+   aamt(1 )=alpha_0+beta_0*(11./6./dy)
+   aamt(ny)=alpha_n+beta_n*(11./6./dy)
+else
+   aamt(1 )=alpha_0+beta_0*ppy(1 )*(11./6./dy)
+   aamt(ny)=alpha_n+beta_n*ppy(ny)*(11./6./dy)
+endif
 !
 !DIAG SUP 1
 bbmt(1     )=bs1y
@@ -2681,8 +2710,13 @@ else
   bbmt(4:ny-3)=bbmt(4:ny-3)+alsajyt/pp2y(5:ny-2)
 endif
 !CL sur bbmt
-bbmt(1 )=0.
-bbmt(ny)=0.
+if (istret==0) then
+   bbmt(1 )=beta_0*(-18./6./dy)
+   bbmt(ny)=0.
+else
+   bbmt(1 )=beta_0*ppy(1)*(-18./6./dy)
+   bbmt(ny)=0.
+endif
 !
 !DIAG SUP 2
 ccmt(1     )=cs1y
@@ -2694,8 +2728,13 @@ ccmt(ny-2  )=bsty
 ccmt(4:ny-3)=bsjyt
 ccmt = -xcst_pr*ccmt
 !CL sur ccmt
-ccmt(1 )=0.
-ccmt(ny)=0.
+if (istret==0) then
+   ccmt(1 )=beta_0*(9./6./dy)
+   ccmt(ny)=0.
+else
+   ccmt(1 )=beta_0*ppy(1)*(9./6./dy)
+   ccmt(ny)=0.
+endif
 !
 !DIAG SUP 3
 rrmt(1     )=ds1y
@@ -2707,8 +2746,13 @@ rrmt(ny-2  )=0.
 rrmt(4:ny-3)=csjyt
 rrmt = -xcst_pr*rrmt
 !CL sur rrmt
-rrmt(1 )=0.
-rrmt(ny)=0.
+if (istret==0) then
+   rrmt(1 )=beta_0*(-2./6./dy)
+   rrmt(ny)=0.
+else
+   rrmt(1 )=beta_0*ppy(1)*(-2./6./dy)
+   rrmt(ny)=0.
+endif
 !
 !DIAG INF 1
 if (istret==0) then
@@ -2727,16 +2771,37 @@ else
   ddmt(3     )=ddmt(3     )+alsa3y/pp2y(2)
   ddmt(ny-2  )=ddmt(ny-2  )+alsaty/pp2y(ny-3)
   ddmt(4:ny-3)=ddmt(4:ny-3)+alsajyt/pp2y(3:ny-4)
-  !CL sur ddmt
-  ddmt(1 )=0.
-  ddmt(ny)=0.
+endif
+!CL sur ddmt
+if (istret==0) then
+   ddmt(1 )=0.
+   ddmt(ny)=beta_n*(-18./6./dy)
+else
+   ddmt(1 )=0.
+   ddmt(ny)=beta_n*ppy(ny)*(-18./6./dy)
 endif
 !
 !DIAG INF 2
 eemt=ccmt
+!CL sur eemt
+if (istret==0) then
+   eemt(1)=0.
+   eemt(ny)=beta_n*(9./6./dy)
+else
+   eemt(1)=0.
+   eemt(ny)=beta_n*ppy(ny)*(9./6./dy)
+endif
 !
 !DIAG INF 3
 qqmt=rrmt
+!CL sur qqmt
+if (istret==0) then
+   qqmt(1)=0.
+   qqmt(ny)=beta_n*(-2./6./dy)
+else
+   qqmt(1)=0.
+   qqmt(ny)=beta_n*ppy(ny)*(-2./6./dy)
+endif
 
 !!! NCL = 1, npaire=0, dirichlet imposé, fonction impaire
 !
@@ -2854,7 +2919,11 @@ else
    bbmt11(1:ny-1) = alsajyt/pp2y(2:ny) - xcst_pr*bbmt11(1:ny-1)
 endif
 !CL sur bbm11t
-bbmt11(1 )=bbmt11(1)+alsajyt/pp2y(2)
+if (istret==0) then
+   bbmt11(1 )=bbmt11(1)+alsajyt
+else
+   bbmt11(1 )=bbmt11(1)+alsajyt/pp2y(2)
+endif
 bbmt11(ny)=0.
 !
 !DIAG SUP 2
@@ -2892,7 +2961,11 @@ else
 endif
 !CL sur ddmt11
 ddmt11(1 )=0.
-ddmt11(ny)=ddmt11(ny)+alsajyt/pp2y(ny-1)!a1
+if (istret==0) then
+   ddmt11(ny)=ddmt11(ny)+alsajyt!a1
+else
+   ddmt11(ny)=ddmt11(ny)+alsajyt/pp2y(ny-1)!a1
+endif
 !
 !DIAG INF 2
 eemt11(1     )=0.
