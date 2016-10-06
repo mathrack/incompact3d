@@ -42,6 +42,7 @@ USE MPI
 USE IBM
 USE derivX
 USE derivZ
+use user_specific
 
 implicit none
 
@@ -102,14 +103,11 @@ if (ilit.eq.1) then
 else
    call init(ux1,uy1,uz1,ep1,phi1,gx1,gy1,gz1,phis1,hx1,hy1,hz1,phiss1)  
 endif
+
+call module_user_init(phG,ph1,ph2,ph3,ph4)
+
 call test_speed_min_max(ux1,uy1,uz1)
 if (iscalar==1) call test_scalar_min_max(phi1)
-
-!array for stat to zero
-umean=0.;vmean=0.;wmean=0.
-uumean=0.;vvmean=0.;wwmean=0.
-uvmean=0.;uwmean=0.;vwmean=0.
-phimean=0.;phiphimean=0.
 
 t1 = MPI_WTIME()
 
@@ -185,9 +183,7 @@ do itime=ifirst,ilast
 
    enddo
 
-   call STATISTIC(ux1,uy1,uz1,phi1,ta1,umean,vmean,wmean,phimean,uumean,vvmean,wwmean,&
-        uvmean,uwmean,vwmean,phiphimean,tmean)
-
+   call module_user_write(phG,ph1,ph2,ph3,ph4)
 
    if (mod(itime,isave)==0) call restart(ux1,uy1,uz1,ep1,pp3,phi1,gx1,gy1,gz1,&
         px1,py1,pz1,phis1,hx1,hy1,hz1,phiss1,phG,1)
@@ -204,6 +200,7 @@ enddo
 if (mod(itime,isave).ne.0) then
    call restart(ux1,uy1,uz1,ep1,pp3,phi1,gx1,gy1,gz1,&
         px1,py1,pz1,phis1,hx1,hy1,hz1,phiss1,phG,1)
+   call module_user_post(phG,ph1,ph2,ph3,ph4)
 endif
 
 t2=MPI_WTIME()-t1

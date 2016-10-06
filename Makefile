@@ -50,7 +50,7 @@ ESSL_LIB = -L$(ESSL_PATH)/lib -L/opt/ibmmath/lib64 -lesslbg
 
 # GNU
 FC = mpif90
-OPTFC = -O3 -funroll-loops -ftree-vectorize -fcray-pointer -cpp
+OPTFC = -O0 -funroll-loops -ftree-vectorize -fcray-pointer -cpp
 CC = mpicc
 CFLAGS = -O3
 PLATFORM = gnu
@@ -93,7 +93,7 @@ else ifeq ($(FFT),essl)
 endif
 
 # List of source files
-SRC = decomp_2d.f90 glassman.f90 fft_$(FFT).f90 module_param.f90 io.f90 variables.f90 poisson.f90 schemes.f90 implicit.f90 convdiff.f90 incompact3d.f90 navier.f90 filter.f90 derive.f90 parameters.f90 tools.f90 visu.f90
+SRC = decomp_2d.f90 glassman.f90 fft_$(FFT).f90 module_param.f90 io.f90 variables.f90 poisson.f90 schemes.f90 user_module.f90 implicit.f90 convdiff.f90 incompact3d.f90 navier.f90 filter.f90 derive.f90 parameters.f90 tools.f90 visu.f90
 
 #-----------------------------------------------------------------------
 # Normally no need to change anything below
