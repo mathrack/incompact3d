@@ -13,3 +13,9 @@ I have applied some modifications and have used it during my PhD : [DNS of turbu
 -----
 
 There seems to be an issue with symbolic links. Especially for the file implicit.f90 in the taylor-green benchmark. If you can not compile some cases in the validation directory, please check carefully each file and symbolic link.
+
+-----
+
+TODO:
+- The module for the statistics would probably look much better if a derived type was used.
+- Upload some source code and results already used in PhD & publications
