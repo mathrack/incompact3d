@@ -1139,7 +1139,7 @@ if (.true.) then ! Spatial average of temperature
   enddo
 
   call MPI_ALLREDUCE(ut3,ut4,1,real_type,MPI_SUM,MPI_COMM_WORLD,code)
-  ut4=ut4/(nx*nz)
+  ut4=ut4/dble(xsize(1)*zsize(3))
   if (nrank==0) print *,nrank,' PHI MOYEN : ',ut4
 
 endif
