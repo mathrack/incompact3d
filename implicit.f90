@@ -1214,6 +1214,11 @@ do k=1,xsize(3)
    enddo
 enddo
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Kasagi Source term !!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!
+tg1=tg1+ux1*xnu/sc
+
 ! TIME ADVANCEMENT EXPLICIT AB + IMPLICIT CN2 (d2/dy2)
 nxyz=xsize(1)*xsize(2)*xsize(3)  
 
