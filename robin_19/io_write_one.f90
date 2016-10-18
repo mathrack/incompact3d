@@ -1,0 +1,1 @@
+../diric/io_write_one.f90

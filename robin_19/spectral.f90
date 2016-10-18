@@ -1,0 +1,1 @@
+../diric/spectral.f90
