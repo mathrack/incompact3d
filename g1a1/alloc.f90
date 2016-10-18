@@ -1,0 +1,1 @@
+../diric/alloc.f90

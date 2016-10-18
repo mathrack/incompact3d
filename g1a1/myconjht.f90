@@ -1,0 +1,1 @@
+../diric/myconjht.f90
