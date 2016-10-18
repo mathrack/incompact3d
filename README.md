@@ -18,4 +18,3 @@ There seems to be an issue with symbolic links. Especially for the file implicit
 
 TODO:
 - The module for the statistics would probably look much better if a derived type was used.
-- Upload some source code and results already used in PhD & publications
