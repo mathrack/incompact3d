@@ -416,10 +416,10 @@ subroutine update_temp_solide()
 
   ! Boundary coundition : flux imposed with fluid and temperature imposed with exterior
   ! Derivate in solid is derivate in fluid * fluxratio
-  ydiff_bot(:,1,:)=1.!-fluxratio_bot
+  ydiff_bot(:,1,:)=fluxratio_bot
   ydiff_bot(:,ny_sol_bot+1+2,:)=cl_bot(:,1,:)*fluxratio_bot
   ydiff_top(:,1,:)=cl_top(:,1,:)*fluxratio_top
-  ydiff_top(:,ny_sol_top+1+2,:)=-1.!-fluxratio_top
+  ydiff_top(:,ny_sol_top+1+2,:)=-fluxratio_top
 
   ! Use matrix inversion to update temperature
   ! New temperature in temp_bot and temp_top
@@ -710,10 +710,15 @@ subroutine xzdiff_temp_solide(temp,dm1,n,mydeco)
 
   ! Local variables
   integer :: i,j,k
-  real(mytype), allocatable, dimension(:,:,:) :: dtdxx, dtdzz, dtdxyz
-  real(mytype), allocatable, dimension(:,:,:) :: temp1, temp3
-  real(mytype), allocatable, dimension(:,:,:) :: di1,di3
-  real(mytype), allocatable, dimension(:,:) :: sx,sz
+  real(mytype), dimension(mydeco%xsz(1),mydeco%xsz(2),mydeco%xsz(3)) :: dtdxx
+  real(mytype), dimension(mydeco%zsz(1),mydeco%zsz(2),mydeco%zsz(3)) :: dtdzz
+  real(mytype), dimension(mydeco%ysz(1),mydeco%ysz(2),mydeco%ysz(3)) :: dtdxyz
+  real(mytype), dimension(mydeco%xsz(1),mydeco%xsz(2),mydeco%xsz(3)) :: temp1
+  real(mytype), dimension(mydeco%zsz(1),mydeco%zsz(2),mydeco%zsz(3)) :: temp3
+  real(mytype), dimension(mydeco%xsz(1),mydeco%xsz(2),mydeco%xsz(3)) :: di1
+  real(mytype), dimension(mydeco%zsz(1),mydeco%zsz(2),mydeco%zsz(3)) :: di3
+  real(mytype), dimension(mydeco%xsz(2),mydeco%xsz(3)) :: sx
+  real(mytype), dimension(mydeco%zsz(1),mydeco%zsz(2)) :: sz
 
   ! Init diffusion (dm1) and boundary values
   dm1=0.
@@ -738,7 +743,7 @@ subroutine xzdiff_temp_solide(temp,dm1,n,mydeco)
     asixts  =((6.-9.*alsaixts)/4.)/dx2
     bsixts  =((-3.+24.*alsaixts)/5.)/(4.*dx2)
     csixts  =((2.-11.*alsaixts)/20.)/(9.*dx2)
-    ! compact finite difference coefficients in x
+    ! compact finite difference coefficients in z
     alsakzts=(45.*fpi2ts*pi*pi-272.)/(2.*(45.*fpi2ts*pi*pi-208.))
     askzts  =((6.-9.*alsakzts)/4.)/dz2
     bskzts  =((-3.+24.*alsakzts)/5.)/(4.*dz2)
@@ -793,21 +798,10 @@ subroutine xzdiff_temp_solide(temp,dm1,n,mydeco)
 
   endif ! init x & z second derivative
 
-    ! allocate
-    call alloc_x(temp1,mydeco)
-    call alloc_z(temp3,mydeco)
     ! transpose y to x & y to z
     call transpose_y_to_x(temp,temp1,mydeco)
     call transpose_y_to_z(temp,temp3,mydeco)
 
-    ! allocate
-    call alloc_x(dtdxx,mydeco)
-    call alloc_y(dtdxyz,mydeco)
-    call alloc_z(dtdzz,mydeco)
-    call alloc_x(di1,mydeco)
-    call alloc_z(di3,mydeco)
-    allocate(sx(mydeco%xsz(2),mydeco%xsz(3)))
-    allocate(sz(mydeco%zsz(1),mydeco%zsz(2)))
     ! x & z second derivative
     call derxxts(dtdxx,temp1,di1,sx,sfxts,ssxts,swxts,mydeco%xsz(1),mydeco%xsz(2),mydeco%xsz(3),0)
     call derzzts(dtdzz,temp3,di3,sz,sfzts,sszts,swzts,mydeco%zsz(1),mydeco%zsz(2),mydeco%zsz(3),0)
@@ -816,17 +810,6 @@ subroutine xzdiff_temp_solide(temp,dm1,n,mydeco)
     call transpose_x_to_y(dtdxx,dm1,mydeco)
     call transpose_z_to_y(dtdzz,dtdxyz,mydeco)
     dm1=dm1+dtdxyz
-
-  ! de-allocate memory
-  if (allocated(temp1)) deallocate(temp1)
-  if (allocated(temp3)) deallocate(temp3)
-  if (allocated(dtdxx)) deallocate(dtdxx)
-  if (allocated(dtdxyz)) deallocate(dtdxyz)
-  if (allocated(dtdzz)) deallocate(dtdzz)
-  if (allocated(di1)) deallocate(di1)
-  if (allocated(di3)) deallocate(di3)
-  if (allocated(sx)) deallocate(sx)
-  if (allocated(sz)) deallocate(sz)
 
 end subroutine xzdiff_temp_solide
 
@@ -1063,6 +1046,19 @@ subroutine my2decomp_solide()
 
   call decomp_info_init(decomp_main%xsz(1),ny_sol_bot+1+2, decomp_main%zsz(3),mydecomp_bot)
   call decomp_info_init(decomp_main%xsz(1),ny_sol_top+1+2, decomp_main%zsz(3),mydecomp_top)
+
+if (decomp_main%ysz(1).ne.mydecomp_bot%ysz(1)) then
+  print *,'Error in mydecomp_bot : ',mydecomp_bot%ysz
+endif
+if (decomp_main%ysz(3).ne.mydecomp_bot%ysz(3)) then
+  print *,'Error in mydecomp_bot : ',mydecomp_bot%ysz
+endif
+if (decomp_main%ysz(1).ne.mydecomp_top%ysz(1)) then
+  print *,'Error in mydecomp_top : ',mydecomp_top%ysz
+endif
+if (decomp_main%ysz(3).ne.mydecomp_top%ysz(3)) then
+  print *,'Error in mydecomp_top : ',mydecomp_top%ysz
+endif
 
 end subroutine my2decomp_solide
 
@@ -1324,7 +1320,7 @@ subroutine ydery_temp_sol(temp,y,n,decomp)
   ! Write to disk
 154 format('t',I9.9)
   write(timer,154) itime
-  call decomp_2d_write_plane(2,output,5,8,'slices/tdyt_sol_'//timer//'.dat',decomp)
+  call decomp_2d_write_plane(2,output,5,nplan_sol*2,'slices/tdyt_sol_'//timer//'.dat',decomp)
 !  j=1
 !  call decomp_2d_write_plane(2,output,5,j,'slices/temp_sol_j131_'//timer//'.dat',decomp); j=j+1
 !  call decomp_2d_write_plane(2,output,5,j,'slices/dy_t_sol_j131_'//timer//'.dat',decomp); j=j+1
