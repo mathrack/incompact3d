@@ -1599,7 +1599,7 @@ contains
 
        ! enforce the limitation of 2D decomposition
        if (min(nx_global,ny_global)>=row .and. &
-            min(ny_global,nz_global)>=col) then
+            min(ny_global,nz_global/2)>=col) then
 
           ! 2D Catersian topology
           dims(1) = row

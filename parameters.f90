@@ -47,8 +47,8 @@ real(mytype) :: re, theta, cfl,cf2
 integer :: longueur ,impi,j
 character :: a*80
 
-#ifdef DOUBLE_PREC 
-pi=dacos(-1.d0) 
+#ifdef DOUBLE_PREC
+pi=dacos(-1.d0)
 #else
 pi=acos(-1.)
 #endif

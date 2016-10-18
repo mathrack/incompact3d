@@ -155,7 +155,7 @@ use decomp_2d, only : mytype
        nchamp*80,filepath*80, fileturb*80, filevisu*80 
   real(mytype), dimension(5), save :: adt,bdt,cdt,gdt
   integer, save :: iimplicit !!TIME IMPLICIT
-  real(mytype) :: xcst, xcst_pr !!TIME IMPLICIT
+  real(mytype), save :: xcst, xcst_pr !!TIME IMPLICIT
   !!
   !! Robin boundary condition on temperature
   !! alpha * T + beta * dT/dn = g
@@ -171,7 +171,7 @@ use decomp_2d, only : mytype
   !!
   !! WARNING ATTENTION ACHTUNG WARNING ATTENTION ACHTUNG
   !!
-  real(mytype) :: alpha_0, beta_0, g_0, alpha_n, beta_n, g_n
+  real(mytype), save :: alpha_0, beta_0, g_0, alpha_n, beta_n, g_n
 end module param
 
 module IBM

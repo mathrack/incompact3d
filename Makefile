@@ -50,7 +50,7 @@ ESSL_LIB = -L$(ESSL_PATH)/lib -L/opt/ibmmath/lib64 -lesslbg
 
 # GNU
 FC = mpif90
-OPTFC = -O0 -funroll-loops -ftree-vectorize -fcray-pointer -cpp
+OPTFC = -O0 -fdefault-real-8 -fdefault-double-8 -funroll-loops -ftree-vectorize -fcray-pointer -cpp
 CC = mpicc
 CFLAGS = -O3
 PLATFORM = gnu
