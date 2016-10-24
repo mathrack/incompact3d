@@ -752,7 +752,9 @@ endif
 call decx6(td1,ta1,di1,sx,cfx6,csx6,cwx6,xsize(1),nxmsize,xsize(2),xsize(3),0)
 call inter6(te1,tb1,di1,sx,cifxp6,cisxp6,ciwxp6,xsize(1),nxmsize,xsize(2),xsize(3),1)
 call inter6(tf1,tc1,di1,sx,cifxp6,cisxp6,ciwxp6,xsize(1),nxmsize,xsize(2),xsize(3),1)
-
+!print*,'divx, minval : ',minval(td1),minval(te1),minval(tf1)
+!print*,'      maxval : ',maxval(td1),maxval(te1),maxval(tf1)
+!td1=0.
 call transpose_x_to_y(td1,td2,ph4)!->NXM NY NZ
 call transpose_x_to_y(te1,te2,ph4)
 call transpose_x_to_y(tf1,tf2,ph4)
@@ -762,7 +764,8 @@ call transpose_x_to_y(tf1,tf2,ph4)
 call intery6(ta2,td2,di2,sy,cifyp6,cisyp6,ciwyp6,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),nymsize,ysize(3),1)
 call decy6(tb2,te2,di2,sy,cfy6,csy6,cwy6,ppyi,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),nymsize,ysize(3),0)
 call intery6(tc2,tf2,di2,sy,cifyp6,cisyp6,ciwyp6,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),nymsize,ysize(3),1)
-
+!print*,'divy, minval : ',minval(ta2),minval(tb2),minval(tc2)
+!print*,'      maxval : ',maxval(ta2),maxval(tb2),maxval(tc2)
 call transpose_y_to_z(ta2,ta3,ph3)!->NXM NYM NZ
 call transpose_y_to_z(tb2,tb3,ph3)
 call transpose_y_to_z(tc2,tc3,ph3)
@@ -775,7 +778,8 @@ call interz6(te3,tb3,di3,sz,cifzp6,ciszp6,ciwzp6,(ph1%zen(1)-ph1%zst(1)+1),&
      (ph1%zen(2)-ph1%zst(2)+1),zsize(3),nzmsize,1)
 call decz6(tf3,tc3,di3,sz,cfz6,csz6,cwz6,(ph1%zen(1)-ph1%zst(1)+1),&
      (ph1%zen(2)-ph1%zst(2)+1),zsize(3),nzmsize,0)
-
+!print*,'divz, minval : ',minval(td3),minval(te3),minval(tf3)
+!print*,'      maxval : ',maxval(td3),maxval(te3),maxval(tf3)
 
 do k=1,nzmsize
 do j=ph1%zst(2),ph1%zen(2)

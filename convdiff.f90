@@ -158,136 +158,130 @@ else !SKEW!
 endif
 !ALL THE CONVECTIVE TERMS ARE IN TA3, TB3 and TC3
 
-td3(:,:,:)=ta3(:,:,:)
-te3(:,:,:)=tb3(:,:,:)
-tf3(:,:,:)=tc3(:,:,:)
-
-!DIFFUSIVE TERMS IN Z
-call derzz (ta3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
-call derzz (tb3,uy3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
-call derzz (tc3,uz3,di3,sz,sfz ,ssz ,swz ,zsize(1),zsize(2),zsize(3),0)
-
-
-!WORK Y-PENCILS
-call transpose_z_to_y(ta3,ta2)
-call transpose_z_to_y(tb3,tb2)
-call transpose_z_to_y(tc3,tc2)
-call transpose_z_to_y(td3,td2)
-call transpose_z_to_y(te3,te2)
-call transpose_z_to_y(tf3,tf2)
-
-tg2(:,:,:)=td2(:,:,:)
-th2(:,:,:)=te2(:,:,:)
-ti2(:,:,:)=tf2(:,:,:)
-
-!DIFFUSIVE TERMS IN Y
-if (iimplicit==0) then ! EXPLICITE
-!-->for ux
-if (istret.ne.0) then 
-   call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-   call dery (te2,ux2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
-   do k=1,ysize(3)
-   do j=1,ysize(2)
-   do i=1,ysize(1)
-      td2(i,j,k)=td2(i,j,k)*pp2y(j)-pp4y(j)*te2(i,j,k)
-   enddo
-   enddo
-   enddo
-else
-   call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1) 
-endif
-!-->for uy
-if (istret.ne.0) then 
-   call deryy (te2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
-   call dery (tf2,uy2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
-   do k=1,ysize(3)
-   do j=1,ysize(2)
-   do i=1,ysize(1)
-      te2(i,j,k)=te2(i,j,k)*pp2y(j)-pp4y(j)*tf2(i,j,k)
-   enddo
-   enddo
-   enddo
-else
-   call deryy (te2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0) 
-endif
-!-->for uz
-if (istret.ne.0) then 
-   call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-   call dery (tj2,uz2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
-   do k=1,ysize(3)
-   do j=1,ysize(2)
-   do i=1,ysize(1)
-      tf2(i,j,k)=tf2(i,j,k)*pp2y(j)-pp4y(j)*tj2(i,j,k)
-   enddo
-   enddo
-   enddo
-else
-   call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1) 
-endif
-else ! IMPLICIT
-if (istret.ne.0) then
-
-!-->for ux
-   call dery (te2,ux2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)                                         
-   do k=1,ysize(3)                                                                                                    
-   do j=1,ysize(2)                                                                                                    
-   do i=1,ysize(1)
-      td2(i,j,k)=-pp4y(j)*te2(i,j,k)                                                                
-   enddo                                                                                                              
-   enddo                                                                                                              
-   enddo                                                                                                              
-!-->for uy
-   call dery (tf2,uy2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)                                            
-   do k=1,ysize(3)                                                                                                    
-   do j=1,ysize(2)                                                                                                    
-   do i=1,ysize(1)
-      te2(i,j,k)=-pp4y(j)*tf2(i,j,k)                                                                
-   enddo                                                                                                              
-   enddo                                                                                                              
-   enddo                                                                                                              
-!-->for uz
-   call dery (tj2,uz2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)                                         
-   do k=1,ysize(3)                                                                                                    
-   do j=1,ysize(2)                                                                                                    
-   do i=1,ysize(1)
-      tf2(i,j,k)=-pp4y(j)*tj2(i,j,k)                                                                
-   enddo                                                                                                              
-   enddo                                                                                                              
-   enddo                                                                                                              
-
+! Diffusive terms
+if (iimplicit.eq.1) then
+   call transpose_z_to_y(ta3,ta2)
+   call transpose_z_to_y(tb3,tb2)
+   call transpose_z_to_y(tc3,tc2)
+   ! Add y diffusion contribution in case of streching
+   if (istret.ne.0) then
+      ! ux
+      call dery (td2,ux2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         td2(i,j,k)=-pp4y(j)*td2(i,j,k)
+      enddo
+      enddo
+      enddo
+      ! uy
+      call dery (te2,uy2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         te2(i,j,k)=-pp4y(j)*te2(i,j,k)
+      enddo
+      enddo
+      enddo
+      ! ux
+      call dery (tf2,uz2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         tf2(i,j,k)=-pp4y(j)*tf2(i,j,k)
+      enddo
+      enddo
+      enddo
+      call transpose_y_to_x(td2,ta1) ! X diffusion
+      call transpose_y_to_x(te2,tb1) ! Y diffusion
+      call transpose_y_to_x(tf2,tc1) ! Z diffusion
+   else
+      ! Diffusion computed on the fly in implicit solver
+      ta1=0.; tb1=0.; tc1=0.
+   endif
+   call transpose_y_to_x(ta2,tg1) ! X convection
+   call transpose_y_to_x(tb2,th1) ! Y convection
+   call transpose_y_to_x(tc2,ti1) ! Z convection
 else
 
-   td2=0.
-   te2=0.
-   tf2=0.
+   !DIFFUSIVE TERMS IN Z
+   call derzz (td3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+   call derzz (te3,uy3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+   call derzz (tf3,uz3,di3,sz,sfz ,ssz ,swz ,zsize(1),zsize(2),zsize(3),0)
 
+   !WORK Y-PENCILS
+   call transpose_z_to_y(ta3,tg2)
+   call transpose_z_to_y(tb3,th2)
+   call transpose_z_to_y(tc3,ti2)
+   call transpose_z_to_y(td3,ta2)
+   call transpose_z_to_y(te3,tb2)
+   call transpose_z_to_y(tf3,tc2)
+
+   !DIFFUSIVE TERMS IN Y
+   !-->for ux
+   if (istret.ne.0) then 
+      call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
+      call dery (te2,ux2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         td2(i,j,k)=td2(i,j,k)*pp2y(j)-pp4y(j)*te2(i,j,k)
+      enddo
+      enddo
+      enddo
+   else
+      call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1) 
+   endif
+   !-->for uy
+   if (istret.ne.0) then 
+      call deryy (te2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+      call dery (tf2,uy2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         te2(i,j,k)=te2(i,j,k)*pp2y(j)-pp4y(j)*tf2(i,j,k)
+      enddo
+      enddo
+      enddo
+   else
+      call deryy (te2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0) 
+   endif
+   !-->for uz
+   if (istret.ne.0) then 
+      call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
+      call dery (tj2,uz2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         tf2(i,j,k)=tf2(i,j,k)*pp2y(j)-pp4y(j)*tj2(i,j,k)
+      enddo
+      enddo
+      enddo
+   else
+      call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1) 
+   endif
+
+   ta2(:,:,:)=ta2(:,:,:)+td2(:,:,:)
+   tb2(:,:,:)=tb2(:,:,:)+te2(:,:,:)
+   tc2(:,:,:)=tc2(:,:,:)+tf2(:,:,:)
+
+   !WORK X-PENCILS
+   call transpose_y_to_x(ta2,ta1)
+   call transpose_y_to_x(tb2,tb1)
+   call transpose_y_to_x(tc2,tc1) !diff
+   call transpose_y_to_x(tg2,tg1)
+   call transpose_y_to_x(th2,th1)
+   call transpose_y_to_x(ti2,ti1) !conv
+
+   !DIFFUSIVE TERMS IN X
+   call derxx (td1,ux1,di1,sx,sfx ,ssx ,swx ,xsize(1),xsize(2),xsize(3),0)
+   call derxx (te1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+   call derxx (tf1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+
+   ta1(:,:,:)=ta1(:,:,:)+td1(:,:,:)
+   tb1(:,:,:)=tb1(:,:,:)+te1(:,:,:)
+   tc1(:,:,:)=tc1(:,:,:)+tf1(:,:,:)
 endif
-endif
-
-ta2(:,:,:)=ta2(:,:,:)+td2(:,:,:)
-tb2(:,:,:)=tb2(:,:,:)+te2(:,:,:)
-tc2(:,:,:)=tc2(:,:,:)+tf2(:,:,:)
-
-!WORK X-PENCILS
-call transpose_y_to_x(ta2,ta1)
-call transpose_y_to_x(tb2,tb1)
-call transpose_y_to_x(tc2,tc1) !diff
-call transpose_y_to_x(tg2,td1)
-call transpose_y_to_x(th2,te1)
-call transpose_y_to_x(ti2,tf1) !conv
-
-tg1(:,:,:)=td1(:,:,:)
-th1(:,:,:)=te1(:,:,:)
-ti1(:,:,:)=tf1(:,:,:)
-
-!DIFFUSIVE TERMS IN X
-call derxx (td1,ux1,di1,sx,sfx ,ssx ,swx ,xsize(1),xsize(2),xsize(3),0)
-call derxx (te1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
-call derxx (tf1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
-
-ta1(:,:,:)=ta1(:,:,:)+td1(:,:,:)
-tb1(:,:,:)=tb1(:,:,:)+te1(:,:,:)
-tc1(:,:,:)=tc1(:,:,:)+tf1(:,:,:)
 
 !if (nrank==1) print *,'WARNING rotating channel',itime
 !tg1(:,:,:)=tg1(:,:,:)-2./18.*uy1(:,:,:)

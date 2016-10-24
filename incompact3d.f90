@@ -129,11 +129,11 @@ do itime=ifirst,ilast
       call convdiff(ux1,uy1,uz1,ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1,&
            ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,tj2,di2,&
            ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3)
-           
+
       if (iscalar==1) then
          if(iimplicit==0) then
-         call scalar(ux1,uy1,uz1,phi1,phis1,phiss1,di1,tg1,th1,ti1,td1,&
-              uy2,uz2,phi2,di2,ta2,tb2,tc2,td2,uz3,phi3,di3,ta3,tb3,ep1) 
+            call scalar(ux1,uy1,uz1,phi1,phis1,phiss1,di1,tg1,th1,ti1,td1,&
+                 uy2,uz2,phi2,di2,ta2,tb2,tc2,td2,uz3,phi3,di3,ta3,tb3,ep1)
          else
             call scalarimp(ux1,uy1,uz1,phi1,phis1,phiss1,di1,tg1,th1,ti1,td1,&
                  uy2,uz2,phi2,di2,ta2,tb2,tc2,td2,uz3,phi3,di3,ta3,tb3)
@@ -142,12 +142,14 @@ do itime=ifirst,ilast
 
       !X PENCILS
       if(iimplicit==0) then
-      call intt (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1) 
+         call intt (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1) 
       else ! d2/dy2 implicite
          call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
-              td1,te1,tf1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2)
+              td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
+              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
       endif
-
+!call test_speed_min_max(ux1,uy1,uz1)
+!print*,'ux : ',(/ (ux1(1,j,1),j=1,ny) /)
       call pre_correc(ux1,uy1,uz1)
 
       if (ivirt==1) then !solid body old school
@@ -180,7 +182,7 @@ do itime=ifirst,ilast
       if (itr==iadvance_time) t=itime*dt
       call test_speed_min_max(ux1,uy1,uz1)
       if (iscalar==1) call test_scalar_min_max(phi1)
-
+!print*,'ux : ',(/ (ux1(1,j,1),j=1,ny) /)
    enddo
 
    call module_user_write(phG,ph1,ph2,ph3,ph4)

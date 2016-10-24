@@ -1,4 +1,4 @@
-#define my_mod_stats
+!#define my_mod_stats
 !#define my_mod_solide
 
 #ifdef my_mod_solide

@@ -682,6 +682,7 @@ if (nclx==0) then
            +csix*(ux(3 ,j,k)-ux(nx  ,j,k)&
            -ux(nx,j,k)+ux(nx-3,j,k))
       rx(nx  ,j,k)=alsaix
+if (iimplicit.eq.1) return
       do i=2,nx
          tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          rx(i,j,k)=rx(i,j,k)-rx(i-1,j,k)*ssx(i)
@@ -1258,6 +1259,7 @@ if (nclz==0) then
       rz(i,j,nz  )=alsakz
    enddo
    enddo
+if (iimplicit.eq.1) return
    do k=2,nz
    do j=1,ny
    do i=1,nx
