@@ -840,15 +840,11 @@ endif
 call transpose_z_to_y(ux3,ta2)
 call transpose_z_to_y(uy3,tb2)
 call transpose_z_to_y(uz3,tc2)
-
-!ta2: A.uhat
-!td2:(A+xcstB).un
+!
 call multmatrix7(td2,ta2,ux2,1)
 call multmatrix7(te2,tb2,uy2,0)
 call multmatrix7(tf2,tc2,uz2,1)
-
-!SECOND MEMBRE COMPLET BBB=A uhat+(A+xcst.B)u^n  
-!in  ta2,tb2,tc2
+! rhs complet
 ta2(:,:,:)=td2(:,:,:)+ta2(:,:,:)
 tb2(:,:,:)=te2(:,:,:)+tb2(:,:,:)
 tc2(:,:,:)=tf2(:,:,:)+tc2(:,:,:)
@@ -864,9 +860,7 @@ if (itype.eq.7) then
   enddo
   enddo
 endif
-
 !
-!Inversion systeme lineaire Mx=b: (A-xcst.B)u^n+1=uhat+(A+xcst.B)u^n
 ux2=0.; uy2=0.; uz2=0.;
 if (ncly.eq.0) then
    call septinv(ux2,ta2,ggm0,hhm0,ssm0,rrm0,vvm0,wwm0,zzm0,l1m,l2m,l3m,u1m,u2m,u3m,ysize(1),ysize(2),ysize(3))
