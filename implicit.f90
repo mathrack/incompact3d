@@ -691,10 +691,10 @@ call derxx (tg1,ux1,di1,sx,sfx ,ssx ,swx ,xsize(1),xsize(2),xsize(3),0)
 call derxx (th1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
 call derxx (ti1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
 iimplicit=1
-! Total RHS with diffusion
-ta1=td1+dt*xnu*(ta1+tg1)
-tb1=te1+dt*xnu*(tb1+th1)
-tc1=tf1+dt*xnu*(tc1+ti1)
+! Total RHS with diffusion + current velocity
+ta1=td1+dt*xnu*(ta1+tg1)+ux1
+tb1=te1+dt*xnu*(tb1+th1)+uy1
+tc1=tf1+dt*xnu*(tc1+ti1)+uz1
 
 ! X pencil inversion
 if (nclx.eq.1) then
@@ -871,13 +871,17 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
    elseif (ncly.eq.2) then
 
       td2(:,1,:) = 0.
-      td2(:,2,:) = alsa2y*ta2(:,1,:) + ta2(:,2,:) + alsa2y*ta2(:,3,:)
-      td2(:,3,:) = alsa3y*ta2(:,2,:) + ta2(:,3,:) + alsa3y*ta2(:,4,:)
+      j=2
+      td2(:,j,:) = alsa2y*ta2(:,j-1,:) + ta2(:,j,:) + alsa2y*ta2(:,j+1,:)
+      j=3
+      td2(:,j,:) = alsa3y*ta2(:,j-1,:) + ta2(:,j,:) + alsa3y*ta2(:,j+1,:)
       do j=4,ysize(2)-3
          td2(:,j,:) = alsajy*ta2(:,j-1,:) + ta2(:,j,:) + alsajy*ta2(:,j+1,:)
       enddo
-      td2(:,ysize(2)-2,:) = alsaty*ta2(:,ysize(2)-3,:) + ta2(:,ysize(2)-2,:) + alsaty*ta2(:,ysize(2)-1,:)
-      td2(:,ysize(2)-1,:) = alsamy*ta2(:,ysize(2)-2,:) + ta2(:,ysize(2)-1,:) + alsamy*ta2(:,ysize(2),:)
+      j=ysize(2)-2
+      td2(:,j,:) = alsaty*ta2(:,j-1,:) + ta2(:,j,:) + alsaty*ta2(:,j+1,:)
+      j=ysize(2)-1
+      td2(:,j,:) = alsamy*ta2(:,j-1,:) + ta2(:,j,:) + alsamy*ta2(:,j+1,:)
       td2(:,ysize(2),:) = 0.
       ta2=td2
 
@@ -900,7 +904,6 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
    elseif (ncly.eq.2) then
 
       call deryy(td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-      ux2=0.
 
    endif
 
@@ -965,7 +968,7 @@ USE decomp_2d
 implicit none
 
 integer :: npaire
-integer :: i,j,k,code
+integer :: i,j,k,code,im1,ip1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: ux1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: td1,ta1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
@@ -973,13 +976,13 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
 !A.uhat
    if (nclx.eq.0) then
 
-      i=1
-      td1(i,:,:) = alsaix*ta1(xsize(1),:,:) + ta1(i,:,:) + alsaix*ta1(i+1,:,:)
+      i=1; im1=xsize(1)
+      td1(i,:,:) = alsaix*ta1(im1,:,:) + ta1(i,:,:) + alsaix*ta1(i+1,:,:)
       do i=2,xsize(1)-1
          td1(i,:,:) = alsaix*ta1(i-1,:,:) + ta1(i,:,:) + alsaix*ta1(i+1,:,:)
       enddo
-      i=xsize(1)
-      td1(i,:,:) = alsaix*ta1(i-1,:,:) + ta1(i,:,:) + alsaix*ta1(1,:,:)
+      i=xsize(1); ip1=1
+      td1(i,:,:) = alsaix*ta1(i-1,:,:) + ta1(i,:,:) + alsaix*ta1(ip1,:,:)
       ta1=td1
 
    elseif (nclx.eq.1) then
@@ -1002,16 +1005,9 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
 
    if (nclx.eq.0) then
 
-      i=1
-      td1(i,:,:) = alsaix*ux1(xsize(1),:,:) + ux1(i,:,:) + alsaix*ux1(i+1,:,:) &
-                 - xcst*td1(i,:,:)
-      do i=2,xsize(1)-1
-         td1(i,:,:) = alsaix*ux1(i-1,:,:) + ux1(i,:,:) + alsaix*ux1(i+1,:,:) &
-                    - xcst*td1(i,:,:)
+      do i=1,xsize(1)
+         td1(i,:,:) = - xcst*td1(i,:,:)
       enddo
-      i=xsize(1)
-      td1(i,:,:) = alsaix*ux1(i-1,:,:) + ux1(i,:,:) + alsaix*ux1(1,:,:) &
-                 - xcst*td1(i,:,:)
 
    elseif (nclx.eq.1) then
 
@@ -1032,7 +1028,7 @@ USE decomp_2d
 implicit none
 
 integer :: npaire
-integer :: i,j,k,code
+integer :: i,j,k,code,km1,kp1
 !real(mytype) :: xcst ! modification module param
 real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: ux3
 real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: td3,ta3
@@ -1041,11 +1037,13 @@ real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: di3
 !A.uhat
    if (nclz.eq.0) then
 
-      td3(:,:,1) = alsakz*ta3(:,:,2) + ta3(:,:,1) + alsakz*ta3(:,:,zsize(3))
+      k=1; km1=zsize(3)
+      td3(:,:,k) = alsakz*ta3(:,:,km1) + ta3(:,:,k) + alsakz*ta3(:,:,k+1)
       do k=2,zsize(3)-1
          td3(:,:,k) = alsakz*ta3(:,:,k-1) + ta3(:,:,k) + alsakz*ta3(:,:,k+1)
       enddo
-      td3(:,:,zsize(3)) = alsakz*ta3(:,:,zsize(3)-1) + ta3(:,:,zsize(3)) + alsakz*ta3(:,:,1)
+      k=zsize(3); kp1=1
+      td3(:,:,k) = alsakz*ta3(:,:,k-1) + ta3(:,:,k) + alsakz*ta3(:,:,kp1)
       ta3=td3
 
    elseif (nclz.eq.1) then
