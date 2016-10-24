@@ -904,15 +904,15 @@ end subroutine inttimp
 subroutine multmatrix7(td2,ta2,ux2,npaire)
 ! 
 !********************************************************************
-USE param
-USE variables
-USE derivY
-USE decomp_2d
+USE param, only: xcst, ncly, istret
+USE variables, only: sy,sfy,sfyp,ssy,ssyp,swy,swyp,pp2y
+USE derivY, only: alsajy,alsa2y,alsa3y,alsaty,alsamy
+USE decomp_2d, only: mytype, ysize
 
 implicit none
 
-integer :: npaire
-integer :: i,j,k,code,jm1,jp1
+integer, intent(in) :: npaire
+integer :: j,jm1,jp1
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(inout) :: ux2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(inout) :: td2,ta2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
@@ -988,15 +988,15 @@ end subroutine multmatrix7
 subroutine xmultmatrix7(td1,ta1,ux1,npaire)
 ! 
 !********************************************************************
-USE param
-USE variables
-USE derivX
-USE decomp_2d
+USE param, only: xcst, nclx
+USE variables, only: sx,sfx,sfxp,ssx,ssxp,swx,swxp
+USE derivX, only: alsaix,alsa2x,alsa3x,alsatx,alsamx
+USE decomp_2d, only: mytype, xsize
 
 implicit none
 
-integer :: npaire
-integer :: i,j,k,code,im1,ip1
+integer, intent(in) :: npaire
+integer :: i,im1,ip1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: ux1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: td1,ta1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
@@ -1066,16 +1066,15 @@ end subroutine xmultmatrix7
 subroutine zmultmatrix7(td3,ta3,ux3,npaire)
 ! 
 !********************************************************************
-USE param
-USE variables
-USE derivZ
-USE decomp_2d
+USE param, only: xcst, nclz
+USE variables, only: sz,sfz,sfzp,ssz,sszp,swz,swzp
+USE derivZ, only: alsakz,alsa2z,alsa3z,alsamz,alsatz
+USE decomp_2d, only: mytype, zsize
 
 implicit none
 
-integer :: npaire
-integer :: i,j,k,code,km1,kp1
-!real(mytype) :: xcst ! modification module param
+integer, intent(in) :: npaire
+integer :: k,km1,kp1
 real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: ux3
 real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: td3,ta3
 real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: di3
@@ -1693,53 +1692,53 @@ qqm11 = -xcst*qqm11
 
 !!! NXL = 0
 !DIAG
-xaam0= 1.-xcst*(-2.*(asix+bsix+csix))
+   xaam0= 1.-xcst*(-2.*(asix+bsix+csix))
 if (istret==0) then
    aam0 = 1.-xcst*(-2.*(asjy+bsjy+csjy))
 else
    aam0 = 1./pp2y-xcst*(-2.*(asjy+bsjy+csjy))
 endif
-zaam0= 1.-xcst*(-2.*(askz+bskz+cskz))
+   zaam0= 1.-xcst*(-2.*(askz+bskz+cskz))
 !
 !DIAG SUP 1
-xbbm0 = alsaix-xcst*asix
+   xbbm0 = alsaix-xcst*asix
 if (istret==0) then
    bbm0 = alsajy-xcst*asjy
 else
    bbm0(1:ny-1) = alsajy/pp2y(2:ny) -xcst*asjy
    bbm0(ny) = alsajy/pp2y(1) -xcst*asjy
 endif
-zbbm0 = alsakz-xcst*askz
+   zbbm0 = alsakz-xcst*askz
 !
 !DIAG SUP 2
-xccm0= -xcst*bsix
+   xccm0= -xcst*bsix
 ccm0 = -xcst*bsjy
-zccm0= -xcst*bskz
+   zccm0= -xcst*bskz
 !
 !DIAG SUP 3
-xrrm0= -xcst*csix
+   xrrm0= -xcst*csix
 rrm0 = -xcst*csjy
-zrrm0= -xcst*cskz
+   zrrm0= -xcst*cskz
 !
 !DIAG INF 1
-xddm0=xbbm0
+   xddm0=xbbm0
 if (istret==0) then
   ddm0=bbm0
 else
    ddm0(1) = alsajy/pp2y(ny) -xcst*asjy
    ddm0(2:ny) = alsajy/pp2y(1:ny-1) -xcst*asjy
 endif
-zddm0=zbbm0
+   zddm0=zbbm0
 !
 !DIAG INF 2
-xeem0=xccm0
+   xeem0=xccm0
 eem0=ccm0
-zeem0=zccm0
+   zeem0=zccm0
 !
 !DIAG INF 3
-xqqm0=xrrm0
+   xqqm0=xrrm0
 qqm0=rrm0
-zqqm0=zrrm0
+   zqqm0=zrrm0
 
 call ludecomp7(aam,bbm,ccm,ddm,eem,qqm,ggm,hhm,ssm,rrm,&
      vvm,wwm,zzm,ny)

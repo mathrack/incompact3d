@@ -263,9 +263,7 @@ if ((itype.eq.6).or.(itype.eq.7)) then
         tc=tc/2.d0
       else
         if (istret.eq.0) then
-          tc=sqrt( (3.d0*tx+ty-1)**2+4.d0*tx*(1.d0+ty) )
-          tc=tc-3.d0*tx-ty+1.d0
-          tc=tc/2.d0/(ty+1.d0)
+          tc=(1.-tx-ty)/(1.+tx+ty)
         else
           tc=1.d0
         endif

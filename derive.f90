@@ -750,6 +750,7 @@ if (nclx==1) then
               -ux(nx  ,j,k)+ux(nx-2,j,k))&
               +csix*(ux(nx-3,j,k)-ux(nx  ,j,k)&
               -ux(nx  ,j,k)+ux(nx-3,j,k))
+if (iimplicit.eq.1) return
          do i=2,nx
             tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          enddo
@@ -797,6 +798,7 @@ if (nclx==1) then
               +csix*(-ux(nx-2,j,k)-ux(nx-1,j,k)&
               -ux(nx-1,j,k)+ux(nx-4,j,k))
          tx(nx  ,j,k)=0.
+if (iimplicit.eq.1) return
          do i=2,nx
             tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          enddo
@@ -1355,6 +1357,7 @@ if (nclz==1) then
               -uz(i,j,nz  )+uz(i,j,nz-3))
       enddo
       enddo
+if (iimplicit.eq.1) return
       do k=2,nz
       do j=1,ny
       do i=1,nx
@@ -1422,6 +1425,7 @@ if (nclz==1) then
          tz(i,j,nz  )=0.
       enddo
       enddo
+if (iimplicit.eq.1) return
       do k=2,nz
       do j=1,ny
       do i=1,nx
