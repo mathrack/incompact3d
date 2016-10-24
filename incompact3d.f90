@@ -148,8 +148,7 @@ do itime=ifirst,ilast
               td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
               ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
       endif
-!call test_speed_min_max(ux1,uy1,uz1)
-!print*,'ux : ',(/ (ux1(1,j,1),j=1,ny) /)
+
       call pre_correc(ux1,uy1,uz1)
 
       if (ivirt==1) then !solid body old school
@@ -182,7 +181,7 @@ do itime=ifirst,ilast
       if (itr==iadvance_time) t=itime*dt
       call test_speed_min_max(ux1,uy1,uz1)
       if (iscalar==1) call test_scalar_min_max(phi1)
-!print*,'ux : ',(/ (ux1(1,j,1),j=1,ny) /)
+
    enddo
 
    call module_user_write(phG,ph1,ph2,ph3,ph4)
