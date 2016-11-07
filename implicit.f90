@@ -31,7 +31,7 @@ module ludecomp
 
       implicit none
 
-      integer :: i,j,k
+      integer :: j
       integer, intent(in) :: ny
       real(mytype),dimension(ny), intent(in)  :: aam,bbm,ccm,ddm,eem,rrm,qqm
       real(mytype),dimension(ny), intent(out) :: ggm,hhm,ssm
@@ -76,7 +76,7 @@ module ludecomp
 
       implicit none
 
-      integer :: i,j,k
+      integer :: j,k
       integer, intent(in) :: ny
       real(mytype),dimension(ny), intent(in)  :: aam,bbm,ccm,ddm,eem,rrm,qqm
       real(mytype),dimension(ny), intent(out) :: ggm,hhm,ssm
@@ -238,39 +238,35 @@ module matinv
 
       implicit none
   
-      integer :: i,j,k
+      integer :: j
       integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz),intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz),intent(in) :: bbb
-      real(mytype),dimension(ny),intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(ny),intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(ny),intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(ny),intent(in) :: vvm,wwm,zzm
 
-      do k=1,nz
-         do i=1,nx
+      !Descente
+      xsol(:,1,:)=bbb(:,1,:)
+      xsol(:,2,:)=bbb(:,2,:)-zzm(2)*xsol(:,1,:)
+      xsol(:,3,:)=bbb(:,3,:)-zzm(3)*xsol(:,2,:) &
+                            -wwm(3)*xsol(:,1,:)
 
-            !Descente
-            xsol(i,1,k)=bbb(i,1,k)
-            xsol(i,2,k)=bbb(i,2,k)-zzm(2)*xsol(i,1,k)
-            xsol(i,3,k)=bbb(i,3,k)-zzm(3)*xsol(i,2,k)-wwm(3)*xsol(i,1,k)
+      do j=4,ny
+         xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                               -wwm(j)*xsol(:,j-2,:) &
+                               -zzm(j)*xsol(:,j-1,:)
+      enddo
 
-            do j=4,ny
-               xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            enddo
-            !
+      !Remontee
+      xsol(:,ny  ,:)= xsol(:,ny  ,:)/ggm(ny)
+      xsol(:,ny-1,:)=(xsol(:,ny-1,:)-hhm(ny-1)*xsol(:,ny  ,:))/ggm(ny-1)
+      xsol(:,ny-2,:)=(xsol(:,ny-2,:)-hhm(ny-2)*xsol(:,ny-1,:) &
+                                    -ssm(ny-2)*xsol(:,ny  ,:))/ggm(ny-2)
 
-            !Remontee
-            xsol(i,ny,k)=xsol(i,ny,k)/ggm(ny)
-            xsol(i,ny-1,k)=(xsol(i,ny-1,k)-hhm(ny-1)*xsol(i,ny,k))/ggm(ny-1)
-            xsol(i,ny-2,k)=(xsol(i,ny-2,k)-hhm(ny-2)*xsol(i,ny-1,k)- &
-                 ssm(ny-2)*xsol(i,ny,k))/ggm(ny-2)
-
-            do j=ny-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(j)*xsol(i,j+1,k)-ssm(j)*xsol(i,j+2,k) &
-                    -rrm(j)*xsol(i,j+3,k))/ggm(j)
-            enddo
-
-         enddo
+      do j=ny-3,1,-1
+         xsol(:,j,:)=(xsol(:,j,:)-hhm(j)*xsol(:,j+1,:) &
+                                 -ssm(j)*xsol(:,j+2,:) &
+                                 -rrm(j)*xsol(:,j+3,:))/ggm(j)
       enddo
 
    end subroutine septinv_12
@@ -282,39 +278,35 @@ module matinv
 
       implicit none
   
-      integer :: i,j,k
+      integer :: i
       integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz),intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz),intent(in) :: bbb
-      real(mytype),dimension(nx),intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(nx),intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(nx),intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nx),intent(in) :: vvm,wwm,zzm
 
-      do k=1,nz
-         do j=1,ny
+      !Descente
+      xsol(1,:,:)=bbb(1,:,:)
+      xsol(2,:,:)=bbb(2,:,:)-zzm(2)*xsol(1,:,:)
+      xsol(3,:,:)=bbb(3,:,:)-zzm(3)*xsol(2,:,:) &
+                            -wwm(3)*xsol(1,:,:)
 
-            !Descente
-            xsol(1,j,k)=bbb(1,j,k)
-            xsol(2,j,k)=bbb(2,j,k)-zzm(2)*xsol(1,j,k)
-            xsol(3,j,k)=bbb(3,j,k)-zzm(3)*xsol(2,j,k)-wwm(3)*xsol(1,j,k)
+      do i=4,nx
+         xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                               -wwm(i)*xsol(i-2,:,:) &
+                               -zzm(i)*xsol(i-1,:,:)
+      enddo
 
-            do i=4,nx
-               xsol(i,j,k)=bbb(i,j,k)-vvm(i)*xsol(i-3,j,k)-wwm(i)*xsol(i-2,j,k) &
-                    -zzm(i)*xsol(i-1,j,k)
-            enddo
-            !
+      !Remontee
+      xsol(nx  ,:,:)= xsol(nx  ,:,:)/ggm(nx)
+      xsol(nx-1,:,:)=(xsol(nx-1,:,:)-hhm(nx-1)*xsol(nx  ,:,:))/ggm(nx-1)
+      xsol(nx-2,:,:)=(xsol(nx-2,:,:)-hhm(nx-2)*xsol(nx-1,:,:) &
+                                    -ssm(nx-2)*xsol(nx  ,:,:))/ggm(nx-2)
 
-            !Remontee
-            xsol(nx,j,k)=xsol(nx,j,k)/ggm(nx)
-            xsol(nx-1,j,k)=(xsol(nx-1,j,k)-hhm(nx-1)*xsol(nx,j,k))/ggm(nx-1)
-            xsol(nx-2,j,k)=(xsol(nx-2,j,k)-hhm(nx-2)*xsol(nx-1,j,k)- &
-                 ssm(nx-2)*xsol(nx,j,k))/ggm(nx-2)
-
-            do i=nx-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(i)*xsol(i+1,j,k)-ssm(i)*xsol(i+2,j,k) &
-                    -rrm(i)*xsol(i+3,j,k))/ggm(i)
-            enddo
-
-         enddo
+      do i=nx-3,1,-1
+         xsol(i,:,:)=(xsol(i,:,:)-hhm(i)*xsol(i+1,:,:) &
+                                 -ssm(i)*xsol(i+2,:,:) &
+                                 -rrm(i)*xsol(i+3,:,:))/ggm(i)
       enddo
 
    end subroutine xseptinv_12
@@ -326,39 +318,35 @@ module matinv
 
       implicit none
   
-      integer :: i,j,k
+      integer :: k
       integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz),intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz),intent(in) :: bbb
-      real(mytype),dimension(nz),intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(nz),intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(nz),intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nz),intent(in) :: vvm,wwm,zzm
 
-      do j=1,ny
-         do i=1,nx
+      !Descente
+      xsol(:,:,1)=bbb(:,:,1)
+      xsol(:,:,2)=bbb(:,:,2)-zzm(2)*xsol(:,:,1)
+      xsol(:,:,3)=bbb(:,:,3)-zzm(3)*xsol(:,:,2) &
+                            -wwm(3)*xsol(:,:,1)
 
-            !Descente
-            xsol(i,j,1)=bbb(i,j,1)
-            xsol(i,j,2)=bbb(i,j,2)-zzm(2)*xsol(i,j,1)
-            xsol(i,j,3)=bbb(i,j,3)-zzm(3)*xsol(i,j,2)-wwm(3)*xsol(i,j,1)
+      do k=4,nz
+         xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                               -wwm(k)*xsol(:,:,k-2) &
+                               -zzm(k)*xsol(:,:,k-1)
+      enddo
 
-            do k=4,nz
-               xsol(i,j,k)=bbb(i,j,k)-vvm(k)*xsol(i,j,k-3)-wwm(k)*xsol(i,j,k-2) &
-                    -zzm(k)*xsol(i,j,k-1)
-            enddo
-            !
+      !Remontee
+      xsol(:,:,nz  )= xsol(:,:,nz  )/ggm(nz)
+      xsol(:,:,nz-1)=(xsol(:,:,nz-1)-hhm(nz-1)*xsol(:,:,nz  ))/ggm(nz-1)
+      xsol(:,:,nz-2)=(xsol(:,:,nz-2)-hhm(nz-2)*xsol(:,:,nz-1) &
+                                    -ssm(nz-2)*xsol(:,:,nz  ))/ggm(nz-2)
 
-            !Remontee
-            xsol(i,j,nz)=xsol(i,j,nz)/ggm(nz)
-            xsol(i,j,nz-1)=(xsol(i,j,nz-1)-hhm(nz-1)*xsol(i,j,nz))/ggm(nz-1)
-            xsol(i,j,nz-2)=(xsol(i,j,nz-2)-hhm(nz-2)*xsol(i,j,nz-1)- &
-                 ssm(nz-2)*xsol(i,j,nz))/ggm(nz-2)
-
-            do k=nz-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(k)*xsol(i,j,k+1)-ssm(k)*xsol(i,j,k+2) &
-                    -rrm(k)*xsol(i,j,k+3))/ggm(k)
-            enddo
-
-         enddo
+      do k=nz-3,1,-1
+         xsol(:,:,k)=(xsol(:,:,k)-hhm(k)*xsol(:,:,k+1) &
+                                 -ssm(k)*xsol(:,:,k+2) &
+                                 -rrm(k)*xsol(:,:,k+3))/ggm(k)
       enddo
 
    end subroutine zseptinv_12
@@ -372,60 +360,60 @@ module matinv
 
       implicit none
 
-      integer :: i,j,k,kk
+      integer :: j,jj
       integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz), intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz), intent(in) :: bbb
-      real(mytype),dimension(ny), intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(ny), intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(ny), intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(ny), intent(in) :: vvm,wwm,zzm
       real(mytype),dimension(ny), intent(in) :: l1m,l2m,l3m
       real(mytype),dimension(ny), intent(in) :: u1m,u2m,u3m
 
-      do k=1,nz
-         do i=1,nx
+      !Descente avec matrice triangulaire inf
+      xsol(:,1,:)=bbb(:,1,:)
+      xsol(:,2,:)=bbb(:,2,:)-zzm(2)*xsol(:,1,:)
+      xsol(:,3,:)=bbb(:,3,:)-zzm(3)*xsol(:,2,:) &
+                            -wwm(3)*xsol(:,1,:)
+      do j=4,ny-3
+         xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                               -wwm(j)*xsol(:,j-2,:) &
+                               -zzm(j)*xsol(:,j-1,:)
+      enddo
+      j=ny-2
+      xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                            -wwm(j)*xsol(:,j-2,:) &
+                            -zzm(j)*xsol(:,j-1,:)
+      do jj=1,j-1
+         xsol(:,j,:)=xsol(:,j,:)-l3m(jj)*xsol(:,jj,:)
+      enddo
+      j=ny-1
+      xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                            -wwm(j)*xsol(:,j-2,:) &
+                            -zzm(j)*xsol(:,j-1,:)
+      do jj=1,j-1
+         xsol(:,j,:)=xsol(:,j,:)-l2m(jj)*xsol(:,jj,:)
+      enddo
+      j=ny
+      xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                            -wwm(j)*xsol(:,j-2,:) &
+                            -zzm(j)*xsol(:,j-1,:)
+      do jj=1,j-1
+         xsol(:,j,:)=xsol(:,j,:)-l1m(jj)*xsol(:,jj,:)
+      enddo
+ 
+      !Remontee avec matrice triangulaire sup.
+      xsol(:,ny  ,:)= xsol(:,ny  ,:)/(ggm(ny)+u1m(ny))
+      xsol(:,ny-1,:)=(xsol(:,ny-1,:)-(hhm(ny-1)+u1m(ny-1))*xsol(:,ny  ,:))/(ggm(ny-1)+u2m(ny-1))
+      xsol(:,ny-2,:)=(xsol(:,ny-2,:)-(hhm(ny-2)+u2m(ny-2))*xsol(:,ny-1,:) &
+                                    -(ssm(ny-2)+u1m(ny-2))*xsol(:,ny  ,:))/(ggm(ny-2)+u3m(ny-2))
 
-            !Descente avec matrice triangulaire inf
-            xsol(i,1,k)=bbb(i,1,k)
-            xsol(i,2,k)=bbb(i,2,k)-zzm(2)*xsol(i,1,k)
-            xsol(i,3,k)=bbb(i,3,k)-zzm(3)*xsol(i,2,k)-wwm(3)*xsol(i,1,k)
-            do j=4,ny-3
-               xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            enddo
-            j=ny-2
-            xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            do kk=1,j-1
-               xsol(i,j,k)=xsol(i,j,k)-l3m(kk)*xsol(i,kk,k)
-            enddo
-            j=ny-1
-            xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            do kk=1,j-1
-               xsol(i,j,k)=xsol(i,j,k)-l2m(kk)*xsol(i,kk,k)
-            enddo
-            j=ny
-            xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            do kk=1,j-1
-               xsol(i,j,k)=xsol(i,j,k)-l1m(kk)*xsol(i,kk,k)
-            enddo
-            !
-
-            !Remontee avec matrice triangulaire sup.
-            xsol(i,ny,k)=xsol(i,ny,k)/(ggm(ny)+u1m(ny))
-            xsol(i,ny-1,k)=(xsol(i,ny-1,k)-(hhm(ny-1)+u1m(ny-1))*xsol(i,ny,k))/(ggm(ny-1)+u2m(ny-1))
-            xsol(i,ny-2,k)=(xsol(i,ny-2,k)-(hhm(ny-2)+u2m(ny-2))*xsol(i,ny-1,k)- &
-                 (ssm(ny-2)+u1m(ny-2))*xsol(i,ny,k))/(ggm(ny-2)+u3m(ny-2))
-
-            do j=ny-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(j)*xsol(i,j+1,k)-ssm(j)*xsol(i,j+2,k) &
-                    -rrm(j)*xsol(i,j+3,k) & 
-                    -u3m(j)*xsol(i,ny-2,k) &
-                    -u2m(j)*xsol(i,ny-1,k) &
-                    -u1m(j)*xsol(i,ny,k) )/ggm(j)
-            enddo
-         enddo
+      do j=ny-3,1,-1
+         xsol(:,j,:)=(xsol(:,j,:)-hhm(j)*xsol(:,j+1 ,:) &
+                                 -ssm(j)*xsol(:,j+2 ,:) &
+                                 -rrm(j)*xsol(:,j+3 ,:) & 
+                                 -u3m(j)*xsol(:,ny-2,:) &
+                                 -u2m(j)*xsol(:,ny-1,:) &
+                                 -u1m(j)*xsol(:,ny  ,:) )/ggm(j)
       enddo
 
    end subroutine septinv_0
@@ -437,60 +425,60 @@ module matinv
 
       implicit none
 
-      integer :: i,j,k,kk
+      integer :: i,ii
       integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz), intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz), intent(in) :: bbb
-      real(mytype),dimension(nx), intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(nx), intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(nx), intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nx), intent(in) :: vvm,wwm,zzm
       real(mytype),dimension(nx), intent(in) :: l1m,l2m,l3m
       real(mytype),dimension(nx), intent(in) :: u1m,u2m,u3m
 
-      do k=1,nz
-         do j=1,ny
+      !Descente avec matrice triangulaire inf
+      xsol(1,:,:)=bbb(1,:,:)
+      xsol(2,:,:)=bbb(2,:,:)-zzm(2)*xsol(1,:,:)
+      xsol(3,:,:)=bbb(3,:,:)-zzm(3)*xsol(2,:,:) &
+                            -wwm(3)*xsol(1,:,:)
+      do i=4,nx-3
+         xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                               -wwm(i)*xsol(i-2,:,:) &
+                               -zzm(i)*xsol(i-1,:,:)
+      enddo
+      i=nx-2
+      xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                            -wwm(i)*xsol(i-2,:,:) &
+                            -zzm(i)*xsol(i-1,:,:)
+      do ii=1,i-1
+         xsol(i,:,:)=xsol(i,:,:)-l3m(ii)*xsol(ii,:,:)
+      enddo
+      i=nx-1
+      xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                            -wwm(i)*xsol(i-2,:,:) &
+                            -zzm(i)*xsol(i-1,:,:)
+      do ii=1,i-1
+         xsol(i,:,:)=xsol(i,:,:)-l2m(ii)*xsol(ii,:,:)
+      enddo
+      i=nx
+      xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                            -wwm(i)*xsol(i-2,:,:) &
+                            -zzm(i)*xsol(i-1,:,:)
+      do ii=1,i-1
+         xsol(i,:,:)=xsol(i,:,:)-l1m(ii)*xsol(ii,:,:)
+      enddo
 
-            !Descente avec matrice triangulaire inf
-            xsol(1,j,k)=bbb(1,j,k)
-            xsol(2,j,k)=bbb(2,j,k)-zzm(2)*xsol(1,j,k)
-            xsol(3,j,k)=bbb(3,j,k)-zzm(3)*xsol(2,j,k)-wwm(3)*xsol(1,j,k)
-            do i=4,nx-3
-               xsol(i,j,k)=bbb(i,j,k)-vvm(i)*xsol(i-3,j,k)-wwm(i)*xsol(i-2,j,k) &
-                    -zzm(i)*xsol(i-1,j,k)
-            enddo
-            i=nx-2
-            xsol(i,j,k)=bbb(i,j,k)-vvm(i)*xsol(i-3,j,k)-wwm(i)*xsol(i-2,j,k) &
-                    -zzm(i)*xsol(i-1,j,k)
-            do kk=1,i-1
-               xsol(i,j,k)=xsol(i,j,k)-l3m(kk)*xsol(kk,j,k)
-            enddo
-            i=nx-1
-            xsol(i,j,k)=bbb(i,j,k)-vvm(i)*xsol(i-3,j,k)-wwm(i)*xsol(i-2,j,k) &
-                    -zzm(i)*xsol(i-1,j,k)
-            do kk=1,i-1
-               xsol(i,j,k)=xsol(i,j,k)-l2m(kk)*xsol(kk,j,k)
-            enddo
-            i=nx
-            xsol(i,j,k)=bbb(i,j,k)-vvm(i)*xsol(i-3,j,k)-wwm(i)*xsol(i-2,j,k) &
-                    -zzm(i)*xsol(i-1,j,k)
-            do kk=1,i-1
-               xsol(i,j,k)=xsol(i,j,k)-l1m(kk)*xsol(kk,j,k)
-            enddo
-            !
+      !Remontee avec matrice triangulaire sup.
+      xsol(nx  ,:,:)= xsol(nx  ,:,:)/(ggm(nx)+u1m(nx))
+      xsol(nx-1,:,:)=(xsol(nx-1,:,:)-(hhm(nx-1)+u1m(nx-1))*xsol(nx  ,:,:))/(ggm(nx-1)+u2m(nx-1))
+      xsol(nx-2,:,:)=(xsol(nx-2,:,:)-(hhm(nx-2)+u2m(nx-2))*xsol(nx-1,:,:) &
+                                    -(ssm(nx-2)+u1m(nx-2))*xsol(nx  ,:,:))/(ggm(nx-2)+u3m(nx-2))
 
-            !Remontee avec matrice triangulaire sup.
-            xsol(nx,j,k)=xsol(nx,j,k)/(ggm(nx)+u1m(nx))
-            xsol(nx-1,j,k)=(xsol(nx-1,j,k)-(hhm(nx-1)+u1m(nx-1))*xsol(nx,j,k))/(ggm(nx-1)+u2m(nx-1))
-            xsol(nx-2,j,k)=(xsol(nx-2,j,k)-(hhm(nx-2)+u2m(nx-2))*xsol(nx-1,j,k)- &
-                 (ssm(nx-2)+u1m(nx-2))*xsol(nx,j,k))/(ggm(nx-2)+u3m(nx-2))
-
-            do i=nx-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(i)*xsol(i+1,j,k)-ssm(i)*xsol(i+2,j,k) &
-                    -rrm(i)*xsol(i+3,j,k) & 
-                    -u3m(i)*xsol(nx-2,j,k) &
-                    -u2m(i)*xsol(nx-1,j,k) &
-                    -u1m(i)*xsol(nx,j,k) )/ggm(i)
-            enddo
-         enddo
+      do i=nx-3,1,-1
+         xsol(i,:,:)=(xsol(i,:,:)-hhm(i)*xsol(i+1 ,:,:) &
+                                 -ssm(i)*xsol(i+2 ,:,:) &
+                                 -rrm(i)*xsol(i+3 ,:,:) &
+                                 -u3m(i)*xsol(nx-2,:,:) &
+                                 -u2m(i)*xsol(nx-1,:,:) &
+                                 -u1m(i)*xsol(nx  ,:,:) )/ggm(i)
       enddo
 
    end subroutine xseptinv_0
@@ -502,60 +490,60 @@ module matinv
 
       implicit none
 
-      integer :: i,j,k,kk
+      integer :: k,kk
       integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz), intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz), intent(in) :: bbb
-      real(mytype),dimension(nz), intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(nz), intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(nz), intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nz), intent(in) :: vvm,wwm,zzm
       real(mytype),dimension(nz), intent(in) :: l1m,l2m,l3m
       real(mytype),dimension(nz), intent(in) :: u1m,u2m,u3m
 
-      do j=1,ny
-         do i=1,nx
+      !Descente avec matrice triangulaire inf
+      xsol(:,:,1)=bbb(:,:,1)
+      xsol(:,:,2)=bbb(:,:,2)-zzm(2)*xsol(:,:,1)
+      xsol(:,:,3)=bbb(:,:,3)-zzm(3)*xsol(:,:,2) &
+                            -wwm(3)*xsol(:,:,1)
+      do k=4,nz-3
+         xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                               -wwm(k)*xsol(:,:,k-2) &
+                               -zzm(k)*xsol(:,:,k-1)
+      enddo
+      k=nz-2
+      xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                            -wwm(k)*xsol(:,:,k-2) &
+                            -zzm(k)*xsol(:,:,k-1)
+      do kk=1,k-1
+         xsol(:,:,k)=xsol(:,:,k)-l3m(kk)*xsol(:,:,kk)
+      enddo
+      k=nz-1
+      xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                            -wwm(k)*xsol(:,:,k-2) &
+                            -zzm(k)*xsol(:,:,k-1)
+      do kk=1,k-1
+         xsol(:,:,k)=xsol(:,:,k)-l2m(kk)*xsol(:,:,kk)
+      enddo
+      k=nz
+      xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                            -wwm(k)*xsol(:,:,k-2) &
+                            -zzm(k)*xsol(:,:,k-1)
+      do kk=1,k-1
+         xsol(:,:,k)=xsol(:,:,k)-l1m(kk)*xsol(:,:,kk)
+      enddo
 
-            !Descente avec matrice triangulaire inf
-            xsol(i,j,1)=bbb(i,j,1)
-            xsol(i,j,2)=bbb(i,j,2)-zzm(2)*xsol(i,j,1)
-            xsol(i,j,3)=bbb(i,j,3)-zzm(3)*xsol(i,j,2)-wwm(3)*xsol(i,j,1)
-            do k=4,nz-3
-               xsol(i,j,k)=bbb(i,j,k)-vvm(k)*xsol(i,j,k-3)-wwm(k)*xsol(i,j,k-2) &
-                    -zzm(k)*xsol(i,j,k-1)
-            enddo
-            k=nz-2
-            xsol(i,j,k)=bbb(i,j,k)-vvm(k)*xsol(i,j,k-3)-wwm(k)*xsol(i,j,k-2) &
-                    -zzm(k)*xsol(i,j,k-1)
-            do kk=1,k-1
-               xsol(i,j,k)=xsol(i,j,k)-l3m(kk)*xsol(i,j,kk)
-            enddo
-            k=nz-1
-            xsol(i,j,k)=bbb(i,j,k)-vvm(k)*xsol(i,j,k-3)-wwm(k)*xsol(i,j,k-2) &
-                    -zzm(k)*xsol(i,j,k-1)
-            do kk=1,k-1
-               xsol(i,j,k)=xsol(i,j,k)-l2m(kk)*xsol(i,j,kk)
-            enddo
-            k=nz
-            xsol(i,j,k)=bbb(i,j,k)-vvm(k)*xsol(i,j,k-3)-wwm(k)*xsol(i,j,k-2) &
-                    -zzm(k)*xsol(i,j,k-1)
-            do kk=1,k-1
-               xsol(i,j,k)=xsol(i,j,k)-l1m(kk)*xsol(i,j,kk)
-            enddo
-            !
+      !Remontee avec matrice triangulaire sup.
+      xsol(:,:,nz  )= xsol(:,:,nz  )/(ggm(nz)+u1m(nz))
+      xsol(:,:,nz-1)=(xsol(:,:,nz-1)-(hhm(nz-1)+u1m(nz-1))*xsol(:,:,nz  ))/(ggm(nz-1)+u2m(nz-1))
+      xsol(:,:,nz-2)=(xsol(:,:,nz-2)-(hhm(nz-2)+u2m(nz-2))*xsol(:,:,nz-1) &
+                                    -(ssm(nz-2)+u1m(nz-2))*xsol(:,:,nz  ))/(ggm(nz-2)+u3m(nz-2))
 
-            !Remontee avec matrice triangulaire sup.
-            xsol(i,j,nz)=xsol(i,j,nz)/(ggm(nz)+u1m(nz))
-            xsol(i,j,nz-1)=(xsol(i,j,nz-1)-(hhm(nz-1)+u1m(nz-1))*xsol(i,j,nz))/(ggm(nz-1)+u2m(nz-1))
-            xsol(i,j,nz-2)=(xsol(i,j,nz-2)-(hhm(nz-2)+u2m(nz-2))*xsol(i,j,nz-1)- &
-                 (ssm(nz-2)+u1m(nz-2))*xsol(i,j,nz))/(ggm(nz-2)+u3m(nz-2))
-
-            do k=nz-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(k)*xsol(i,j,k+1)-ssm(k)*xsol(i,j,k+2) &
-                    -rrm(k)*xsol(i,j,k+3) & 
-                    -u3m(k)*xsol(i,j,nz-2) &
-                    -u2m(k)*xsol(i,j,nz-1) &
-                    -u1m(k)*xsol(i,j,nz) )/ggm(k)
-            enddo
-         enddo
+      do k=nz-3,1,-1
+         xsol(:,:,k)=(xsol(:,:,k)-hhm(k)*xsol(:,:,k+1 ) &
+                                 -ssm(k)*xsol(:,:,k+2 ) &
+                                 -rrm(k)*xsol(:,:,k+3 ) & 
+                                 -u3m(k)*xsol(:,:,nz-2) &
+                                 -u2m(k)*xsol(:,:,nz-1) &
+                                 -u1m(k)*xsol(:,:,nz  ) )/ggm(k)
       enddo
 
    end subroutine zseptinv_0

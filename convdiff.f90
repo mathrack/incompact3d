@@ -183,7 +183,7 @@ if (iimplicit.eq.1) then
       enddo
       enddo
       enddo
-      ! ux
+      ! uz
       call dery (tf2,uz2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
       do k=1,ysize(3)
       do j=1,ysize(2)
