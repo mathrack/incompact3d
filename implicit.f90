@@ -552,7 +552,7 @@ end module matinv
 
 !********************************************************************
 !
-subroutine  inttimp (ux1,uy1,uz1,gx,gy,gz,hx,hy,hz,ta1,tb1,tc1,px1,py1,pz1,&
+subroutine inttimp(ux1,uy1,uz1,gx,gy,gz,hx,hy,hz,ta1,tb1,tc1,px1,py1,pz1,&
      td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
      ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
 ! 
@@ -774,9 +774,9 @@ tb1=te1+dt*xnu*(tb1+th1)+uy1
 tc1=tf1+dt*xnu*(tc1+ti1)+uz1
 
 ! X pencil inversion
-call xmultmatrix7(td1,ta1,ux1,0)
-call xmultmatrix7(te1,tb1,uy1,1)
-call xmultmatrix7(tf1,tc1,uz1,1)
+call xmultmatrix7(td1,ta1,ux1,0,di1)
+call xmultmatrix7(te1,tb1,uy1,1,di1)
+call xmultmatrix7(tf1,tc1,uz1,1,di1)
 ! rhs complet
 ta1(:,:,:)=td1(:,:,:)+ta1(:,:,:)
 tb1(:,:,:)=te1(:,:,:)+tb1(:,:,:)
@@ -803,9 +803,9 @@ call transpose_y_to_z(ta2,ta3)
 call transpose_y_to_z(tb2,tb3)
 call transpose_y_to_z(tc2,tc3)
 !
-call zmultmatrix7(td3,ta3,ux3,1)
-call zmultmatrix7(te3,tb3,uy3,1)
-call zmultmatrix7(tf3,tc3,uz3,0)
+call zmultmatrix7(td3,ta3,ux3,1,di2)
+call zmultmatrix7(te3,tb3,uy3,1,di2)
+call zmultmatrix7(tf3,tc3,uz3,0,di2)
 ! rhs complet
 ta3(:,:,:)=td3(:,:,:)+ta3(:,:,:)
 tb3(:,:,:)=te3(:,:,:)+tb3(:,:,:)
@@ -829,9 +829,9 @@ call transpose_z_to_y(ux3,ta2)
 call transpose_z_to_y(uy3,tb2)
 call transpose_z_to_y(uz3,tc2)
 !
-call multmatrix7(td2,ta2,ux2,1)
-call multmatrix7(te2,tb2,uy2,0)
-call multmatrix7(tf2,tc2,uz2,1)
+call multmatrix7(td2,ta2,ux2,1,di3)
+call multmatrix7(te2,tb2,uy2,0,di3)
+call multmatrix7(tf2,tc2,uz2,1,di3)
 ! rhs complet
 ta2(:,:,:)=td2(:,:,:)+ta2(:,:,:)
 tb2(:,:,:)=te2(:,:,:)+tb2(:,:,:)
@@ -883,7 +883,7 @@ end subroutine inttimp
 
 !********************************************************************
 !PREMULT FOR INTTIMP WITH SEPTADIAG
-subroutine multmatrix7(td2,ta2,ux2,npaire)
+subroutine multmatrix7(td2,ta2,ux2,npaire,di2)
 ! 
 !********************************************************************
 USE param, only: xcst, ncly, istret
@@ -895,9 +895,9 @@ implicit none
 
 integer, intent(in) :: npaire
 integer :: j,jm1,jp1
-real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(inout) :: ux2
-real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(inout) :: td2,ta2
-real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
+real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(in) :: ux2
+real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(inout) :: ta2
+real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(out) :: td2,di2
 
    if (istret.ne.0) then
       do j=1,ysize(2)
@@ -956,9 +956,7 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
       call deryy(td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
    endif
 
-   do j=1,ysize(2)
-      td2(:,j,:) = - xcst*td2(:,j,:)
-   enddo
+   td2 = - xcst*td2
 
    if (ncly.eq.2) then
       td2(:,1,:) = 0.
@@ -967,7 +965,7 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
 
 end subroutine multmatrix7
 !
-subroutine xmultmatrix7(td1,ta1,ux1,npaire)
+subroutine xmultmatrix7(td1,ta1,ux1,npaire,di1)
 ! 
 !********************************************************************
 USE param, only: xcst, nclx
@@ -979,9 +977,9 @@ implicit none
 
 integer, intent(in) :: npaire
 integer :: i,im1,ip1
-real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: ux1
-real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: td1,ta1
-real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(in) :: ux1
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: ta1
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(out) :: td1,di1
 
    if (nclx.eq.0) then
 
@@ -1034,9 +1032,7 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
       call derxx(td1,ux1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
    endif
 
-   do i=1,xsize(1)
-      td1(i,:,:) = - xcst*td1(i,:,:)
-   enddo
+   td1 = - xcst*td1
 
    if (nclx.eq.2) then
       td1(1,:,:) = 0.
@@ -1045,7 +1041,7 @@ real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
 
 end subroutine xmultmatrix7
 !
-subroutine zmultmatrix7(td3,ta3,ux3,npaire)
+subroutine zmultmatrix7(td3,ta3,ux3,npaire,di3)
 ! 
 !********************************************************************
 USE param, only: xcst, nclz
@@ -1057,9 +1053,9 @@ implicit none
 
 integer, intent(in) :: npaire
 integer :: k,km1,kp1
-real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: ux3
-real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: td3,ta3
-real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: di3
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(in) :: ux3
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: ta3
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(out) :: td3,di3
 
    if (nclz.eq.0) then
 
@@ -1112,9 +1108,7 @@ real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: di3
       call derzz(td3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
    endif
 
-   do k=1,zsize(3)
-      td3(:,:,k) = - xcst*td3(:,:,k)
-   enddo
+   td3 = - xcst*td3
 
    if (nclz.eq.2) then
       td3(:,:,1) = 0.

@@ -682,7 +682,7 @@ if (nclx==0) then
            +csix*(ux(3 ,j,k)-ux(nx  ,j,k)&
            -ux(nx,j,k)+ux(nx-3,j,k))
       rx(nx  ,j,k)=alsaix
-if (iimplicit.eq.1) return
+if (iimplicit.eq.1) cycle
       do i=2,nx
          tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          rx(i,j,k)=rx(i,j,k)-rx(i-1,j,k)*ssx(i)
@@ -750,7 +750,7 @@ if (nclx==1) then
               -ux(nx  ,j,k)+ux(nx-2,j,k))&
               +csix*(ux(nx-3,j,k)-ux(nx  ,j,k)&
               -ux(nx  ,j,k)+ux(nx-3,j,k))
-if (iimplicit.eq.1) return
+if (iimplicit.eq.1) cycle
          do i=2,nx
             tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          enddo
@@ -798,7 +798,7 @@ if (iimplicit.eq.1) return
               +csix*(-ux(nx-2,j,k)-ux(nx-1,j,k)&
               -ux(nx-1,j,k)+ux(nx-4,j,k))
          tx(nx  ,j,k)=0.
-if (iimplicit.eq.1) return
+if (iimplicit.eq.1) cycle
          do i=2,nx
             tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          enddo

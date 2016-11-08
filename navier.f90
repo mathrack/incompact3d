@@ -650,11 +650,8 @@ if (itype.eq.6) then
       gy1=-2.d0*(tx+ty)*gy1/tc/dt
    else
       if (istret.eq.0) then
-         tc=sqrt( (3.d0*tx+ty-1)**2+4.d0*tx*(1.d0+ty) )
-         tc=tc-3.d0*tx-ty+1.d0
-         tc=tc/2.d0/(ty+1.d0)
-         gx1=-2.d0*tx*gx1/tc/dt
-         gy1=-2.d0*tx*gy1/tc/dt
+         gx1=0.
+         gy1=0.
       else
          do k=1,xsize(3)
          do j=1,xsize(2)
