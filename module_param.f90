@@ -84,17 +84,17 @@ real(mytype), dimension(ny) :: rrmt1,qqmt1,vvmt1,ssmt1 !!TIME IMPLICIT SCALAR (w
 real(mytype), dimension(ny) :: aamt0,bbmt0,ccmt0,ddmt0,eemt0,ggmt0,hhmt0,wwmt0,zzmt0 !!TIME IMPLICIT SCALAR, ncl=0
 real(mytype), dimension(ny) :: rrmt0,qqmt0,vvmt0,ssmt0,l1mt,l2mt,l3mt,u1mt,u2mt,u3mt !!TIME IMPLICIT SCALAR (with HPL), ncl=0
 !module implicit in x
-real(mytype), dimension(ny) :: xaam10,xbbm10,xccm10,xddm10,xeem10,xggm10,xhhm10,xwwm10,xzzm10 !!TIME IMPLICIT, ncl=1, npaire=0
-real(mytype), dimension(ny) :: xrrm10,xqqm10,xvvm10,xssm10 !!TIME IMPLICIT (with HPL), ncl=1, npaire=0
-real(mytype), dimension(ny) :: xaam11,xbbm11,xccm11,xddm11,xeem11,xggm11,xhhm11,xwwm11,xzzm11 !!TIME IMPLICIT, ncl=1, npaire=1
-real(mytype), dimension(ny) :: xrrm11,xqqm11,xvvm11,xssm11 !!TIME IMPLICIT (with HPL), ncl=1, npaire=1
+real(mytype), dimension(nx) :: xaam10,xbbm10,xccm10,xddm10,xeem10,xggm10,xhhm10,xwwm10,xzzm10 !!TIME IMPLICIT, ncl=1, npaire=0
+real(mytype), dimension(nx) :: xrrm10,xqqm10,xvvm10,xssm10 !!TIME IMPLICIT (with HPL), ncl=1, npaire=0
+real(mytype), dimension(nx) :: xaam11,xbbm11,xccm11,xddm11,xeem11,xggm11,xhhm11,xwwm11,xzzm11 !!TIME IMPLICIT, ncl=1, npaire=1
+real(mytype), dimension(nx) :: xrrm11,xqqm11,xvvm11,xssm11 !!TIME IMPLICIT (with HPL), ncl=1, npaire=1
 real(mytype), dimension(nx) :: xaam0,xbbm0,xccm0,xddm0,xeem0,xggm0,xhhm0,xwwm0,xzzm0 !!TIME IMPLICIT, ncl=0
 real(mytype), dimension(nx) :: xrrm0,xqqm0,xvvm0,xssm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m !!TIME IMPLICIT (with HPL), ncl=0
 !module implicit in z
-real(mytype), dimension(ny) :: zaam10,zbbm10,zccm10,zddm10,zeem10,zggm10,zhhm10,zwwm10,zzzm10 !!TIME IMPLICIT, ncl=1, npaire=0
-real(mytype), dimension(ny) :: zrrm10,zqqm10,zvvm10,zssm10 !!TIME IMPLICIT (with HPL), ncl=1, npaire=0
-real(mytype), dimension(ny) :: zaam11,zbbm11,zccm11,zddm11,zeem11,zggm11,zhhm11,zwwm11,zzzm11 !!TIME IMPLICIT, ncl=1, npaire=1
-real(mytype), dimension(ny) :: zrrm11,zqqm11,zvvm11,zssm11 !!TIME IMPLICIT (with HPL), ncl=1, npaire=1
+real(mytype), dimension(nz) :: zaam10,zbbm10,zccm10,zddm10,zeem10,zggm10,zhhm10,zwwm10,zzzm10 !!TIME IMPLICIT, ncl=1, npaire=0
+real(mytype), dimension(nz) :: zrrm10,zqqm10,zvvm10,zssm10 !!TIME IMPLICIT (with HPL), ncl=1, npaire=0
+real(mytype), dimension(nz) :: zaam11,zbbm11,zccm11,zddm11,zeem11,zggm11,zhhm11,zwwm11,zzzm11 !!TIME IMPLICIT, ncl=1, npaire=1
+real(mytype), dimension(nz) :: zrrm11,zqqm11,zvvm11,zssm11 !!TIME IMPLICIT (with HPL), ncl=1, npaire=1
 real(mytype), dimension(nz) :: zaam0,zbbm0,zccm0,zddm0,zeem0,zggm0,zhhm0,zwwm0,zzzm0 !!TIME IMPLICIT, ncl=0
 real(mytype), dimension(nz) :: zrrm0,zqqm0,zvvm0,zssm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m !!TIME IMPLICIT (with HPL), ncl=0
 
