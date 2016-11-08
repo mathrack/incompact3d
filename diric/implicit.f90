@@ -1,4 +1,4 @@
-#define my_mod_solide
+!#define my_mod_solide
 
 module ludecomp
 
@@ -3053,7 +3053,6 @@ subroutine scalar_schemes(fpi2t)
    implicit none
 
    real(mytype), intent(in) :: fpi2t
-   real(mytype) :: c1,nu0snu,xmpi2,xnpi2
    integer :: i,j,k
    real(mytype), dimension(ny) :: aamt10,bbmt10,ccmt10,ddmt10,eemt10,ggmt10,hhmt10,wwmt10,zzmt10
    real(mytype), dimension(ny) :: rrmt10,qqmt10,vvmt10,ssmt10
@@ -3062,25 +3061,10 @@ subroutine scalar_schemes(fpi2t)
 
    xcst_pr=xnu*dt*0.5/sc
 
-   ! Ordre 6
-!   alsaixt=(45.*fpi2t*pi*pi-272.)/(2.*(45.*fpi2t*pi*pi-208.))
-!   asixt  =((6.-9.*alsaixt)/4.)/dx2
-!   bsixt  =((-3.+24.*alsaixt)/5.)/(4.*dx2)
-!   csixt  =((2.-11.*alsaixt)/20.)/(9.*dx2)
-   ! Ordre 4
-   c1=exp(-((pi-2.*pi/3.)/(0.3*pi-2.*pi/3.))**2 )
-   nu0snu=19.
-   xmpi2=(c1*nu0snu+1.)*(4./9.)*pi*pi
-   xnpi2=(nu0snu+1.)*pi*pi
-   alsaixt = (64.*xmpi2-27.*xnpi2-96.)/(64.*xmpi2-54.*xnpi2+48.)
-   asixt = (54.*xnpi2-15.*xmpi2*xnpi2+12.)/(64.*xmpi2-54.*xnpi2+48.)
-   asixt = asixt / (dx2)
-   bsixt = (192.*xmpi2-216.*xnpi2+24.*xmpi2*xnpi2-48.) &
-          & /(64.*xmpi2-54.*xnpi2+48.)
-   bsixt = bsixt / (4.*dx2)
-   csixt = 3.*(18.*xnpi2 -3.*xmpi2*xnpi2-36.) &
-          & /(64.*xmpi2-54.*xnpi2+48.)
-   csixt = csixt / (9.*dx2)
+   alsaixt=(45.*fpi2t*pi*pi-272.)/(2.*(45.*fpi2t*pi*pi-208.))
+   asixt  =((6.-9.*alsaixt)/4.)/dx2
+   bsixt  =((-3.+24.*alsaixt)/5.)/(4.*dx2)
+   csixt  =((2.-11.*alsaixt)/20.)/(9.*dx2)
 
    alsajyt=(45.*fpi2t*pi*pi-272.)/(2.*(45.*fpi2t*pi*pi-208.))
    asjyt  =((6.-9.*alsajyt)/4.)/dy2

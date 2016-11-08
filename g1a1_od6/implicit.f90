@@ -31,7 +31,8 @@ module ludecomp
 
       implicit none
 
-      integer :: i,j,k,ny
+      integer :: j
+      integer, intent(in) :: ny
       real(mytype),dimension(ny), intent(in)  :: aam,bbm,ccm,ddm,eem,rrm,qqm
       real(mytype),dimension(ny), intent(out) :: ggm,hhm,ssm
       real(mytype),dimension(ny), intent(out) :: vvm,wwm,zzm
@@ -75,7 +76,8 @@ module ludecomp
 
       implicit none
 
-      integer :: i,j,k,ny
+      integer :: j,k
+      integer, intent(in) :: ny
       real(mytype),dimension(ny), intent(in)  :: aam,bbm,ccm,ddm,eem,rrm,qqm
       real(mytype),dimension(ny), intent(out) :: ggm,hhm,ssm
       real(mytype),dimension(ny), intent(out) :: vvm,wwm,zzm
@@ -198,7 +200,7 @@ module matinv
    implicit none
 
    private
-   public :: septinv
+   public :: septinv, xseptinv, zseptinv
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !
@@ -210,6 +212,20 @@ module matinv
       module procedure septinv_12
       module procedure septinv_0
    end interface septinv
+   !
+   ! xseptinv is called for x inversion
+   !
+   interface xseptinv
+      module procedure xseptinv_12
+      module procedure xseptinv_0
+   end interface xseptinv
+   !
+   ! zseptinv is called for z inversion
+   !
+   interface zseptinv
+      module procedure zseptinv_12
+      module procedure zseptinv_0
+   end interface zseptinv
 
    contains
 
@@ -222,42 +238,118 @@ module matinv
 
       implicit none
   
-      integer :: i,j,k,nx,ny,nz
+      integer :: j
+      integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz),intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz),intent(in) :: bbb
-      real(mytype),dimension(ny),intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(ny),intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(ny),intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(ny),intent(in) :: vvm,wwm,zzm
 
-      do k=1,nz
-         do i=1,nx
+      !Descente
+      xsol(:,1,:)=bbb(:,1,:)
+      xsol(:,2,:)=bbb(:,2,:)-zzm(2)*xsol(:,1,:)
+      xsol(:,3,:)=bbb(:,3,:)-zzm(3)*xsol(:,2,:) &
+                            -wwm(3)*xsol(:,1,:)
 
-            !Descente
-            xsol(i,1,k)=bbb(i,1,k)
-            xsol(i,2,k)=bbb(i,2,k)-zzm(2)*xsol(i,1,k)
-            xsol(i,3,k)=bbb(i,3,k)-zzm(3)*xsol(i,2,k)-wwm(3)*xsol(i,1,k)
+      do j=4,ny
+         xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                               -wwm(j)*xsol(:,j-2,:) &
+                               -zzm(j)*xsol(:,j-1,:)
+      enddo
 
-            do j=4,ny
-               xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            enddo
-            !
+      !Remontee
+      xsol(:,ny  ,:)= xsol(:,ny  ,:)/ggm(ny)
+      xsol(:,ny-1,:)=(xsol(:,ny-1,:)-hhm(ny-1)*xsol(:,ny  ,:))/ggm(ny-1)
+      xsol(:,ny-2,:)=(xsol(:,ny-2,:)-hhm(ny-2)*xsol(:,ny-1,:) &
+                                    -ssm(ny-2)*xsol(:,ny  ,:))/ggm(ny-2)
 
-            !Remontee
-            xsol(i,ny,k)=xsol(i,ny,k)/ggm(ny)
-            xsol(i,ny-1,k)=(xsol(i,ny-1,k)-hhm(ny-1)*xsol(i,ny,k))/ggm(ny-1)
-            xsol(i,ny-2,k)=(xsol(i,ny-2,k)-hhm(ny-2)*xsol(i,ny-1,k)- &
-                 ssm(ny-2)*xsol(i,ny,k))/ggm(ny-2)
-
-            do j=ny-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(j)*xsol(i,j+1,k)-ssm(j)*xsol(i,j+2,k) &
-                    -rrm(j)*xsol(i,j+3,k))/ggm(j)
-            enddo
-
-         enddo
+      do j=ny-3,1,-1
+         xsol(:,j,:)=(xsol(:,j,:)-hhm(j)*xsol(:,j+1,:) &
+                                 -ssm(j)*xsol(:,j+2,:) &
+                                 -rrm(j)*xsol(:,j+3,:))/ggm(j)
       enddo
 
    end subroutine septinv_12
    !
+   subroutine xseptinv_12(xsol,bbb,ggm,hhm,ssm,rrm,vvm,wwm,zzm,nx,ny,nz)
+   !
+   !********************************************************************
+      use decomp_2d, only : mytype
+
+      implicit none
+  
+      integer :: i
+      integer, intent(in) :: nx,ny,nz
+      real(mytype),dimension(nx,ny,nz),intent(out) :: xsol
+      real(mytype),dimension(nx,ny,nz),intent(in) :: bbb
+      real(mytype),dimension(nx),intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nx),intent(in) :: vvm,wwm,zzm
+
+      !Descente
+      xsol(1,:,:)=bbb(1,:,:)
+      xsol(2,:,:)=bbb(2,:,:)-zzm(2)*xsol(1,:,:)
+      xsol(3,:,:)=bbb(3,:,:)-zzm(3)*xsol(2,:,:) &
+                            -wwm(3)*xsol(1,:,:)
+
+      do i=4,nx
+         xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                               -wwm(i)*xsol(i-2,:,:) &
+                               -zzm(i)*xsol(i-1,:,:)
+      enddo
+
+      !Remontee
+      xsol(nx  ,:,:)= xsol(nx  ,:,:)/ggm(nx)
+      xsol(nx-1,:,:)=(xsol(nx-1,:,:)-hhm(nx-1)*xsol(nx  ,:,:))/ggm(nx-1)
+      xsol(nx-2,:,:)=(xsol(nx-2,:,:)-hhm(nx-2)*xsol(nx-1,:,:) &
+                                    -ssm(nx-2)*xsol(nx  ,:,:))/ggm(nx-2)
+
+      do i=nx-3,1,-1
+         xsol(i,:,:)=(xsol(i,:,:)-hhm(i)*xsol(i+1,:,:) &
+                                 -ssm(i)*xsol(i+2,:,:) &
+                                 -rrm(i)*xsol(i+3,:,:))/ggm(i)
+      enddo
+
+   end subroutine xseptinv_12
+   !
+   subroutine zseptinv_12(xsol,bbb,ggm,hhm,ssm,rrm,vvm,wwm,zzm,nx,ny,nz)
+   ! 
+   !********************************************************************
+      use decomp_2d, only : mytype
+
+      implicit none
+  
+      integer :: k
+      integer, intent(in) :: nx,ny,nz
+      real(mytype),dimension(nx,ny,nz),intent(out) :: xsol
+      real(mytype),dimension(nx,ny,nz),intent(in) :: bbb
+      real(mytype),dimension(nz),intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nz),intent(in) :: vvm,wwm,zzm
+
+      !Descente
+      xsol(:,:,1)=bbb(:,:,1)
+      xsol(:,:,2)=bbb(:,:,2)-zzm(2)*xsol(:,:,1)
+      xsol(:,:,3)=bbb(:,:,3)-zzm(3)*xsol(:,:,2) &
+                            -wwm(3)*xsol(:,:,1)
+
+      do k=4,nz
+         xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                               -wwm(k)*xsol(:,:,k-2) &
+                               -zzm(k)*xsol(:,:,k-1)
+      enddo
+
+      !Remontee
+      xsol(:,:,nz  )= xsol(:,:,nz  )/ggm(nz)
+      xsol(:,:,nz-1)=(xsol(:,:,nz-1)-hhm(nz-1)*xsol(:,:,nz  ))/ggm(nz-1)
+      xsol(:,:,nz-2)=(xsol(:,:,nz-2)-hhm(nz-2)*xsol(:,:,nz-1) &
+                                    -ssm(nz-2)*xsol(:,:,nz  ))/ggm(nz-2)
+
+      do k=nz-3,1,-1
+         xsol(:,:,k)=(xsol(:,:,k)-hhm(k)*xsol(:,:,k+1) &
+                                 -ssm(k)*xsol(:,:,k+2) &
+                                 -rrm(k)*xsol(:,:,k+3))/ggm(k)
+      enddo
+
+   end subroutine zseptinv_12
 
    !********************************************************************
    !INVERSE SEPTADIAG CYCLIQUE
@@ -268,70 +360,201 @@ module matinv
 
       implicit none
 
-      integer :: i,j,k,kk,nx,ny,nz
+      integer :: j,jj
+      integer, intent(in) :: nx,ny,nz
       real(mytype),dimension(nx,ny,nz), intent(out) :: xsol
       real(mytype),dimension(nx,ny,nz), intent(in) :: bbb
-      real(mytype),dimension(ny), intent(in)    :: ggm,hhm,ssm,rrm
-      real(mytype),dimension(ny), intent(in)    :: vvm,wwm,zzm
+      real(mytype),dimension(ny), intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(ny), intent(in) :: vvm,wwm,zzm
       real(mytype),dimension(ny), intent(in) :: l1m,l2m,l3m
       real(mytype),dimension(ny), intent(in) :: u1m,u2m,u3m
 
-      do k=1,nz
-         do i=1,nx
+      !Descente avec matrice triangulaire inf
+      xsol(:,1,:)=bbb(:,1,:)
+      xsol(:,2,:)=bbb(:,2,:)-zzm(2)*xsol(:,1,:)
+      xsol(:,3,:)=bbb(:,3,:)-zzm(3)*xsol(:,2,:) &
+                            -wwm(3)*xsol(:,1,:)
+      do j=4,ny-3
+         xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                               -wwm(j)*xsol(:,j-2,:) &
+                               -zzm(j)*xsol(:,j-1,:)
+      enddo
+      j=ny-2
+      xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                            -wwm(j)*xsol(:,j-2,:) &
+                            -zzm(j)*xsol(:,j-1,:)
+      do jj=1,j-1
+         xsol(:,j,:)=xsol(:,j,:)-l3m(jj)*xsol(:,jj,:)
+      enddo
+      j=ny-1
+      xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                            -wwm(j)*xsol(:,j-2,:) &
+                            -zzm(j)*xsol(:,j-1,:)
+      do jj=1,j-1
+         xsol(:,j,:)=xsol(:,j,:)-l2m(jj)*xsol(:,jj,:)
+      enddo
+      j=ny
+      xsol(:,j,:)=bbb(:,j,:)-vvm(j)*xsol(:,j-3,:) &
+                            -wwm(j)*xsol(:,j-2,:) &
+                            -zzm(j)*xsol(:,j-1,:)
+      do jj=1,j-1
+         xsol(:,j,:)=xsol(:,j,:)-l1m(jj)*xsol(:,jj,:)
+      enddo
+ 
+      !Remontee avec matrice triangulaire sup.
+      xsol(:,ny  ,:)= xsol(:,ny  ,:)/(ggm(ny)+u1m(ny))
+      xsol(:,ny-1,:)=(xsol(:,ny-1,:)-(hhm(ny-1)+u1m(ny-1))*xsol(:,ny  ,:))/(ggm(ny-1)+u2m(ny-1))
+      xsol(:,ny-2,:)=(xsol(:,ny-2,:)-(hhm(ny-2)+u2m(ny-2))*xsol(:,ny-1,:) &
+                                    -(ssm(ny-2)+u1m(ny-2))*xsol(:,ny  ,:))/(ggm(ny-2)+u3m(ny-2))
 
-            !Descente avec matrice triangulaire inf
-            xsol(i,1,k)=bbb(i,1,k)
-            xsol(i,2,k)=bbb(i,2,k)-zzm(2)*xsol(i,1,k)
-            xsol(i,3,k)=bbb(i,3,k)-zzm(3)*xsol(i,2,k)-wwm(3)*xsol(i,1,k)
-            do j=4,ny-3
-               xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            enddo
-            j=ny-2
-            xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            do kk=1,j-1
-               xsol(i,j,k)=xsol(i,j,k)-l3m(kk)*xsol(i,kk,k)
-            enddo
-            j=ny-1
-            xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            do kk=1,j-1
-               xsol(i,j,k)=xsol(i,j,k)-l2m(kk)*xsol(i,kk,k)
-            enddo
-            j=ny
-            xsol(i,j,k)=bbb(i,j,k)-vvm(j)*xsol(i,j-3,k)-wwm(j)*xsol(i,j-2,k) &
-                    -zzm(j)*xsol(i,j-1,k)
-            do kk=1,j-1
-               xsol(i,j,k)=xsol(i,j,k)-l1m(kk)*xsol(i,kk,k)
-            enddo
-            !
-
-            !Remontee avec matrice triangulaire sup.
-            xsol(i,ny,k)=xsol(i,ny,k)/(ggm(ny)+u1m(ny))
-            xsol(i,ny-1,k)=(xsol(i,ny-1,k)-(hhm(ny-1)+u1m(ny-1))*xsol(i,ny,k))/(ggm(ny-1)+u2m(ny-1))
-            xsol(i,ny-2,k)=(xsol(i,ny-2,k)-(hhm(ny-2)+u2m(ny-2))*xsol(i,ny-1,k)- &
-                 (ssm(ny-2)+u1m(ny-2))*xsol(i,ny,k))/(ggm(ny-2)+u3m(ny-2))
-
-            do j=ny-3,1,-1
-               xsol(i,j,k)=(xsol(i,j,k)-hhm(j)*xsol(i,j+1,k)-ssm(j)*xsol(i,j+2,k) &
-                    -rrm(j)*xsol(i,j+3,k) & 
-                    -u3m(j)*xsol(i,ny-2,k) &
-                    -u2m(j)*xsol(i,ny-1,k) &
-                    -u1m(j)*xsol(i,ny,k) )/ggm(j)
-            enddo
-         enddo
+      do j=ny-3,1,-1
+         xsol(:,j,:)=(xsol(:,j,:)-hhm(j)*xsol(:,j+1 ,:) &
+                                 -ssm(j)*xsol(:,j+2 ,:) &
+                                 -rrm(j)*xsol(:,j+3 ,:) & 
+                                 -u3m(j)*xsol(:,ny-2,:) &
+                                 -u2m(j)*xsol(:,ny-1,:) &
+                                 -u1m(j)*xsol(:,ny  ,:) )/ggm(j)
       enddo
 
    end subroutine septinv_0
    !
+   subroutine xseptinv_0(xsol,bbb,ggm,hhm,ssm,rrm,vvm,wwm,zzm,l1m,l2m,l3m,u1m,u2m,u3m,nx,ny,nz)
+   ! 
+   !********************************************************************
+      use decomp_2d, only : mytype
+
+      implicit none
+
+      integer :: i,ii
+      integer, intent(in) :: nx,ny,nz
+      real(mytype),dimension(nx,ny,nz), intent(out) :: xsol
+      real(mytype),dimension(nx,ny,nz), intent(in) :: bbb
+      real(mytype),dimension(nx), intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nx), intent(in) :: vvm,wwm,zzm
+      real(mytype),dimension(nx), intent(in) :: l1m,l2m,l3m
+      real(mytype),dimension(nx), intent(in) :: u1m,u2m,u3m
+
+      !Descente avec matrice triangulaire inf
+      xsol(1,:,:)=bbb(1,:,:)
+      xsol(2,:,:)=bbb(2,:,:)-zzm(2)*xsol(1,:,:)
+      xsol(3,:,:)=bbb(3,:,:)-zzm(3)*xsol(2,:,:) &
+                            -wwm(3)*xsol(1,:,:)
+      do i=4,nx-3
+         xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                               -wwm(i)*xsol(i-2,:,:) &
+                               -zzm(i)*xsol(i-1,:,:)
+      enddo
+      i=nx-2
+      xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                            -wwm(i)*xsol(i-2,:,:) &
+                            -zzm(i)*xsol(i-1,:,:)
+      do ii=1,i-1
+         xsol(i,:,:)=xsol(i,:,:)-l3m(ii)*xsol(ii,:,:)
+      enddo
+      i=nx-1
+      xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                            -wwm(i)*xsol(i-2,:,:) &
+                            -zzm(i)*xsol(i-1,:,:)
+      do ii=1,i-1
+         xsol(i,:,:)=xsol(i,:,:)-l2m(ii)*xsol(ii,:,:)
+      enddo
+      i=nx
+      xsol(i,:,:)=bbb(i,:,:)-vvm(i)*xsol(i-3,:,:) &
+                            -wwm(i)*xsol(i-2,:,:) &
+                            -zzm(i)*xsol(i-1,:,:)
+      do ii=1,i-1
+         xsol(i,:,:)=xsol(i,:,:)-l1m(ii)*xsol(ii,:,:)
+      enddo
+
+      !Remontee avec matrice triangulaire sup.
+      xsol(nx  ,:,:)= xsol(nx  ,:,:)/(ggm(nx)+u1m(nx))
+      xsol(nx-1,:,:)=(xsol(nx-1,:,:)-(hhm(nx-1)+u1m(nx-1))*xsol(nx  ,:,:))/(ggm(nx-1)+u2m(nx-1))
+      xsol(nx-2,:,:)=(xsol(nx-2,:,:)-(hhm(nx-2)+u2m(nx-2))*xsol(nx-1,:,:) &
+                                    -(ssm(nx-2)+u1m(nx-2))*xsol(nx  ,:,:))/(ggm(nx-2)+u3m(nx-2))
+
+      do i=nx-3,1,-1
+         xsol(i,:,:)=(xsol(i,:,:)-hhm(i)*xsol(i+1 ,:,:) &
+                                 -ssm(i)*xsol(i+2 ,:,:) &
+                                 -rrm(i)*xsol(i+3 ,:,:) &
+                                 -u3m(i)*xsol(nx-2,:,:) &
+                                 -u2m(i)*xsol(nx-1,:,:) &
+                                 -u1m(i)*xsol(nx  ,:,:) )/ggm(i)
+      enddo
+
+   end subroutine xseptinv_0
+   !
+   subroutine zseptinv_0(xsol,bbb,ggm,hhm,ssm,rrm,vvm,wwm,zzm,l1m,l2m,l3m,u1m,u2m,u3m,nx,ny,nz)
+   ! 
+   !********************************************************************
+      use decomp_2d, only : mytype
+
+      implicit none
+
+      integer :: k,kk
+      integer, intent(in) :: nx,ny,nz
+      real(mytype),dimension(nx,ny,nz), intent(out) :: xsol
+      real(mytype),dimension(nx,ny,nz), intent(in) :: bbb
+      real(mytype),dimension(nz), intent(in) :: ggm,hhm,ssm,rrm
+      real(mytype),dimension(nz), intent(in) :: vvm,wwm,zzm
+      real(mytype),dimension(nz), intent(in) :: l1m,l2m,l3m
+      real(mytype),dimension(nz), intent(in) :: u1m,u2m,u3m
+
+      !Descente avec matrice triangulaire inf
+      xsol(:,:,1)=bbb(:,:,1)
+      xsol(:,:,2)=bbb(:,:,2)-zzm(2)*xsol(:,:,1)
+      xsol(:,:,3)=bbb(:,:,3)-zzm(3)*xsol(:,:,2) &
+                            -wwm(3)*xsol(:,:,1)
+      do k=4,nz-3
+         xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                               -wwm(k)*xsol(:,:,k-2) &
+                               -zzm(k)*xsol(:,:,k-1)
+      enddo
+      k=nz-2
+      xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                            -wwm(k)*xsol(:,:,k-2) &
+                            -zzm(k)*xsol(:,:,k-1)
+      do kk=1,k-1
+         xsol(:,:,k)=xsol(:,:,k)-l3m(kk)*xsol(:,:,kk)
+      enddo
+      k=nz-1
+      xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                            -wwm(k)*xsol(:,:,k-2) &
+                            -zzm(k)*xsol(:,:,k-1)
+      do kk=1,k-1
+         xsol(:,:,k)=xsol(:,:,k)-l2m(kk)*xsol(:,:,kk)
+      enddo
+      k=nz
+      xsol(:,:,k)=bbb(:,:,k)-vvm(k)*xsol(:,:,k-3) &
+                            -wwm(k)*xsol(:,:,k-2) &
+                            -zzm(k)*xsol(:,:,k-1)
+      do kk=1,k-1
+         xsol(:,:,k)=xsol(:,:,k)-l1m(kk)*xsol(:,:,kk)
+      enddo
+
+      !Remontee avec matrice triangulaire sup.
+      xsol(:,:,nz  )= xsol(:,:,nz  )/(ggm(nz)+u1m(nz))
+      xsol(:,:,nz-1)=(xsol(:,:,nz-1)-(hhm(nz-1)+u1m(nz-1))*xsol(:,:,nz  ))/(ggm(nz-1)+u2m(nz-1))
+      xsol(:,:,nz-2)=(xsol(:,:,nz-2)-(hhm(nz-2)+u2m(nz-2))*xsol(:,:,nz-1) &
+                                    -(ssm(nz-2)+u1m(nz-2))*xsol(:,:,nz  ))/(ggm(nz-2)+u3m(nz-2))
+
+      do k=nz-3,1,-1
+         xsol(:,:,k)=(xsol(:,:,k)-hhm(k)*xsol(:,:,k+1 ) &
+                                 -ssm(k)*xsol(:,:,k+2 ) &
+                                 -rrm(k)*xsol(:,:,k+3 ) & 
+                                 -u3m(k)*xsol(:,:,nz-2) &
+                                 -u2m(k)*xsol(:,:,nz-1) &
+                                 -u1m(k)*xsol(:,:,nz  ) )/ggm(k)
+      enddo
+
+   end subroutine zseptinv_0
 
 end module matinv
 
 !********************************************************************
 !
 subroutine  inttimp (ux1,uy1,uz1,gx,gy,gz,hx,hy,hz,ta1,tb1,tc1,px1,py1,pz1,&
-     td1,te1,tf1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2)
+     td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
+     ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
 ! 
 !********************************************************************
 USE param
@@ -343,21 +566,24 @@ use matinv
 implicit none
 
 integer :: ijk,nxyz,i,j,k,code
-!real(mytype) :: xcst,x,z,r,liss ! pour VERIF inversion matrice, modification module param
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: px1,py1,pz1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: gx,gy,gz
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: hx,hy,hz
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,tc1
 real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: td1,te1,tf1
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: tg1,th1,ti1,di1
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ux2,uy2,uz2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2,tb2,tc2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: td2,te2,tf2,di2
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ux3,uy3,uz3
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,tc3
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: td3,te3,tf3,di3
 real(mytype) :: x, y, z
 
-td1=0.;te1=0.;tf1=0.
-ta2=0.;tb2=0.;tc2=0.;td2=0.;te2=0.;tf2=0.
-ux2=0.;uy2=0.;uz2=0.
+td1=0.;te1=0.;tf1=0.;tg1=0.;th1=0.;ti1=0.;di1=0.
+ta2=0.;tb2=0.;tc2=0.;td2=0.;te2=0.;tf2=0.;di2=0.
+ta3=0.;tb3=0.;tc3=0.;td3=0.;te3=0.;tf3=0.;di3=0.
 
 nxyz=xsize(1)*xsize(2)*xsize(3)
 
@@ -489,32 +715,124 @@ if (nscheme==4) then
    endif
 endif
 
-!Y-PENCIL FOR MATRIX INVERSION
 call transpose_x_to_y(ux1,ux2)
 call transpose_x_to_y(uy1,uy2)
 call transpose_x_to_y(uz1,uz2)
-call transpose_x_to_y(td1,ta2)
-call transpose_x_to_y(te1,tb2)
-call transpose_x_to_y(tf1,tc2)
-  
-!ta2: A.uhat
-!td2:(A+xcstB).un
-if (ncly.eq.0) then
-   call multmatrix7(td2,ta2,ux2,0)
-   call multmatrix7(te2,tb2,uy2,0)
-   call multmatrix7(tf2,tc2,uz2,0)
-elseif (ncly.eq.1) then
-   call multmatrix7(td2,ta2,ux2,1)
-   call multmatrix7(te2,tb2,uy2,0)
-   call multmatrix7(tf2,tc2,uz2,1)
-elseif (ncly.eq.2) then
-   call multmatrix7(td2,ta2,ux2,0)
-   call multmatrix7(te2,tb2,uy2,0)
-   call multmatrix7(tf2,tc2,uz2,0)
+call transpose_y_to_z(ux2,ux3)
+call transpose_y_to_z(uy2,uy3)
+call transpose_y_to_z(uz2,uz3)
+
+! DIFFUSIVE TERMS IN Z
+iimplicit=0
+call derzz (ta3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+call derzz (tb3,uy3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+call derzz (tc3,uz3,di3,sz,sfz ,ssz ,swz ,zsize(1),zsize(2),zsize(3),0)
+call transpose_z_to_y(ta3,ta2)
+call transpose_z_to_y(tb3,tb2)
+call transpose_z_to_y(tc3,tc2)
+!DIFFUSIVE TERMS IN Y
+call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
+call deryy (te2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
+if (istret.ne.0) then
+   do k=1,ysize(3)
+   do j=1,ysize(2)
+   do i=1,ysize(1)
+      td2(i,j,k)=td2(i,j,k)*pp2y(j)
+   enddo
+   enddo
+   enddo
+   do k=1,ysize(3)
+   do j=1,ysize(2)
+   do i=1,ysize(1)
+      te2(i,j,k)=te2(i,j,k)*pp2y(j)
+   enddo
+   enddo
+   enddo
+   do k=1,ysize(3)
+   do j=1,ysize(2)
+   do i=1,ysize(1)
+      tf2(i,j,k)=tf2(i,j,k)*pp2y(j)
+   enddo
+   enddo
+   enddo
+endif
+ta2 = td2 + ta2;
+tb2 = te2 + tb2;
+tc2 = tf2 + tc2;
+call transpose_y_to_x(ta2,ta1)
+call transpose_y_to_x(tb2,tb1)
+call transpose_y_to_x(tc2,tc1)
+!DIFFUSIVE TERMS IN X
+call derxx (tg1,ux1,di1,sx,sfx ,ssx ,swx ,xsize(1),xsize(2),xsize(3),0)
+call derxx (th1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+call derxx (ti1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+iimplicit=1
+! Total RHS with diffusion + current velocity
+ta1=td1+dt*xnu*(ta1+tg1)+ux1
+tb1=te1+dt*xnu*(tb1+th1)+uy1
+tc1=tf1+dt*xnu*(tc1+ti1)+uz1
+
+! X pencil inversion
+call xmultmatrix7(td1,ta1,ux1,0)
+call xmultmatrix7(te1,tb1,uy1,1)
+call xmultmatrix7(tf1,tc1,uz1,1)
+! rhs complet
+ta1(:,:,:)=td1(:,:,:)+ta1(:,:,:)
+tb1(:,:,:)=te1(:,:,:)+tb1(:,:,:)
+tc1(:,:,:)=tf1(:,:,:)+tc1(:,:,:)
+!
+ux1=0.; uy1=0.; uz1=0.
+if (nclx.eq.0) then
+   call xseptinv(ux1,ta1,xggm0,xhhm0,xssm0,xrrm0,xvvm0,xwwm0,xzzm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m,xsize(1),xsize(2),xsize(3))
+   call xseptinv(uy1,tb1,xggm0,xhhm0,xssm0,xrrm0,xvvm0,xwwm0,xzzm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m,xsize(1),xsize(2),xsize(3))
+   call xseptinv(uz1,tc1,xggm0,xhhm0,xssm0,xrrm0,xvvm0,xwwm0,xzzm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m,xsize(1),xsize(2),xsize(3))
+elseif (nclx.eq.1) then
+   call septinv(ux1,ta1,xggm10,xhhm10,xssm10,xrrm10,xvvm10,xwwm10,xzzm10,xsize(1),xsize(2),xsize(3))
+   call septinv(uy1,tb1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
+   call septinv(uz1,tc1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
+elseif (nclx.eq.2) then
+
 endif
 
-!SECOND MEMBRE COMPLET BBB=A uhat+(A+xcst.B)u^n  
-!in  ta2,tb2,tc2
+! Z pencil inversion
+call transpose_x_to_y(ux1,ta2)
+call transpose_x_to_y(uy1,tb2)
+call transpose_x_to_y(uz1,tc2)
+call transpose_y_to_z(ta2,ta3)
+call transpose_y_to_z(tb2,tb3)
+call transpose_y_to_z(tc2,tc3)
+!
+call zmultmatrix7(td3,ta3,ux3,1)
+call zmultmatrix7(te3,tb3,uy3,1)
+call zmultmatrix7(tf3,tc3,uz3,0)
+! rhs complet
+ta3(:,:,:)=td3(:,:,:)+ta3(:,:,:)
+tb3(:,:,:)=te3(:,:,:)+tb3(:,:,:)
+tc3(:,:,:)=tf3(:,:,:)+tc3(:,:,:)
+!
+ux3=0.; uy3=0.; uz3=0.
+if (nclz.eq.0) then
+   call zseptinv(ux3,ta3,zggm0,zhhm0,zssm0,zrrm0,zvvm0,zwwm0,zzzm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m,zsize(1),zsize(2),zsize(3))
+   call zseptinv(uy3,tb3,zggm0,zhhm0,zssm0,zrrm0,zvvm0,zwwm0,zzzm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m,zsize(1),zsize(2),zsize(3))
+   call zseptinv(uz3,tc3,zggm0,zhhm0,zssm0,zrrm0,zvvm0,zwwm0,zzzm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m,zsize(1),zsize(2),zsize(3))
+elseif (nclz.eq.1) then
+   call septinv(ux3,ta3,zggm11,zhhm11,zssm11,zrrm11,zvvm11,zwwm11,zzzm11,zsize(1),zsize(2),zsize(3))
+   call septinv(uy3,tb3,zggm11,zhhm11,zssm11,zrrm11,zvvm11,zwwm11,zzzm11,zsize(1),zsize(2),zsize(3))
+   call septinv(uz3,tc3,zggm10,zhhm10,zssm10,zrrm10,zvvm10,zwwm10,zzzm10,zsize(1),zsize(2),zsize(3))
+elseif (nclz.eq.2) then
+
+endif
+
+! Y pencil inversion
+call transpose_z_to_y(ux3,ta2)
+call transpose_z_to_y(uy3,tb2)
+call transpose_z_to_y(uz3,tc2)
+!
+call multmatrix7(td2,ta2,ux2,1)
+call multmatrix7(te2,tb2,uy2,0)
+call multmatrix7(tf2,tc2,uz2,1)
+! rhs complet
 ta2(:,:,:)=td2(:,:,:)+ta2(:,:,:)
 tb2(:,:,:)=te2(:,:,:)+tb2(:,:,:)
 tc2(:,:,:)=tf2(:,:,:)+tc2(:,:,:)
@@ -530,9 +848,7 @@ if (itype.eq.7) then
   enddo
   enddo
 endif
-
 !
-!Inversion systeme lineaire Mx=b: (A-xcst.B)u^n+1=uhat+(A+xcst.B)u^n
 ux2=0.; uy2=0.; uz2=0.;
 if (ncly.eq.0) then
    call septinv(ux2,ta2,ggm0,hhm0,ssm0,rrm0,vvm0,wwm0,zzm0,l1m,l2m,l3m,u1m,u2m,u3m,ysize(1),ysize(2),ysize(3))
@@ -570,23 +886,19 @@ end subroutine inttimp
 subroutine multmatrix7(td2,ta2,ux2,npaire)
 ! 
 !********************************************************************
-USE param
-USE variables
-USE derivY
-USE decomp_2d
+USE param, only: xcst, ncly, istret
+USE variables, only: sy,sfy,sfyp,ssy,ssyp,swy,swyp,pp2y
+USE derivY, only: alsajy,alsa2y,alsa3y,alsaty,alsamy
+USE decomp_2d, only: mytype, ysize
 
 implicit none
 
-integer :: npaire
-integer :: i,j,k,code
-!real(mytype) :: xcst ! modification module param
+integer, intent(in) :: npaire
+integer :: j,jm1,jp1
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(inout) :: ux2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)), intent(inout) :: td2,ta2
 real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
 
-!xcst= xnu*gdt(itr)*0.5
-
-!A.uhat
    if (istret.ne.0) then
       do j=1,ysize(2)
          ta2(:,j,:)=ta2(:,j,:)/pp2y(j)
@@ -595,12 +907,13 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
 
    if (ncly.eq.0) then
 
-      td2(:,1,:) = alsajy*ta2(:,2,:) + ta2(:,1,:) + alsajy*ta2(:,ysize(2),:)
+      j=1; jm1=ysize(2)
+      td2(:,j,:) = alsajy*ta2(:,jm1,:) + ta2(:,j,:) + alsajy*ta2(:,j+1,:)
       do j=2,ysize(2)-1
          td2(:,j,:) = alsajy*ta2(:,j-1,:) + ta2(:,j,:) + alsajy*ta2(:,j+1,:)
       enddo
-      td2(:,ysize(2),:) = alsajy*ta2(:,ysize(2)-1,:) + ta2(:,ysize(2),:) + alsajy*ta2(:,1,:)
-      ta2=td2
+      j=ysize(2); jp1=1
+      td2(:,j,:) = alsajy*ta2(:,j-1,:) + ta2(:,j,:) + alsajy*ta2(:,jp1,:)
 
    elseif (ncly.eq.1) then
 
@@ -609,111 +922,206 @@ real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: di2
       else
          td2(:,1,:) = 2.*alsajy*ta2(:,2,:) + ta2(:,1,:)
       endif
-
       do j=2,ysize(2)-1
          td2(:,j,:) = alsajy*ta2(:,j-1,:) + ta2(:,j,:) + alsajy*ta2(:,j+1,:)
       enddo
-
       if (npaire.eq.0) then
          td2(:,ysize(2),:) = ta2(:,ysize(2),:)
       else
          td2(:,ysize(2),:) = 2.*alsajy*ta2(:,ysize(2)-1,:) + ta2(:,ysize(2),:)
       endif
-      ta2=td2
 
    elseif (ncly.eq.2) then
 
       td2(:,1,:) = 0.
-      td2(:,2,:) = alsa2y*ta2(:,1,:) + ta2(:,2,:) + alsa2y*ta2(:,3,:)
-      td2(:,3,:) = alsa3y*ta2(:,2,:) + ta2(:,3,:) + alsa3y*ta2(:,4,:)
+      j=2
+      td2(:,j,:) = alsa2y*ta2(:,j-1,:) + ta2(:,j,:) + alsa2y*ta2(:,j+1,:)
+      j=3
+      td2(:,j,:) = alsa3y*ta2(:,j-1,:) + ta2(:,j,:) + alsa3y*ta2(:,j+1,:)
       do j=4,ysize(2)-3
          td2(:,j,:) = alsajy*ta2(:,j-1,:) + ta2(:,j,:) + alsajy*ta2(:,j+1,:)
       enddo
-      td2(:,ysize(2)-2,:) = alsaty*ta2(:,ysize(2)-3,:) + ta2(:,ysize(2)-2,:) + alsaty*ta2(:,ysize(2)-1,:)
-      td2(:,ysize(2)-1,:) = alsamy*ta2(:,ysize(2)-2,:) + ta2(:,ysize(2)-1,:) + alsamy*ta2(:,ysize(2),:)
+      j=ysize(2)-2
+      td2(:,j,:) = alsaty*ta2(:,j-1,:) + ta2(:,j,:) + alsaty*ta2(:,j+1,:)
+      j=ysize(2)-1
+      td2(:,j,:) = alsamy*ta2(:,j-1,:) + ta2(:,j,:) + alsamy*ta2(:,j+1,:)
       td2(:,ysize(2),:) = 0.
-      ta2=td2
 
    endif
+   ta2=td2
 
-
-!(A+nu*dt.B).un
-   if (ncly.eq.0) then
-
+   if ( (ncly.eq.1).and.(npaire==0) ) then
+      call deryy(td2,ux2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+   else
       call deryy(td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-
-   elseif (ncly.eq.1) then
-
-      if (npaire==0) then
-         call deryy(td2,ux2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
-      else
-         call deryy(td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-      endif
-
-   elseif (ncly.eq.2) then
-
-      call deryy(td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-
    endif
 
-   if (istret.ne.0) then
-      do j=1,ysize(2)
-         ux2(:,j,:)=ux2(:,j,:)/pp2y(j)
-      enddo
-   endif
+   do j=1,ysize(2)
+      td2(:,j,:) = - xcst*td2(:,j,:)
+   enddo
 
-   if (ncly.eq.0) then
-
-      td2(:,1,:) = alsajy*ux2(:,2,:) + ux2(:,1,:) + alsajy*ux2(:,ysize(2),:) &
-                    + xcst*td2(:,1,:)
-      do j=2,ysize(2)-1
-         td2(:,j,:) = alsajy*ux2(:,j-1,:) + ux2(:,j,:) + alsajy*ux2(:,j+1,:) &
-                    + xcst*td2(:,j,:)
-      enddo
-      td2(:,ysize(2),:) = alsajy*ux2(:,ysize(2)-1,:) + ux2(:,ysize(2),:) + alsajy*ux2(:,1,:) &
-                           + xcst*td2(:,ysize(2),:)
-
-   elseif (ncly.eq.1) then
-
-      if (npaire.eq.0) then
-         td2(:,1,:) = ux2(:,1,:) + xcst*td2(:,1,:)
-      else
-         td2(:,1,:) = 2.*alsajy*ux2(:,2,:) + ux2(:,1,:) &
-                    + xcst*td2(:,1,:)
-      endif
-
-      do j=2,ysize(2)-1
-         td2(:,j,:) = alsajy*ux2(:,j-1,:) + ux2(:,j,:) + alsajy*ux2(:,j+1,:) &
-                    + xcst*td2(:,j,:)
-      enddo
-
-      if (npaire.eq.0) then
-         td2(:,ysize(2),:) = ux2(:,ysize(2),:) + xcst*td2(:,ysize(2),:)
-      else
-         td2(:,ysize(2),:) = 2.*alsajy*ux2(:,ysize(2)-1,:) + ux2(:,ysize(2),:) &
-                           + xcst*td2(:,ysize(2),:)
-      endif
-
-   elseif (ncly.eq.2) then
-
+   if (ncly.eq.2) then
       td2(:,1,:) = 0.
-      td2(:,2,:) = alsa2y*ux2(:,1,:) + ux2(:,2,:) + alsa2y*ux2(:,3,:) &
-                 + xcst*td2(:,2,:)
-      td2(:,3,:) = alsa3y*ux2(:,2,:) + ux2(:,3,:) + alsa3y*ux2(:,4,:) &
-                 + xcst*td2(:,3,:)
-      do j=4,ysize(2)-3
-         td2(:,j,:) = alsajy*ux2(:,j-1,:) + ux2(:,j,:) + alsajy*ux2(:,j+1,:) &
-                    + xcst*td2(:,j,:)
-      enddo
-      td2(:,ysize(2)-2,:) = alsaty*ux2(:,ysize(2)-3,:) + ux2(:,ysize(2)-2,:) + alsaty*ux2(:,ysize(2)-1,:) &
-                          + xcst*td2(:,ysize(2)-2,:)
-      td2(:,ysize(2)-1,:) = alsamy*ux2(:,ysize(2)-2,:) + ux2(:,ysize(2)-1,:) + alsamy*ux2(:,ysize(2),:) &
-                          + xcst*td2(:,ysize(2)-1,:)
       td2(:,ysize(2),:) = 0.
-
    endif
 
 end subroutine multmatrix7
+!
+subroutine xmultmatrix7(td1,ta1,ux1,npaire)
+! 
+!********************************************************************
+USE param, only: xcst, nclx
+USE variables, only: sx,sfx,sfxp,ssx,ssxp,swx,swxp
+USE derivX, only: alsaix,alsa2x,alsa3x,alsatx,alsamx
+USE decomp_2d, only: mytype, xsize
+
+implicit none
+
+integer, intent(in) :: npaire
+integer :: i,im1,ip1
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: ux1
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(inout) :: td1,ta1
+real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: di1
+
+   if (nclx.eq.0) then
+
+      i=1; im1=xsize(1)
+      td1(i,:,:) = alsaix*ta1(im1,:,:) + ta1(i,:,:) + alsaix*ta1(i+1,:,:)
+      do i=2,xsize(1)-1
+         td1(i,:,:) = alsaix*ta1(i-1,:,:) + ta1(i,:,:) + alsaix*ta1(i+1,:,:)
+      enddo
+      i=xsize(1); ip1=1
+      td1(i,:,:) = alsaix*ta1(i-1,:,:) + ta1(i,:,:) + alsaix*ta1(ip1,:,:)
+
+   elseif (nclx.eq.1) then
+
+      if (npaire.eq.0) then
+         td1(1,:,:) = ta1(1,:,:)
+      else
+         td1(1,:,:) = 2.*alsaix*ta1(2,:,:) + ta1(1,:,:)
+      endif
+      do i=2,xsize(1)-1
+         td1(i,:,:) = alsaix*ta1(i-1,:,:) + ta1(i,:,:) + alsaix*ta1(i+1,:,:)
+      enddo
+      if (npaire.eq.0) then
+         td1(xsize(1),:,:) = ta1(xsize(1),:,:)
+      else
+         td1(xsize(1),:,:) = 2.*alsaix*ta1(xsize(1)-1,:,:) + ta1(xsize(1),:,:)
+      endif
+   
+   elseif (nclx.eq.2) then
+
+      td1(1,:,:) = 0.
+      i=2
+      td1(i,:,:) = alsa2x*ta1(i-1,:,:) + ta1(i,:,:) + alsa2x*ta1(i+1,:,:)
+      i=3
+      td1(i,:,:) = alsa3x*ta1(i-1,:,:) + ta1(i,:,:) + alsa3x*ta1(i+1,:,:)
+      do i=4,xsize(1)-3
+         td1(i,:,:) = alsaix*ta1(i-1,:,:) + ta1(i,:,:) + alsaix*ta1(i+1,:,:)
+      enddo
+      i=xsize(1)-2
+      td1(i,:,:) = alsatx*ta1(i-1,:,:) + ta1(i,:,:) + alsatx*ta1(i+1,:,:)
+      i=xsize(1)-1
+      td1(i,:,:) = alsamx*ta1(i-1,:,:) + ta1(i,:,:) + alsamx*ta1(i+1,:,:)
+      td1(xsize(1),:,:) = 0.
+
+   endif
+   ta1=td1
+
+   if ( (nclx.eq.1).and.(npaire==0) ) then
+      call derxx(td1,ux1,di1,sx,sfx,ssx,swx,xsize(1),xsize(2),xsize(3),0)
+   else
+      call derxx(td1,ux1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+   endif
+
+   do i=1,xsize(1)
+      td1(i,:,:) = - xcst*td1(i,:,:)
+   enddo
+
+   if (nclx.eq.2) then
+      td1(1,:,:) = 0.
+      td1(xsize(1),:,:) = 0.
+   endif
+
+end subroutine xmultmatrix7
+!
+subroutine zmultmatrix7(td3,ta3,ux3,npaire)
+! 
+!********************************************************************
+USE param, only: xcst, nclz
+USE variables, only: sz,sfz,sfzp,ssz,sszp,swz,swzp
+USE derivZ, only: alsakz,alsa2z,alsa3z,alsamz,alsatz
+USE decomp_2d, only: mytype, zsize
+
+implicit none
+
+integer, intent(in) :: npaire
+integer :: k,km1,kp1
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: ux3
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)), intent(inout) :: td3,ta3
+real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: di3
+
+   if (nclz.eq.0) then
+
+      k=1; km1=zsize(3)
+      td3(:,:,k) = alsakz*ta3(:,:,km1) + ta3(:,:,k) + alsakz*ta3(:,:,k+1)
+      do k=2,zsize(3)-1
+         td3(:,:,k) = alsakz*ta3(:,:,k-1) + ta3(:,:,k) + alsakz*ta3(:,:,k+1)
+      enddo
+      k=zsize(3); kp1=1
+      td3(:,:,k) = alsakz*ta3(:,:,k-1) + ta3(:,:,k) + alsakz*ta3(:,:,kp1)
+
+   elseif (nclz.eq.1) then
+
+      if (npaire.eq.0) then
+         td3(:,:,1) = ta3(:,:,1)
+      else
+         td3(:,:,1) = 2.*alsakz*ta3(:,:,2) + ta3(:,:,1)
+      endif
+      do k=2,zsize(3)-1
+         td3(:,:,k) = alsakz*ta3(:,:,k-1) + ta3(:,:,k) + alsakz*ta3(:,:,k+1)
+      enddo
+      if (npaire.eq.0) then
+         td3(:,:,zsize(3)) = ta3(:,:,zsize(3))
+      else
+         td3(:,:,zsize(3)) = 2.*alsakz*ta3(:,:,zsize(3)-1) + ta3(:,:,zsize(3))
+      endif
+
+   elseif (nclz.eq.2) then
+
+      td3(:,:,1) = 0.
+      k=2
+      td3(:,:,k) = alsa2z*ta3(:,:,k-1) + ta3(:,:,k) + alsa2z*ta3(:,:,k+1)
+      k=3
+      td3(:,:,k) = alsa3z*ta3(:,:,k-1) + ta3(:,:,k) + alsa3z*ta3(:,:,k+1)      
+      do k=4,zsize(3)-3
+         td3(:,:,k) = alsakz*ta3(:,:,k-1) + ta3(:,:,k) + alsakz*ta3(:,:,k+1)
+      enddo
+      k=zsize(3)-2
+      td3(:,:,k) = alsatz*ta3(:,:,k-1) + ta3(:,:,k) + alsatz*ta3(:,:,k+1)
+      k=zsize(3)-1
+      td3(:,:,k) = alsamz*ta3(:,:,k-1) + ta3(:,:,k) + alsamz*ta3(:,:,k+1)
+      td3(:,:,zsize(3)) = 0.
+
+   endif
+   ta3=td3
+
+   if ( (nclz.eq.1).and.(npaire==0) ) then
+      call derzz(td3,ux3,di3,sz,sfz,ssz,swz,zsize(1),zsize(2),zsize(3),0)
+   else
+      call derzz(td3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+   endif
+
+   do k=1,zsize(3)
+      td3(:,:,k) = - xcst*td3(:,:,k)
+   enddo
+
+   if (nclz.eq.2) then
+      td3(:,:,1) = 0.
+      td3(:,:,zsize(3)) = 0.
+   endif
+
+end subroutine zmultmatrix7
 
 !********************************************************************
 !
@@ -722,7 +1130,9 @@ subroutine implicit_schemes()
 !********************************************************************
 
 USE param
+USE derivX
 USE derivY
+USE derivZ
 USE variables
 USE var
 use ludecomp
@@ -849,6 +1259,12 @@ qqm=rrm
 !!! NCL = 1, npaire=0, dirichlet imposé, fonction impaire
 !
 ! DIAG
+   xaam10(1     )=0.
+   xaam10(nx    )=0.
+   xaam10(2     )=-2.*asix-3.*bsix-2.*csix
+   xaam10(nx-1  )=xaam10(2)
+   xaam10(3:nx-2)=-2.*(asix+bsix+csix)
+   xaam10 = 1. - xcst*xaam10
 aam10(1     )=0.
 aam10(ny    )=0.
 aam10(2     )=-2.*asjy-3.*bsjy-2.*csjy
@@ -859,8 +1275,24 @@ if (istret==0) then
 else
    aam10 = 1./pp2y - xcst*aam10
 endif
+   zaam10(1     )=0.
+   zaam10(nz    )=0.
+   zaam10(2     )=-2.*askz-3.*bskz-2.*cskz
+   zaam10(nz-1  )=zaam10(2)
+   zaam10(3:nz-2)=-2.*(askz+bskz+cskz)
+   zaam10 = 1. - xcst*zaam10
 !
 !DIAG SUP 1
+   xbbm10(1     )=0.
+   xbbm10(nx    )=0.
+   xbbm10(2     )=asix-csix
+   xbbm10(nx-1  )=asix
+   xbbm10(3     )=asix
+   xbbm10(nx-2  )=asix-csix
+   xbbm10(4:nx-3)=asix
+   xbbm10 = alsaix - xcst*xbbm10
+   xbbm10(1 )=0.
+   xbbm10(nx)=0.
 bbm10(1     )=0.
 bbm10(ny    )=0.
 bbm10(2     )=asjy-csjy
@@ -876,8 +1308,26 @@ endif
 !CL sur bbm10
 bbm10(1 )=0.
 bbm10(ny)=0.
+   zbbm10(1     )=0.
+   zbbm10(nz    )=0.
+   zbbm10(2     )=askz-cskz
+   zbbm10(nz-1  )=askz
+   zbbm10(3     )=askz
+   zbbm10(nz-2  )=askz-cskz
+   zbbm10(4:nz-3)=askz
+   zbbm10 = alsakz - xcst*zbbm10
+   zbbm10(1 )=0.
+   zbbm10(nz)=0.
 !
 !DIAG SUP 2
+   xccm10(1     )=0.
+   xccm10(nx    )=0.
+   xccm10(2     )=bsix
+   xccm10(nx-1  )=0.
+   xccm10(3     )=bsix
+   xccm10(nx-2  )=bsix
+   xccm10(4:nx-3)=bsix
+   xccm10 = -xcst*xccm10
 ccm10(1     )=0.
 ccm10(ny    )=0.
 ccm10(2     )=bsjy
@@ -886,8 +1336,24 @@ ccm10(3     )=bsjy
 ccm10(ny-2  )=bsjy
 ccm10(4:ny-3)=bsjy
 ccm10 = -xcst*ccm10
+   zccm10(1     )=0.
+   zccm10(nz    )=0.
+   zccm10(2     )=bskz
+   zccm10(nz-1  )=0.
+   zccm10(3     )=bskz
+   zccm10(nz-2  )=bskz
+   zccm10(4:nz-3)=bskz
+   zccm10 = -xcst*zccm10
 !
 !DIAG SUP 3
+   xrrm10(1     )=0.
+   xrrm10(nx    )=0.
+   xrrm10(2     )=csix
+   xrrm10(nx-1  )=0.
+   xrrm10(3     )=csix
+   xrrm10(nx-2  )=0.
+   xrrm10(4:nx-3)=csix
+   xrrm10 = -xcst*xrrm10
 rrm10(1     )=0.
 rrm10(ny    )=0.
 rrm10(2     )=csjy
@@ -896,8 +1362,26 @@ rrm10(3     )=csjy
 rrm10(ny-2  )=0.
 rrm10(4:ny-3)=csjy
 rrm10 = -xcst*rrm10
+   zrrm10(1     )=0.
+   zrrm10(nz    )=0.
+   zrrm10(2     )=cskz
+   zrrm10(nz-1  )=0.
+   zrrm10(3     )=cskz
+   zrrm10(nz-2  )=0.
+   zrrm10(4:nz-3)=cskz
+   zrrm10 = -xcst*zrrm10
 !
 !DIAG INF 1
+   xddm10(1     )=0.
+   xddm10(nx    )=0.
+   xddm10(2     )=asix
+   xddm10(nx-1  )=asix-csix
+   xddm10(3     )=asix-csix
+   xddm10(nx-2  )=asix
+   xddm10(4:nx-3)=asix
+   xddm10 = alsajy - xcst*xddm10
+   xddm10(1 )=0.
+   xddm10(nx)=0.
 ddm10(1     )=0.
 ddm10(ny    )=0.
 ddm10(2     )=asjy
@@ -913,8 +1397,26 @@ endif
 !CL sur ddm10
 ddm10(1 )=0.
 ddm10(ny)=0.
+   zddm10(1     )=0.
+   zddm10(nz    )=0.
+   zddm10(2     )=askz
+   zddm10(nz-1  )=askz-cskz
+   zddm10(3     )=askz-cskz
+   zddm10(nz-2  )=askz
+   zddm10(4:nz-3)=askz
+   zddm10 = alsakz - xcst*zddm10
+   zddm10(1 )=0.
+   zddm10(nz)=0.
 !
 !DIAG INF 2
+   xeem10(1     )=0.
+   xeem10(nx    )=0.
+   xeem10(2     )=0.
+   xeem10(nx-1  )=bsix
+   xeem10(3     )=bsix
+   xeem10(nx-2  )=bsix
+   xeem10(4:nx-3)=bsix
+   xeem10 = -xcst*xeem10
 eem10(1     )=0.
 eem10(ny    )=0.
 eem10(2     )=0.
@@ -923,8 +1425,24 @@ eem10(3     )=bsjy
 eem10(ny-2  )=bsjy
 eem10(4:ny-3)=bsjy
 eem10 = -xcst*eem10
+   zeem10(1     )=0.
+   zeem10(nz    )=0.
+   zeem10(2     )=0.
+   zeem10(nz-1  )=bskz
+   zeem10(3     )=bskz
+   zeem10(nz-2  )=bskz
+   zeem10(4:nz-3)=bskz
+   zeem10 = -xcst*zeem10
 !
 !DIAG INF 3
+   xqqm10(1     )=0.
+   xqqm10(nx    )=0.
+   xqqm10(2     )=0.
+   xqqm10(nx-1  )=csix
+   xqqm10(3     )=0.
+   xqqm10(nx-2  )=csix
+   xqqm10(4:nx-3)=csix
+   xqqm10 = -xcst*xqqm10
 qqm10(1     )=0.
 qqm10(ny    )=0.
 qqm10(2     )=0.
@@ -933,10 +1451,24 @@ qqm10(3     )=0.
 qqm10(ny-2  )=csjy
 qqm10(4:ny-3)=csjy
 qqm10 = -xcst*qqm10
+   zqqm10(1     )=0.
+   zqqm10(nz    )=0.
+   zqqm10(2     )=0.
+   zqqm10(nz-1  )=cskz
+   zqqm10(3     )=0.
+   zqqm10(nz-2  )=cskz
+   zqqm10(4:nz-3)=cskz
+   zqqm10 = -xcst*zqqm10
 
 !!! NCL = 1, npaire=1, neumann imposé, fonction paire
 !
 ! DIAG
+   xaam11(1     )=-2.*(asix+bsix+csix)
+   xaam11(nx    )=xaam11(1)
+   xaam11(2     )=-2.*asix-bsix-2.*csix
+   xaam11(nx-1  )=xaam11(2)
+   xaam11(3:nx-2)=-2.*(asix+bsix+csix)
+   xaam11 = 1. - xcst*xaam11
 aam11(1     )=-2.*(asjy+bsjy+csjy)
 aam11(ny    )=aam11(1)
 aam11(2     )=-2.*asjy-bsjy-2.*csjy
@@ -947,8 +1479,24 @@ if (istret==0) then
 else
    aam11 = 1./pp2y - xcst*aam11
 endif
+   zaam11(1     )=-2.*(askz+bskz+cskz)
+   zaam11(nz    )=zaam11(1)
+   zaam11(2     )=-2.*askz-bskz-2.*cskz
+   zaam11(nz-1  )=zaam11(2)
+   zaam11(3:nz-2)=-2.*(askz+bskz+cskz)
+   zaam11 = 1. - xcst*zaam11
 !
 !DIAG SUP 1
+   xbbm11(1     )=2.*asix
+   xbbm11(nx    )=0.
+   xbbm11(2     )=asix+csix
+   xbbm11(nx-1  )=asix
+   xbbm11(3     )=asix
+   xbbm11(nx-2  )=asix+csix
+   xbbm11(4:nx-3)=asix
+   xbbm11 = alsaix - xcst*xbbm11
+   xbbm11(1 )=xbbm11(1)+alsaix
+   xbbm11(nx)=0.
 bbm11(1     )=2.*asjy
 bbm11(ny    )=0.
 bbm11(2     )=asjy+csjy
@@ -968,8 +1516,26 @@ else
    bbm11(1 )=bbm11(1)+alsajy/pp2y(2)
 endif
 bbm11(ny)=0.
+   zbbm11(1     )=2.*askz
+   zbbm11(nz    )=0.
+   zbbm11(2     )=askz+cskz
+   zbbm11(nz-1  )=askz
+   zbbm11(3     )=askz
+   zbbm11(nz-2  )=askz+cskz
+   zbbm11(4:nz-3)=askz
+   zbbm11 = alsakz - xcst*zbbm11
+   zbbm11(1 )=zbbm11(1)+alsakz
+   zbbm11(nz)=0.
 !
 !DIAG SUP 2
+   xccm11(1     )=2.*bsix
+   xccm11(nx    )=0.
+   xccm11(2     )=bsix
+   xccm11(nx-1  )=0.
+   xccm11(3     )=bsix
+   xccm11(nx-2  )=bsix
+   xccm11(4:nx-3)=bsix
+   xccm11 = -xcst*xccm11
 ccm11(1     )=2.*bsjy
 ccm11(ny    )=0.
 ccm11(2     )=bsjy
@@ -978,8 +1544,24 @@ ccm11(3     )=bsjy
 ccm11(ny-2  )=bsjy
 ccm11(4:ny-3)=bsjy
 ccm11 = -xcst*ccm11
+   zccm11(1     )=2.*bskz
+   zccm11(nz    )=0.
+   zccm11(2     )=bskz
+   zccm11(nz-1  )=0.
+   zccm11(3     )=bskz
+   zccm11(nz-2  )=bskz
+   zccm11(4:nz-3)=bskz
+   zccm11 = -xcst*zccm11
 !
 !DIAG SUP 3
+   xrrm11(1     )=2.*csix
+   xrrm11(nx    )=0.
+   xrrm11(2     )=csix
+   xrrm11(nx-1  )=0.
+   xrrm11(3     )=csix
+   xrrm11(nx-2  )=0.
+   xrrm11(4:nx-3)=csix
+   xrrm11 = -xcst*xrrm11
 rrm11(1     )=2.*csjy
 rrm11(ny    )=0.
 rrm11(2     )=csjy
@@ -988,8 +1570,26 @@ rrm11(3     )=csjy
 rrm11(ny-2  )=0.
 rrm11(4:ny-3)=csjy
 rrm11 = -xcst*rrm11
+   zrrm11(1     )=2.*cskz
+   zrrm11(nz    )=0.
+   zrrm11(2     )=cskz
+   zrrm11(nz-1  )=0.
+   zrrm11(3     )=cskz
+   zrrm11(nz-2  )=0.
+   zrrm11(4:nz-3)=cskz
+   zrrm11 = -xcst*zrrm11
 !
 !DIAG INF 1
+   xddm11(1     )=0.
+   xddm11(nx    )=2.*asix
+   xddm11(2     )=asix
+   xddm11(nx-1  )=asix+csix
+   xddm11(3     )=asix+csix
+   xddm11(nx-2  )=asix
+   xddm11(4:nx-3)=asix
+   xddm11 = alsaix - xcst*xddm11
+   xddm11(1 )=0.
+   xddm11(nx)=xddm11(nx)+alsaix
 ddm11(1     )=0.
 ddm11(ny    )=2.*asjy
 ddm11(2     )=asjy
@@ -1009,8 +1609,26 @@ if (istret.eq.0) then
 else
    ddm11(ny)=ddm11(ny)+alsajy/pp2y(ny-1)!a1
 endif
+   zddm11(1     )=0.
+   zddm11(nz    )=2.*askz
+   zddm11(2     )=askz
+   zddm11(nz-1  )=askz+cskz
+   zddm11(3     )=askz+cskz
+   zddm11(nz-2  )=askz
+   zddm11(4:nz-3)=askz
+   zddm11 = alsakz - xcst*zddm11
+   zddm11(1 )=0.
+   zddm11(nz)=zddm11(nz)+alsakz
 !
 !DIAG INF 2
+   xeem11(1     )=0.
+   xeem11(nx    )=2.*bsix
+   xeem11(2     )=0.
+   xeem11(nx-1  )=bsix
+   xeem11(3     )=bsix
+   xeem11(nx-2  )=bsix
+   xeem11(4:nx-3)=bsix
+   xeem11 = -xcst*xeem11
 eem11(1     )=0.
 eem11(ny    )=2.*bsjy
 eem11(2     )=0.
@@ -1019,8 +1637,24 @@ eem11(3     )=bsjy
 eem11(ny-2  )=bsjy
 eem11(4:ny-3)=bsjy
 eem11 = -xcst*eem11
+   zeem11(1     )=0.
+   zeem11(nz    )=2.*bskz
+   zeem11(2     )=0.
+   zeem11(nz-1  )=bskz
+   zeem11(3     )=bskz
+   zeem11(nz-2  )=bskz
+   zeem11(4:nz-3)=bskz
+   zeem11 = -xcst*zeem11
 !
 !DIAG INF 3
+   xqqm11(1     )=0.
+   xqqm11(nx    )=2.*csix
+   xqqm11(2     )=0.
+   xqqm11(nx-1  )=csix
+   xqqm11(3     )=0.
+   xqqm11(nx-2  )=csix
+   xqqm11(4:nx-3)=csix
+   xqqm11 = -xcst*xqqm11
 qqm11(1     )=0.
 qqm11(ny    )=2.*csjy
 qqm11(2     )=0.
@@ -1029,51 +1663,85 @@ qqm11(3     )=0.
 qqm11(ny-2  )=csjy
 qqm11(4:ny-3)=csjy
 qqm11 = -xcst*qqm11
+   zqqm11(1     )=0.
+   zqqm11(nz    )=2.*cskz
+   zqqm11(2     )=0.
+   zqqm11(nz-1  )=cskz
+   zqqm11(3     )=0.
+   zqqm11(nz-2  )=cskz
+   zqqm11(4:nz-3)=cskz
+   zqqm11 = -xcst*zqqm11
 
 !!! NXL = 0
 !DIAG
+   xaam0= 1.-xcst*(-2.*(asix+bsix+csix))
 if (istret==0) then
    aam0 = 1.-xcst*(-2.*(asjy+bsjy+csjy))
 else
    aam0 = 1./pp2y-xcst*(-2.*(asjy+bsjy+csjy))
 endif
+   zaam0= 1.-xcst*(-2.*(askz+bskz+cskz))
 !
 !DIAG SUP 1
+   xbbm0 = alsaix-xcst*asix
 if (istret==0) then
    bbm0 = alsajy-xcst*asjy
 else
    bbm0(1:ny-1) = alsajy/pp2y(2:ny) -xcst*asjy
    bbm0(ny) = alsajy/pp2y(1) -xcst*asjy
 endif
+   zbbm0 = alsakz-xcst*askz
 !
 !DIAG SUP 2
+   xccm0= -xcst*bsix
 ccm0 = -xcst*bsjy
+   zccm0= -xcst*bskz
 !
 !DIAG SUP 3
+   xrrm0= -xcst*csix
 rrm0 = -xcst*csjy
+   zrrm0= -xcst*cskz
 !
 !DIAG INF 1
+   xddm0=xbbm0
 if (istret==0) then
   ddm0=bbm0
 else
    ddm0(1) = alsajy/pp2y(ny) -xcst*asjy
    ddm0(2:ny) = alsajy/pp2y(1:ny-1) -xcst*asjy
 endif
+   zddm0=zbbm0
 !
 !DIAG INF 2
+   xeem0=xccm0
 eem0=ccm0
+   zeem0=zccm0
 !
 !DIAG INF 3
+   xqqm0=xrrm0
 qqm0=rrm0
+   zqqm0=zrrm0
 
 call ludecomp7(aam,bbm,ccm,ddm,eem,qqm,ggm,hhm,ssm,rrm,&
      vvm,wwm,zzm,ny)
+call ludecomp7(xaam10,xbbm10,xccm10,xddm10,xeem10,xqqm10,xggm10,xhhm10,xssm10,xrrm10,&
+     xvvm10,xwwm10,xzzm10,nx)
 call ludecomp7(aam10,bbm10,ccm10,ddm10,eem10,qqm10,ggm10,hhm10,ssm10,rrm10,&
      vvm10,wwm10,zzm10,ny)
+call ludecomp7(zaam10,zbbm10,zccm10,zddm10,zeem10,zqqm10,zggm10,zhhm10,zssm10,zrrm10,&
+     zvvm10,zwwm10,zzzm10,nz)
+call ludecomp7(xaam11,xbbm11,xccm11,xddm11,xeem11,xqqm11,xggm11,xhhm11,xssm11,xrrm11,&
+     xvvm11,xwwm11,xzzm11,nx)
 call ludecomp7(aam11,bbm11,ccm11,ddm11,eem11,qqm11,ggm11,hhm11,ssm11,rrm11,&
      vvm11,wwm11,zzm11,ny)
+call ludecomp7(zaam11,zbbm11,zccm11,zddm11,zeem11,zqqm11,zggm11,zhhm11,zssm11,zrrm11,&
+     zvvm11,zwwm11,zzzm11,nz)
+call ludecomp7(xaam0,xbbm0,xccm0,xddm0,xeem0,xqqm0,xggm0,xhhm0,xssm0,xrrm0,&
+     xvvm0,xwwm0,xzzm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m,nx)
 call ludecomp7(aam0,bbm0,ccm0,ddm0,eem0,qqm0,ggm0,hhm0,ssm0,rrm0,&
      vvm0,wwm0,zzm0,l1m,l2m,l3m,u1m,u2m,u3m,ny)
+call ludecomp7(zaam0,zbbm0,zccm0,zddm0,zeem0,zqqm0,zggm0,zhhm0,zssm0,zrrm0,&
+     zvvm0,zwwm0,zzzm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m,nz)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! FIN MATRICE M2 TIME IMPLICIT    !!
