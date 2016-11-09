@@ -792,7 +792,9 @@ elseif (nclx.eq.1) then
    call xseptinv(uy1,tb1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
    call xseptinv(uz1,tc1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
 elseif (nclx.eq.2) then
-
+   call xseptinv(ux1,ta1,xggm,xhhm,xssm,xrrm,xvvm,xwwm,xzzm,xsize(1),xsize(2),xsize(3))
+   call xseptinv(uy1,tb1,xggm,xhhm,xssm,xrrm,xvvm,xwwm,xzzm,xsize(1),xsize(2),xsize(3))
+   call xseptinv(uz1,tc1,xggm,xhhm,xssm,xrrm,xvvm,xwwm,xzzm,xsize(1),xsize(2),xsize(3))
 endif
 
 ! Z pencil inversion
@@ -821,7 +823,9 @@ elseif (nclz.eq.1) then
    call zseptinv(uy3,tb3,zggm11,zhhm11,zssm11,zrrm11,zvvm11,zwwm11,zzzm11,zsize(1),zsize(2),zsize(3))
    call zseptinv(uz3,tc3,zggm10,zhhm10,zssm10,zrrm10,zvvm10,zwwm10,zzzm10,zsize(1),zsize(2),zsize(3))
 elseif (nclz.eq.2) then
-
+   call zseptinv(ux3,ta3,zggm,zhhm,zssm,zrrm,zvvm,zwwm,zzzm,zsize(1),zsize(2),zsize(3))
+   call zseptinv(uy3,tb3,zggm,zhhm,zssm,zrrm,zvvm,zwwm,zzzm,zsize(1),zsize(2),zsize(3))
+   call zseptinv(uz3,tc3,zggm,zhhm,zssm,zrrm,zvvm,zwwm,zzzm,zsize(1),zsize(2),zsize(3))
 endif
 
 ! Y pencil inversion

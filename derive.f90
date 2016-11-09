@@ -838,6 +838,7 @@ if (nclx==2) then
            -ux(nx-1,j,k)+ux(nx-2,j,k))
       tx(nx  ,j,k)=asnx*ux(nx  ,j,k)+bsnx*ux(nx-1,j,k)&
            +csnx*ux(nx-2,j,k)+dsnx*ux(nx-3,j,k)
+if (iimplicit.eq.1) cycle
       do i=2,nx
          tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
       enddo
@@ -1485,6 +1486,7 @@ if (nclz==2) then
            +csnz*uz(i,j,nz-2)+dsnz*uz(i,j,nz-3)
    enddo
    enddo
+if (iimplicit.eq.1) return
    do k=2,nz
    do j=1,ny
    do i=1,nx
