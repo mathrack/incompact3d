@@ -1284,9 +1284,7 @@ endif
    xbbm10(3     )=asix
    xbbm10(nx-2  )=asix-csix
    xbbm10(4:nx-3)=asix
-   xbbm10 = alsaix - xcst*xbbm10
-   xbbm10(1 )=0.
-   xbbm10(nx)=0.
+   xbbm10(2:nx-1) = alsaix - xcst*xbbm10(2:nx-1)
 bbm10(1     )=0.
 bbm10(ny    )=0.
 bbm10(2     )=asjy-csjy
@@ -1295,13 +1293,10 @@ bbm10(3     )=asjy
 bbm10(ny-2  )=asjy-csjy
 bbm10(4:ny-3)=asjy
 if (istret==0) then
-   bbm10 = alsajy - xcst*bbm10
+   bbm10(2:ny-1) = alsajy - xcst*bbm10(2:ny-1)
 else
    bbm10(2:ny-1) = alsajy/pp2y(3:ny) - xcst*bbm10(2:ny-1)
 endif
-!CL sur bbm10
-bbm10(1 )=0.
-bbm10(ny)=0.
    zbbm10(1     )=0.
    zbbm10(nz    )=0.
    zbbm10(2     )=askz-cskz
@@ -1309,150 +1304,43 @@ bbm10(ny)=0.
    zbbm10(3     )=askz
    zbbm10(nz-2  )=askz-cskz
    zbbm10(4:nz-3)=askz
-   zbbm10 = alsakz - xcst*zbbm10
-   zbbm10(1 )=0.
-   zbbm10(nz)=0.
+   zbbm10(2:nz-1) = alsakz - xcst*zbbm10(2:nz-1)
 !
 !DIAG SUP 2
-   xccm10(1     )=0.
-   xccm10(nx    )=0.
-   xccm10(2     )=bsix
-   xccm10(nx-1  )=0.
-   xccm10(3     )=bsix
-   xccm10(nx-2  )=bsix
-   xccm10(4:nx-3)=bsix
-   xccm10 = -xcst*xccm10
-ccm10(1     )=0.
-ccm10(ny    )=0.
-ccm10(2     )=bsjy
-ccm10(ny-1  )=0.
-ccm10(3     )=bsjy
-ccm10(ny-2  )=bsjy
-ccm10(4:ny-3)=bsjy
-ccm10 = -xcst*ccm10
-   zccm10(1     )=0.
-   zccm10(nz    )=0.
-   zccm10(2     )=bskz
-   zccm10(nz-1  )=0.
-   zccm10(3     )=bskz
-   zccm10(nz-2  )=bskz
-   zccm10(4:nz-3)=bskz
-   zccm10 = -xcst*zccm10
+   xccm10= -xcst*bsix*(/0.,(1.,i=2,nx-2),0.,0./)
+   ccm10 = -xcst*bsjy*(/0.,(1.,i=2,ny-2),0.,0./)
+   zccm10= -xcst*bskz*(/0.,(1.,i=2,nz-2),0.,0./)
 !
 !DIAG SUP 3
-   xrrm10(1     )=0.
-   xrrm10(nx    )=0.
-   xrrm10(2     )=csix
-   xrrm10(nx-1  )=0.
-   xrrm10(3     )=csix
-   xrrm10(nx-2  )=0.
-   xrrm10(4:nx-3)=csix
-   xrrm10 = -xcst*xrrm10
-rrm10(1     )=0.
-rrm10(ny    )=0.
-rrm10(2     )=csjy
-rrm10(ny-1  )=0.
-rrm10(3     )=csjy
-rrm10(ny-2  )=0.
-rrm10(4:ny-3)=csjy
-rrm10 = -xcst*rrm10
-   zrrm10(1     )=0.
-   zrrm10(nz    )=0.
-   zrrm10(2     )=cskz
-   zrrm10(nz-1  )=0.
-   zrrm10(3     )=cskz
-   zrrm10(nz-2  )=0.
-   zrrm10(4:nz-3)=cskz
-   zrrm10 = -xcst*zrrm10
+   xrrm10= -xcst*csix*(/0.,(1.,i=2,nx-3),0.,0.,0./)
+   rrm10 = -xcst*csjy*(/0.,(1.,i=2,ny-3),0.,0.,0./)
+   zrrm10= -xcst*cskz*(/0.,(1.,i=2,nz-3),0.,0.,0./)
 !
 !DIAG INF 1
-   xddm10(1     )=0.
-   xddm10(nx    )=0.
-   xddm10(2     )=asix
-   xddm10(nx-1  )=asix-csix
-   xddm10(3     )=asix-csix
-   xddm10(nx-2  )=asix
-   xddm10(4:nx-3)=asix
-   xddm10 = alsajy - xcst*xddm10
-   xddm10(1 )=0.
-   xddm10(nx)=0.
-ddm10(1     )=0.
-ddm10(ny    )=0.
-ddm10(2     )=asjy
-ddm10(ny-1  )=asjy-csjy
-ddm10(3     )=asjy-csjy
-ddm10(ny-2  )=asjy
-ddm10(4:ny-3)=asjy
+   xddm10=xbbm10(nx:1:-1)
 if (istret==0) then
-   ddm10 = alsajy - xcst*ddm10
+   ddm10 = bbm10(ny:1:-1)
 else
+   ddm10(1     )=0.
+   ddm10(ny    )=0.
+   ddm10(2     )=asjy
+   ddm10(ny-1  )=asjy-csjy
+   ddm10(3     )=asjy-csjy
+   ddm10(ny-2  )=asjy
+   ddm10(4:ny-3)=asjy
    ddm10(2:ny-1) = alsajy/pp2y(1:ny-2) - xcst*ddm10(2:ny-1)
 endif
-!CL sur ddm10
-ddm10(1 )=0.
-ddm10(ny)=0.
-   zddm10(1     )=0.
-   zddm10(nz    )=0.
-   zddm10(2     )=askz
-   zddm10(nz-1  )=askz-cskz
-   zddm10(3     )=askz-cskz
-   zddm10(nz-2  )=askz
-   zddm10(4:nz-3)=askz
-   zddm10 = alsakz - xcst*zddm10
-   zddm10(1 )=0.
-   zddm10(nz)=0.
+   zddm10=zbbm10(nz:1:-1)
 !
 !DIAG INF 2
-   xeem10(1     )=0.
-   xeem10(nx    )=0.
-   xeem10(2     )=0.
-   xeem10(nx-1  )=bsix
-   xeem10(3     )=bsix
-   xeem10(nx-2  )=bsix
-   xeem10(4:nx-3)=bsix
-   xeem10 = -xcst*xeem10
-eem10(1     )=0.
-eem10(ny    )=0.
-eem10(2     )=0.
-eem10(ny-1  )=bsjy
-eem10(3     )=bsjy
-eem10(ny-2  )=bsjy
-eem10(4:ny-3)=bsjy
-eem10 = -xcst*eem10
-   zeem10(1     )=0.
-   zeem10(nz    )=0.
-   zeem10(2     )=0.
-   zeem10(nz-1  )=bskz
-   zeem10(3     )=bskz
-   zeem10(nz-2  )=bskz
-   zeem10(4:nz-3)=bskz
-   zeem10 = -xcst*zeem10
+   xeem10=xccm10(nx:1:-1)
+   eem10 = ccm10(ny:1:-1)
+   zeem10=zccm10(nz:1:-1)
 !
 !DIAG INF 3
-   xqqm10(1     )=0.
-   xqqm10(nx    )=0.
-   xqqm10(2     )=0.
-   xqqm10(nx-1  )=csix
-   xqqm10(3     )=0.
-   xqqm10(nx-2  )=csix
-   xqqm10(4:nx-3)=csix
-   xqqm10 = -xcst*xqqm10
-qqm10(1     )=0.
-qqm10(ny    )=0.
-qqm10(2     )=0.
-qqm10(ny-1  )=csjy
-qqm10(3     )=0.
-qqm10(ny-2  )=csjy
-qqm10(4:ny-3)=csjy
-qqm10 = -xcst*qqm10
-   zqqm10(1     )=0.
-   zqqm10(nz    )=0.
-   zqqm10(2     )=0.
-   zqqm10(nz-1  )=cskz
-   zqqm10(3     )=0.
-   zqqm10(nz-2  )=cskz
-   zqqm10(4:nz-3)=cskz
-   zqqm10 = -xcst*zqqm10
+   xqqm10=xrrm10(nx:1:-1)
+   qqm10 = rrm10(ny:1:-1)
+   zqqm10=zrrm10(nz:1:-1)
 
 !!! NCL = 1, npaire=1, neumann imposé, fonction paire
 !
@@ -1522,149 +1410,41 @@ bbm11(ny)=0.
    zbbm11(nz)=0.
 !
 !DIAG SUP 2
-   xccm11(1     )=2.*bsix
-   xccm11(nx    )=0.
-   xccm11(2     )=bsix
-   xccm11(nx-1  )=0.
-   xccm11(3     )=bsix
-   xccm11(nx-2  )=bsix
-   xccm11(4:nx-3)=bsix
-   xccm11 = -xcst*xccm11
-ccm11(1     )=2.*bsjy
-ccm11(ny    )=0.
-ccm11(2     )=bsjy
-ccm11(ny-1  )=0.
-ccm11(3     )=bsjy
-ccm11(ny-2  )=bsjy
-ccm11(4:ny-3)=bsjy
-ccm11 = -xcst*ccm11
-   zccm11(1     )=2.*bskz
-   zccm11(nz    )=0.
-   zccm11(2     )=bskz
-   zccm11(nz-1  )=0.
-   zccm11(3     )=bskz
-   zccm11(nz-2  )=bskz
-   zccm11(4:nz-3)=bskz
-   zccm11 = -xcst*zccm11
+   xccm11= -xcst*bsix*(/2.,(1.,i=2,nx-2),0.,0./)
+   ccm11 = -xcst*bsjy*(/2.,(1.,i=2,ny-2),0.,0./)
+   zccm11= -xcst*bskz*(/2.,(1.,i=2,nz-2),0.,0./)
 !
 !DIAG SUP 3
-   xrrm11(1     )=2.*csix
-   xrrm11(nx    )=0.
-   xrrm11(2     )=csix
-   xrrm11(nx-1  )=0.
-   xrrm11(3     )=csix
-   xrrm11(nx-2  )=0.
-   xrrm11(4:nx-3)=csix
-   xrrm11 = -xcst*xrrm11
-rrm11(1     )=2.*csjy
-rrm11(ny    )=0.
-rrm11(2     )=csjy
-rrm11(ny-1  )=0.
-rrm11(3     )=csjy
-rrm11(ny-2  )=0.
-rrm11(4:ny-3)=csjy
-rrm11 = -xcst*rrm11
-   zrrm11(1     )=2.*cskz
-   zrrm11(nz    )=0.
-   zrrm11(2     )=cskz
-   zrrm11(nz-1  )=0.
-   zrrm11(3     )=cskz
-   zrrm11(nz-2  )=0.
-   zrrm11(4:nz-3)=cskz
-   zrrm11 = -xcst*zrrm11
+   xrrm11= -xcst*csix*(/2.,(1.,i=2,nx-3),0.,0.,0./)
+   rrm11 = -xcst*csjy*(/2.,(1.,i=2,ny-3),0.,0.,0./)
+   zrrm11= -xcst*cskz*(/2.,(1.,i=2,nz-3),0.,0.,0./)
 !
 !DIAG INF 1
-   xddm11(1     )=0.
-   xddm11(nx    )=2.*asix
-   xddm11(2     )=asix
-   xddm11(nx-1  )=asix+csix
-   xddm11(3     )=asix+csix
-   xddm11(nx-2  )=asix
-   xddm11(4:nx-3)=asix
-   xddm11 = alsaix - xcst*xddm11
-   xddm11(1 )=0.
-   xddm11(nx)=xddm11(nx)+alsaix
-ddm11(1     )=0.
-ddm11(ny    )=2.*asjy
-ddm11(2     )=asjy
-ddm11(ny-1  )=asjy+csjy
-ddm11(3     )=asjy+csjy
-ddm11(ny-2  )=asjy
-ddm11(4:ny-3)=asjy
+   xddm11=xbbm11(nx:1:-1)
 if (istret==0) then
-   ddm11 = alsajy - xcst*ddm11
+    ddm11 = bbm11(ny:1:-1)
 else
+   ddm11(1     )=0.
+   ddm11(ny    )=2.*asjy
+   ddm11(2     )=asjy
+   ddm11(ny-1  )=asjy+csjy
+   ddm11(3     )=asjy+csjy
+   ddm11(ny-2  )=asjy
+   ddm11(4:ny-3)=asjy
    ddm11(2:ny) = alsajy/pp2y(1:ny-1) - xcst*ddm11(2:ny)
-endif
-!CL sur ddm11
-ddm11(1 )=0.
-if (istret.eq.0) then
-   ddm11(ny)=ddm11(ny)+alsajy
-else
    ddm11(ny)=ddm11(ny)+alsajy/pp2y(ny-1)!a1
 endif
-   zddm11(1     )=0.
-   zddm11(nz    )=2.*askz
-   zddm11(2     )=askz
-   zddm11(nz-1  )=askz+cskz
-   zddm11(3     )=askz+cskz
-   zddm11(nz-2  )=askz
-   zddm11(4:nz-3)=askz
-   zddm11 = alsakz - xcst*zddm11
-   zddm11(1 )=0.
-   zddm11(nz)=zddm11(nz)+alsakz
+   zddm11=zbbm11(nz:1:-1)
 !
 !DIAG INF 2
-   xeem11(1     )=0.
-   xeem11(nx    )=2.*bsix
-   xeem11(2     )=0.
-   xeem11(nx-1  )=bsix
-   xeem11(3     )=bsix
-   xeem11(nx-2  )=bsix
-   xeem11(4:nx-3)=bsix
-   xeem11 = -xcst*xeem11
-eem11(1     )=0.
-eem11(ny    )=2.*bsjy
-eem11(2     )=0.
-eem11(ny-1  )=bsjy
-eem11(3     )=bsjy
-eem11(ny-2  )=bsjy
-eem11(4:ny-3)=bsjy
-eem11 = -xcst*eem11
-   zeem11(1     )=0.
-   zeem11(nz    )=2.*bskz
-   zeem11(2     )=0.
-   zeem11(nz-1  )=bskz
-   zeem11(3     )=bskz
-   zeem11(nz-2  )=bskz
-   zeem11(4:nz-3)=bskz
-   zeem11 = -xcst*zeem11
+   xeem11=xccm11(nx:1:-1)
+   eem11 = ccm11(ny:1:-1)
+   zeem11=zccm11(nz:1:-1)
 !
 !DIAG INF 3
-   xqqm11(1     )=0.
-   xqqm11(nx    )=2.*csix
-   xqqm11(2     )=0.
-   xqqm11(nx-1  )=csix
-   xqqm11(3     )=0.
-   xqqm11(nx-2  )=csix
-   xqqm11(4:nx-3)=csix
-   xqqm11 = -xcst*xqqm11
-qqm11(1     )=0.
-qqm11(ny    )=2.*csjy
-qqm11(2     )=0.
-qqm11(ny-1  )=csjy
-qqm11(3     )=0.
-qqm11(ny-2  )=csjy
-qqm11(4:ny-3)=csjy
-qqm11 = -xcst*qqm11
-   zqqm11(1     )=0.
-   zqqm11(nz    )=2.*cskz
-   zqqm11(2     )=0.
-   zqqm11(nz-1  )=cskz
-   zqqm11(3     )=0.
-   zqqm11(nz-2  )=cskz
-   zqqm11(4:nz-3)=cskz
-   zqqm11 = -xcst*zqqm11
+   xqqm11=xrrm11(nx:1:-1)
+   qqm11 = rrm11(ny:1:-1)
+   zqqm11=zrrm11(nz:1:-1)
 
 !!! NXL = 0
 !DIAG
@@ -1677,29 +1457,29 @@ endif
    zaam0= 1.-xcst*(-2.*(askz+bskz+cskz))
 !
 !DIAG SUP 1
-   xbbm0 = alsaix-xcst*asix
+   xbbm0= alsaix-xcst*asix
 if (istret==0) then
    bbm0 = alsajy-xcst*asjy
 else
    bbm0(1:ny-1) = alsajy/pp2y(2:ny) -xcst*asjy
    bbm0(ny) = alsajy/pp2y(1) -xcst*asjy
 endif
-   zbbm0 = alsakz-xcst*askz
+   zbbm0= alsakz-xcst*askz
 !
 !DIAG SUP 2
    xccm0= -xcst*bsix
-ccm0 = -xcst*bsjy
+   ccm0 = -xcst*bsjy
    zccm0= -xcst*bskz
 !
 !DIAG SUP 3
    xrrm0= -xcst*csix
-rrm0 = -xcst*csjy
+   rrm0 = -xcst*csjy
    zrrm0= -xcst*cskz
 !
 !DIAG INF 1
    xddm0=xbbm0
 if (istret==0) then
-  ddm0=bbm0
+   ddm0 = bbm0
 else
    ddm0(1) = alsajy/pp2y(ny) -xcst*asjy
    ddm0(2:ny) = alsajy/pp2y(1:ny-1) -xcst*asjy
@@ -1708,12 +1488,12 @@ endif
 !
 !DIAG INF 2
    xeem0=xccm0
-eem0=ccm0
+   eem0 = ccm0
    zeem0=zccm0
 !
 !DIAG INF 3
    xqqm0=xrrm0
-qqm0=rrm0
+   qqm0 = rrm0
    zqqm0=zrrm0
 
 call ludecomp7(aam,bbm,ccm,ddm,eem,qqm,ggm,hhm,ssm,rrm,&
