@@ -1,6 +1,6 @@
  In auto-tuning mode......
  factors:            1
- processor grid           1  by            1  time=   5.6982040405273438E-005
+ processor grid           1  by            1  time=   5.4121017456054688E-005
  the best processor grid is probably            1  by            1
  ===========================================================
  ===========================================================
@@ -49,32 +49,32 @@
   at            2           2           2  on            0
  Norme T2 (**1/2)=    0.0000000000000000     
 Time step =      1, Time unit =    0.000
- DIV U* Max=   1.1968333816658572E-002
- DIV U* Moyy=   5.3557134532878194E-003
+ DIV U* Max=   1.1968294013674829E-002
+ DIV U* Moyy=   5.3556977094474977E-003
   
  ***** Using the generic FFT engine *****
   
- DIV U final Max=   8.3065884967532649E-015
- DIV U final Moy=   1.4501906991830788E-015
- U,V,W max=   1.0003927799521999       0.99963344033203738        1.0004254322216593E-016
- U,V,W min=  -1.0003927799522001      -0.99963344033203738       -8.7892847167321951E-017
- Norme Lix infinie =    4.0067560455014917E-004
-  at            4           7           1
- Norme Liy infinie =    5.6683974861682085E-004
+ DIV U final Max=   7.3003703507868263E-015
+ DIV U final Moy=   1.6661007787885111E-015
+ U,V,W max=   1.0003927799748109       0.99963344030606771        2.2803515553278087E-016
+ U,V,W min=  -1.0003927799748109      -0.99963344030606838       -2.0968507576820859E-016
+ Norme Lix infinie =    4.0067562716106231E-004
+  at            4           7           8
+ Norme Liy infinie =    5.6683971232596164E-004
   at            7           8           1
- Norme Liz infinie =    1.0004254322216593E-016
-  at            7           1           3
- Norme Liw infinie =    5.6683974861705157E-004
-  at            7           8           4
- Norme L2x (**1/2) =    8.6564133390285261E-005
- Norme L2y (**1/2) =    1.6785760853205343E-004
- Norme L2z (**1/2) =    1.8500278253225113E-017
- Norme L2w (**1/2) =    1.8886377612372149E-004
+ Norme Liz infinie =    2.2803515553278087E-016
+  at            2          13           1
+ Norme Liw infinie =    5.6683971232624798E-004
+  at            7           8           9
+ Norme L2x (**1/2) =    8.6564126724261015E-005
+ Norme L2y (**1/2) =    1.6785760665847179E-004
+ Norme L2z (**1/2) =    5.0802859968786928E-017
+ Norme L2w (**1/2) =    1.8886377140321051E-004
  PHI max=  0.99945621294253684     
  PHI min= -0.99945621294253684     
  Norme T infinie =    8.8057555331921833E-006
   at            6          10           2  on            0
  Norme T2 (**1/2)=    3.8253553231618668E-006
- time per time_step:    5.8531761169433594E-003  seconds
+ time per time_step:    1.0442018508911133E-002  seconds
  simulation with nx*ny*nz=          13          13          10 mesh nodes
  Mapping p_row*p_col=           0           0
