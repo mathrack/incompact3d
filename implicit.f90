@@ -788,9 +788,9 @@ if (nclx.eq.0) then
    call xseptinv(uy1,tb1,xggm0,xhhm0,xssm0,xrrm0,xvvm0,xwwm0,xzzm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m,xsize(1),xsize(2),xsize(3))
    call xseptinv(uz1,tc1,xggm0,xhhm0,xssm0,xrrm0,xvvm0,xwwm0,xzzm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m,xsize(1),xsize(2),xsize(3))
 elseif (nclx.eq.1) then
-   call septinv(ux1,ta1,xggm10,xhhm10,xssm10,xrrm10,xvvm10,xwwm10,xzzm10,xsize(1),xsize(2),xsize(3))
-   call septinv(uy1,tb1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
-   call septinv(uz1,tc1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
+   call xseptinv(ux1,ta1,xggm10,xhhm10,xssm10,xrrm10,xvvm10,xwwm10,xzzm10,xsize(1),xsize(2),xsize(3))
+   call xseptinv(uy1,tb1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
+   call xseptinv(uz1,tc1,xggm11,xhhm11,xssm11,xrrm11,xvvm11,xwwm11,xzzm11,xsize(1),xsize(2),xsize(3))
 elseif (nclx.eq.2) then
 
 endif
@@ -817,9 +817,9 @@ if (nclz.eq.0) then
    call zseptinv(uy3,tb3,zggm0,zhhm0,zssm0,zrrm0,zvvm0,zwwm0,zzzm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m,zsize(1),zsize(2),zsize(3))
    call zseptinv(uz3,tc3,zggm0,zhhm0,zssm0,zrrm0,zvvm0,zwwm0,zzzm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m,zsize(1),zsize(2),zsize(3))
 elseif (nclz.eq.1) then
-   call septinv(ux3,ta3,zggm11,zhhm11,zssm11,zrrm11,zvvm11,zwwm11,zzzm11,zsize(1),zsize(2),zsize(3))
-   call septinv(uy3,tb3,zggm11,zhhm11,zssm11,zrrm11,zvvm11,zwwm11,zzzm11,zsize(1),zsize(2),zsize(3))
-   call septinv(uz3,tc3,zggm10,zhhm10,zssm10,zrrm10,zvvm10,zwwm10,zzzm10,zsize(1),zsize(2),zsize(3))
+   call zseptinv(ux3,ta3,zggm11,zhhm11,zssm11,zrrm11,zvvm11,zwwm11,zzzm11,zsize(1),zsize(2),zsize(3))
+   call zseptinv(uy3,tb3,zggm11,zhhm11,zssm11,zrrm11,zvvm11,zwwm11,zzzm11,zsize(1),zsize(2),zsize(3))
+   call zseptinv(uz3,tc3,zggm10,zhhm10,zssm10,zrrm10,zvvm10,zwwm10,zzzm10,zsize(1),zsize(2),zsize(3))
 elseif (nclz.eq.2) then
 
 endif
