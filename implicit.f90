@@ -1235,9 +1235,9 @@ bbm(ny)=0.
    ccm =-xcst*(/0.,0.,bs3y,(bsjy,i=4,ny-3),bsty,0.,0./)
    zccm=-xcst*(/0.,0.,bs3z,(bskz,i=4,nz-3),bstz,0.,0./)
 !DIAG SUP 3
-   xrrm=-xcst*(0.,0.,0.,(csix,i=4,nx-3),0.,0.,0.)
-   rrm =-xcst*(0.,0.,0.,(csjy,i=4,ny-3),0.,0.,0.)
-   zrrm=-xcst*(0.,0.,0.,(cskz,i=4,nz-3),0.,0.,0.)
+   xrrm=-xcst*(/0.,0.,0.,(csix,i=4,nx-3),0.,0.,0./)
+   rrm =-xcst*(/0.,0.,0.,(csjy,i=4,ny-3),0.,0.,0./)
+   zrrm=-xcst*(/0.,0.,0.,(cskz,i=4,nz-3),0.,0.,0./)
 !DIAG INF 1
    xddm=xbbm
 if (istret==0) then
