@@ -275,10 +275,11 @@ if ((itype.eq.6).or.(itype.eq.7)) then
       enddo
       if ((iimplicit.eq.1).and.(istret.ne.0)) then
         ta=dt*(twopi**2)*xnu/2.d0
-        tl=(6.d0*ta+1.d0)/(2.d0*ta+1.d0)
+        tl=1.d0-ta-ta**2+ta**3
         do j=1,xsize(2)
           tb=dt*twopi*xnu*pp4y(j-1+xstart(2))/2.d0
-          tc=( (1.d0+ta)*(1.d0-4.d0*ta+ta*tl)+(tb**2)*(2.d0-tl) )/( (1.d0+ta)**2+tb**2 )
+          tc=(tl+(tb**2)*(3.d0+ta+2.d0*(ta**2)+(ta-1)*(1+2.d0*tx+3.d0*ty)/(1.d0+ty)))
+          tc=tc/((1.d0+ta)*((1.d0+ta)**2+tb**2))
           ux_obj(:,j,:)=ux_obj(:,j,:)*tc
           uy_obj(:,j,:)=uy_obj(:,j,:)*tc
           uz_obj(:,j,:)=uz_obj(:,j,:)*tc

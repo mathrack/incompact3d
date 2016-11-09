@@ -656,13 +656,13 @@ if (itype.eq.6) then
          do k=1,xsize(3)
          do j=1,xsize(2)
          do i=1,xsize(1)
-            gx1(i,j,k)=xnu*( -(twopi**2)*ux1(i,j,k)-pp4y(j)*uz1(i,j,1) )
-            gy1(i,j,k)=xnu*( -(twopi**2)*uy1(i,j,k)-pp4y(j)*uz1(i,j,2) )
+            gx1(i,j,k)=xnu*( -pp4y(j)*uz1(i,j,1) )
+            gy1(i,j,k)=xnu*( -pp4y(j)*uz1(i,j,2) )
          enddo
          enddo
          enddo
-         gx1=gx1*(1.d0+6.d0*tx)/(1.d0+2.d0*tx)
-         gy1=gy1*(1.d0+6.d0*tx)/(1.d0+2.d0*tx)
+         gx1=gx1*(1.d0+2.d0*tx+3.d0*ty)/(1.d0+ty)
+         gy1=gy1*(1.d0+2.d0*tx+3.d0*ty)/(1.d0+ty)
          ilast=ifirst
       endif
    endif
