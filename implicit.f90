@@ -1154,6 +1154,14 @@ xcst = xnu*dt*0.5
 !!! NCL = 2, dirichlet imposé, fonction nulle à la paroi
 !
 !DIAG
+   xaam(1     )=1.!as1x
+   xaam(nx    )=1.!asnx
+   xaam(2     )=-2.*as2x
+   xaam(nx-1  )=-2.*asmx
+   xaam(3     )=-2.*(as3x+bs3x)
+   xaam(nx-2  )=-2.*(astx+bstx)
+   xaam(4:nx-3)=-2.*(asix+bsix+csix)
+   xaam(2:nx-1)= 1.-xcst*xaam(2:nx-1)
 aam(1     )=as1y
 aam(ny    )=asny
 aam(2     )=-2.*as2y
@@ -1169,8 +1177,23 @@ endif
 !CL sur aam
 aam(1 )=1.
 aam(ny)=1.
+   zaam(1     )=1.!as1z
+   zaam(nz    )=1.!asnz
+   zaam(2     )=-2.*as2z
+   zaam(nz-1  )=-2.*asmz
+   zaam(3     )=-2.*(as3z+bs3z)
+   zaam(nz-2  )=-2.*(astz+bstz)
+   zaam(4:nz-3)=-2.*(askz+bskz+cskz)
+   zaam(2:nz-1)= 1.-xcst*zaam(2:nz-1)
 !
 !DIAG SUP 1
+   xbbm(1     )=0.
+   xbbm(nx    )=0.
+   xbbm(2     )=alsa2x-as2x*xcst
+   xbbm(nx-1  )=alsamx-asmx*xcst
+   xbbm(3     )=alsa3x-as3x*xcst
+   xbbm(nx-2  )=alsatx-astx*xcst
+   xbbm(4:nx-3)=alsaix-asix*xcst
 bbm(1     )=bs1y
 bbm(ny    )=bsny
 bbm(2     )=as2y
@@ -1195,36 +1218,26 @@ endif
 !CL sur bbm
 bbm(1 )=0.
 bbm(ny)=0.
+   zbbm(1     )=0.
+   zbbm(nz    )=0.
+   zbbm(2     )=alsa2z-as2z*xcst
+   zbbm(nz-1  )=alsamz-asmz*xcst
+   zbbm(3     )=alsa3z-as3z*xcst
+   zbbm(nz-2  )=alsatz-astz*xcst
+   zbbm(4:nz-3)=alsakz-askz*xcst
 !
 !DIAG SUP 2
-ccm(1     )=cs1y
-ccm(ny    )=csny
-ccm(2     )=0.
-ccm(ny-1  )=0.
-ccm(3     )=bs3y
-ccm(ny-2  )=bsty
-ccm(4:ny-3)=bsjy
-ccm = -xcst*ccm
-!CL sur ccm
-ccm(1 )=0.
-ccm(ny)=0.
-!
+   xccm=-xcst*(/0.,0.,bs3x,(bsix,i=4,nx-3),bstx,0.,0./)
+   ccm =-xcst*(/0.,0.,bs3y,(bsjy,i=4,ny-3),bsty,0.,0./)
+   zccm=-xcst*(/0.,0.,bs3z,(bskz,i=4,nz-3),bstz,0.,0./)
 !DIAG SUP 3
-rrm(1     )=ds1y
-rrm(ny    )=dsny
-rrm(2     )=0. 
-rrm(ny-1  )=0.
-rrm(3     )=0.
-rrm(ny-2  )=0.
-rrm(4:ny-3)=csjy
-rrm = -xcst*rrm
-!CL sur rrm
-rrm(1 )=0.
-rrm(ny)=0.
-!
+   xrrm=-xcst*(0.,0.,0.,(csix,i=4,nx-3),0.,0.,0.)
+   rrm =-xcst*(0.,0.,0.,(csjy,i=4,ny-3),0.,0.,0.)
+   zrrm=-xcst*(0.,0.,0.,(cskz,i=4,nz-3),0.,0.,0.)
 !DIAG INF 1
+   xddm=xbbm
 if (istret==0) then
-  ddm=bbm
+   ddm = bbm
 else
   ddm(1     )=bs1y
   ddm(ny    )=bsny
@@ -1243,12 +1256,16 @@ else
   ddm(1 )=0.
   ddm(ny)=0.
 endif
-!
+   zddm=zbbm
 !DIAG INF 2
-eem=ccm
+   xeem=xccm
+   eem = ccm
+   zeem=zccm
 !
 !DIAG INF 3
-qqm=rrm
+   xqqm=xrrm
+   qqm = rrm
+   zqqm=zrrm
 
 !!! NCL = 1, npaire=0, dirichlet imposé, fonction impaire
 !
