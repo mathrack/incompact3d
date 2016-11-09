@@ -1513,8 +1513,12 @@ endif
    qqm0 = rrm0
    zqqm0=zrrm0
 
+call ludecomp7(xaam,xbbm,xccm,xddm,xeem,xqqm,xggm,xhhm,xssm,xrrm,&
+     xvvm,xwwm,xzzm,nx)
 call ludecomp7(aam,bbm,ccm,ddm,eem,qqm,ggm,hhm,ssm,rrm,&
      vvm,wwm,zzm,ny)
+call ludecomp7(zaam,zbbm,zccm,zddm,zeem,zqqm,zggm,zhhm,zssm,zrrm,&
+     zvvm,zwwm,zzzm,nz)
 call ludecomp7(xaam10,xbbm10,xccm10,xddm10,xeem10,xqqm10,xggm10,xhhm10,xssm10,xrrm10,&
      xvvm10,xwwm10,xzzm10,nx)
 call ludecomp7(aam10,bbm10,ccm10,ddm10,eem10,qqm10,ggm10,hhm10,ssm10,rrm10,&
