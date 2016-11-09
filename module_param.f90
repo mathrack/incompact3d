@@ -84,6 +84,8 @@ real(mytype), dimension(ny) :: rrmt1,qqmt1,vvmt1,ssmt1 !!TIME IMPLICIT SCALAR (w
 real(mytype), dimension(ny) :: aamt0,bbmt0,ccmt0,ddmt0,eemt0,ggmt0,hhmt0,wwmt0,zzmt0 !!TIME IMPLICIT SCALAR, ncl=0
 real(mytype), dimension(ny) :: rrmt0,qqmt0,vvmt0,ssmt0,l1mt,l2mt,l3mt,u1mt,u2mt,u3mt !!TIME IMPLICIT SCALAR (with HPL), ncl=0
 !module implicit in x
+real(mytype), dimension(nx) :: xaam,xbbm,xccm,xddm,xeem,xggm,xhhm,xwwm,xzzm !!TIME IMPLICIT, ncl=2
+real(mytype), dimension(nx) :: xrrm,xqqm,xvvm,xssm !!TIME IMPLICIT (with HPL), ncl=2
 real(mytype), dimension(nx) :: xaam10,xbbm10,xccm10,xddm10,xeem10,xggm10,xhhm10,xwwm10,xzzm10 !!TIME IMPLICIT, ncl=1, npaire=0
 real(mytype), dimension(nx) :: xrrm10,xqqm10,xvvm10,xssm10 !!TIME IMPLICIT (with HPL), ncl=1, npaire=0
 real(mytype), dimension(nx) :: xaam11,xbbm11,xccm11,xddm11,xeem11,xggm11,xhhm11,xwwm11,xzzm11 !!TIME IMPLICIT, ncl=1, npaire=1
@@ -91,6 +93,8 @@ real(mytype), dimension(nx) :: xrrm11,xqqm11,xvvm11,xssm11 !!TIME IMPLICIT (with
 real(mytype), dimension(nx) :: xaam0,xbbm0,xccm0,xddm0,xeem0,xggm0,xhhm0,xwwm0,xzzm0 !!TIME IMPLICIT, ncl=0
 real(mytype), dimension(nx) :: xrrm0,xqqm0,xvvm0,xssm0,xl1m,xl2m,xl3m,xu1m,xu2m,xu3m !!TIME IMPLICIT (with HPL), ncl=0
 !module implicit in z
+real(mytype), dimension(nz) :: zaam,zbbm,zccm,zddm,zeem,zggm,zhhm,zwwm,zzzm !!TIME IMPLICIT, ncl=2
+real(mytype), dimension(nz) :: zrrm,zqqm,zvvm,zssm !!TIME IMPLICIT (with HPL), ncl=2
 real(mytype), dimension(nz) :: zaam10,zbbm10,zccm10,zddm10,zeem10,zggm10,zhhm10,zwwm10,zzzm10 !!TIME IMPLICIT, ncl=1, npaire=0
 real(mytype), dimension(nz) :: zrrm10,zqqm10,zvvm10,zssm10 !!TIME IMPLICIT (with HPL), ncl=1, npaire=0
 real(mytype), dimension(nz) :: zaam11,zbbm11,zccm11,zddm11,zeem11,zggm11,zhhm11,zwwm11,zzzm11 !!TIME IMPLICIT, ncl=1, npaire=1
