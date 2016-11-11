@@ -597,7 +597,7 @@ endif
 !!!!!!!!!!!!!
 !! CN2+AB2 !!
 !!!!!!!!!!!!!
-if (nscheme.eq.1) then
+if ((iimplicit.eq.1).and.(nscheme.eq.1)) then
    if ((itime.eq.1).and.(ilit.eq.0)) then
 
       !START WITH EXPLICIT EULER + IMPLICIT CN SCHEMES
@@ -642,7 +642,7 @@ endif
 !!!!!!!!!!!!!!!
 !!! CN2+AB3 !!!
 !!!!!!!!!!!!!!!
-if (nscheme==4) then
+if ((iimplicit.eq.1).and.(nscheme==4)) then
    if ((itime.eq.1).and.(ilit.eq.0)) then
 
       if (nrank==0) print *,'start AB3 with Euler',itime
@@ -712,6 +712,20 @@ if (nscheme==4) then
          enddo
       enddo
 
+   endif
+endif
+
+if (iimplicit.eq.2) then
+   ! equation (1.3) in doi:10.1016/j.apnum.2005.11.011
+   if ((itime.eq.1).and.(ilit.eq.0)) then
+      !uhat
+      td1 = gdt(itr)*ta1
+      te1 = gdt(itr)*tb1
+      tf1 = gdt(itr)*tc1
+   else
+      td1 = gdt(itr)*ta1 - px1
+      te1 = gdt(itr)*tb1 - py1
+      tf1 = gdt(itr)*tc1 - pz1
    endif
 endif
 
