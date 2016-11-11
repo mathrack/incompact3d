@@ -723,7 +723,7 @@ call transpose_y_to_z(uy2,uy3)
 call transpose_y_to_z(uz2,uz3)
 
 ! DIFFUSIVE TERMS IN Z
-iimplicit=0
+iimplicit=-iimplicit
 call derzz (ta3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
 call derzz (tb3,uy3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
 call derzz (tc3,uz3,di3,sz,sfz ,ssz ,swz ,zsize(1),zsize(2),zsize(3),0)
@@ -767,7 +767,7 @@ call transpose_y_to_x(tc2,tc1)
 call derxx (tg1,ux1,di1,sx,sfx ,ssx ,swx ,xsize(1),xsize(2),xsize(3),0)
 call derxx (th1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
 call derxx (ti1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
-iimplicit=1
+iimplicit=-iimplicit
 ! Total RHS with diffusion + current velocity
 ta1=td1+dt*xnu*(ta1+tg1)+ux1
 tb1=te1+dt*xnu*(tb1+th1)+uy1
@@ -2257,7 +2257,7 @@ if (ncly==0) then
       ry(i,ny  ,k)=alsajyt
    enddo
    enddo
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
    do k=1,nz
    do j=2,ny
    do i=1,nx
@@ -2353,7 +2353,7 @@ if (ncly==1) then
               -uy(i,ny  ,k)+uy(i,ny-3,k))
       enddo
       enddo
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
       do k=1,nz
       do j=2,ny         
       do i=1,nx
@@ -2421,7 +2421,7 @@ if (iimplicit.eq.1) return
          ty(i,ny  ,k)=0.
       enddo
       enddo   
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
       do k=1,nz
       do j=2,ny
       do i=1,nx
@@ -2481,7 +2481,7 @@ if (ncly==2) then
            +csny*uy(i,ny-2,k)+dsny*uy(i,ny-3,k)
    enddo
    enddo
-if (iimplicit.eq.1) return  
+if (iimplicit.ge.1) return
    do k=1,nz
    do j=2,ny
    do i=1,nx

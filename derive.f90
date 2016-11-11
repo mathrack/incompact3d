@@ -682,7 +682,7 @@ if (nclx==0) then
            +csix*(ux(3 ,j,k)-ux(nx  ,j,k)&
            -ux(nx,j,k)+ux(nx-3,j,k))
       rx(nx  ,j,k)=alsaix
-if (iimplicit.eq.1) cycle
+if (iimplicit.ge.1) cycle
       do i=2,nx
          tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          rx(i,j,k)=rx(i,j,k)-rx(i-1,j,k)*ssx(i)
@@ -750,7 +750,7 @@ if (nclx==1) then
               -ux(nx  ,j,k)+ux(nx-2,j,k))&
               +csix*(ux(nx-3,j,k)-ux(nx  ,j,k)&
               -ux(nx  ,j,k)+ux(nx-3,j,k))
-if (iimplicit.eq.1) cycle
+if (iimplicit.ge.1) cycle
          do i=2,nx
             tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          enddo
@@ -798,7 +798,7 @@ if (iimplicit.eq.1) cycle
               +csix*(-ux(nx-2,j,k)-ux(nx-1,j,k)&
               -ux(nx-1,j,k)+ux(nx-4,j,k))
          tx(nx  ,j,k)=0.
-if (iimplicit.eq.1) cycle
+if (iimplicit.ge.1) cycle
          do i=2,nx
             tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
          enddo
@@ -838,7 +838,7 @@ if (nclx==2) then
            -ux(nx-1,j,k)+ux(nx-2,j,k))
       tx(nx  ,j,k)=asnx*ux(nx  ,j,k)+bsnx*ux(nx-1,j,k)&
            +csnx*ux(nx-2,j,k)+dsnx*ux(nx-3,j,k)
-if (iimplicit.eq.1) cycle
+if (iimplicit.ge.1) cycle
       do i=2,nx
          tx(i,j,k)=tx(i,j,k)-tx(i-1,j,k)*ssx(i)
       enddo
@@ -933,7 +933,7 @@ if (ncly==0) then
       ry(i,ny  ,k)=alsajy
    enddo
    enddo
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
    do k=1,nz
    do j=2,ny
    do i=1,nx
@@ -1029,7 +1029,7 @@ if (ncly==1) then
               -uy(i,ny  ,k)+uy(i,ny-3,k))
       enddo
       enddo   
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
       do k=1,nz
       do j=2,ny         
       do i=1,nx
@@ -1097,7 +1097,7 @@ if (iimplicit.eq.1) return
          ty(i,ny  ,k)=0.
       enddo
       enddo   
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
       do k=1,nz
       do j=2,ny
       do i=1,nx
@@ -1157,7 +1157,7 @@ if (ncly==2) then
            +csny*uy(i,ny-2,k)+dsny*uy(i,ny-3,k)
    enddo
    enddo    
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
    do k=1,nz
    do j=2,ny
    do i=1,nx
@@ -1262,7 +1262,7 @@ if (nclz==0) then
       rz(i,j,nz  )=alsakz
    enddo
    enddo
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
    do k=2,nz
    do j=1,ny
    do i=1,nx
@@ -1358,7 +1358,7 @@ if (nclz==1) then
               -uz(i,j,nz  )+uz(i,j,nz-3))
       enddo
       enddo
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
       do k=2,nz
       do j=1,ny
       do i=1,nx
@@ -1426,7 +1426,7 @@ if (iimplicit.eq.1) return
          tz(i,j,nz  )=0.
       enddo
       enddo
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
       do k=2,nz
       do j=1,ny
       do i=1,nx
@@ -1486,7 +1486,7 @@ if (nclz==2) then
            +csnz*uz(i,j,nz-2)+dsnz*uz(i,j,nz-3)
    enddo
    enddo
-if (iimplicit.eq.1) return
+if (iimplicit.ge.1) return
    do k=2,nz
    do j=1,ny
    do i=1,nx

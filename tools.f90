@@ -130,7 +130,7 @@ if (itype.eq.6) then
     do i=1,itime
       phi_obj=phi_obj*tc
     enddo
-    if ((iimplicit.eq.1).and.(istret.ne.0)) then
+    if ((iimplicit.ge.1).and.(istret.ne.0)) then
       ta=dt*(twopi**2)*xnu/(2.d0*sc)
       tl=(6.d0*ta+1.d0)/(2.d0*ta+1.d0)
       do j=1,xsize(2)
@@ -273,7 +273,7 @@ if ((itype.eq.6).or.(itype.eq.7)) then
         uy_obj=uy_obj*tc
         uz_obj=uz_obj*tc
       enddo
-      if ((iimplicit.eq.1).and.(istret.ne.0)) then
+      if ((iimplicit.ge.1).and.(istret.ne.0)) then
         ta=dt*(twopi**2)*xnu/2.d0
         tl=1.d0-ta-ta**2+ta**3
         do j=1,xsize(2)

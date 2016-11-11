@@ -159,7 +159,7 @@ endif
 !ALL THE CONVECTIVE TERMS ARE IN TA3, TB3 and TC3
 
 ! Diffusive terms
-if (iimplicit.eq.1) then
+if (iimplicit.ge.1) then
    call transpose_z_to_y(ta3,ta2)
    call transpose_z_to_y(tb3,tb2)
    call transpose_z_to_y(tc3,tc2)

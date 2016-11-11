@@ -1277,7 +1277,6 @@ subroutine pre_update_user_stats(phG,ph1,ph2,ph3,ph4)
   implicit none
 
   TYPE(DECOMP_INFO), intent(in) :: phG,ph1,ph2,ph3,ph4
-  logical :: myflag
   integer :: i,j,k
 
   ! Pressure interpolation
@@ -1309,9 +1308,7 @@ TYPE(DECOMP_INFO) :: phglob
 
 call get_decomp_info(phglob)
 
-  myflag=.false.
-  if (iimplicit.eq.1) myflag=.true.
-  if (myflag) iimplicit=0
+  iimplicit=-iimplicit
 
   ! Compute laplacian temperature (budget uPhi, vPhi, wPhi) and grad(phi)
   if (iscalar.eq.1) then
@@ -1467,7 +1464,7 @@ endif
     !The pressure field on the main mesh is in tmp_pres
   endif
 
-  if (myflag) iimplicit=1
+  iimplicit=-iimplicit
 
   if (iscalar.eq.1) then
     call update_user_stats(ux1,uy1,uz1,px1,py1,pz1,&
