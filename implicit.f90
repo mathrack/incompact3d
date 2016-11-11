@@ -872,6 +872,10 @@ call transpose_y_to_x(ux2,ux1)
 call transpose_y_to_x(uy2,uy1)
 call transpose_y_to_x(uz2,uz1)
 
+if (iimplicit.eq.2) then
+   return
+endif
+
 ! IF ab2 OR ab3
 if ((nscheme.eq.1).or.(nscheme.eq.4)) then
    ! IF NOT (first time step with no restart)
