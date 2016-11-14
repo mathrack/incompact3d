@@ -718,15 +718,13 @@ endif
 if (iimplicit.eq.2) then
    ! equation (1.5) in doi:10.1016/j.apnum.2005.11.011
    if ((itime.eq.1).and.(ilit.eq.0)) then
-      !uhat
-      td1 = gdt(itr)*ta1
-      te1 = gdt(itr)*tb1
-      tf1 = gdt(itr)*tc1
-   else
-      td1 = gdt(itr)*ta1 - px1
-      te1 = gdt(itr)*tb1 - py1
-      tf1 = gdt(itr)*tc1 - pz1
+      px1 = 0.
+      py1 = 0.
+      pz1 = 0.
    endif
+   td1 = gdt(itr)*ta1 - px1
+   te1 = gdt(itr)*tb1 - py1
+   tf1 = gdt(itr)*tc1 - pz1
 endif
 
 if (iimplicit.eq.1) then
