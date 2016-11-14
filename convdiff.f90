@@ -159,7 +159,7 @@ endif
 !ALL THE CONVECTIVE TERMS ARE IN TA3, TB3 and TC3
 
 ! Diffusive terms
-if (iimplicit.ge.1) then
+if (iimplicit.eq.1) then
    call transpose_z_to_y(ta3,ta2)
    call transpose_z_to_y(tb3,tb2)
    call transpose_z_to_y(tc3,tc2)
@@ -203,6 +203,8 @@ if (iimplicit.ge.1) then
    call transpose_y_to_x(tb2,th1) ! Y convection
    call transpose_y_to_x(tc2,ti1) ! Z convection
 else
+
+   iimplicit = -iimplicit
 
    !DIFFUSIVE TERMS IN Z
    call derzz (td3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
@@ -281,6 +283,9 @@ else
    ta1(:,:,:)=ta1(:,:,:)+td1(:,:,:)
    tb1(:,:,:)=tb1(:,:,:)+te1(:,:,:)
    tc1(:,:,:)=tc1(:,:,:)+tf1(:,:,:)
+
+   iimplicit = -iimplicit
+
 endif
 
 !if (nrank==1) print *,'WARNING rotating channel',itime

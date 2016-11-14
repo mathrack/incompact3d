@@ -63,7 +63,7 @@ call parameter()
 call init_variables
 
 !DEVELOPPEMENT A PLACER DANS incompact3d.prm
-iimplicit=1
+iimplicit=2
 if (nrank.eq.0) print *,'Parametre implicite : ',iimplicit
 
 call schemes()
@@ -144,7 +144,23 @@ do itime=ifirst,ilast
       if(iimplicit==0) then
          call intt (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1) 
          call pre_correc(ux1,uy1,uz1)
-      else ! d2/dy2 implicite
+      elseif (iimplicit==1) then
+         call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
+              td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
+              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
+      elseif (iimplicit==2) then
+         hx1=ta1
+         hy1=tb1
+         hz1=tc1
+         call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
+              td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
+              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
+         call convdiff(ux1,uy1,uz1,ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1,&
+              ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,tj2,di2,&
+              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3)
+         ta1=(ta1-hx1)/2.
+         tb1=(tb1-hy1)/2.
+         tc1=(tc1-hz1)/2.
          call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
               td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
               ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
@@ -160,44 +176,33 @@ do itime=ifirst,ilast
       !X-->Y-->Z
       call divergence (ux1,uy1,uz1,ep1,ta1,tb1,tc1,di1,td1,te1,tf1,&
            td2,te2,tf2,di2,ta2,tb2,tc2,ta3,tb3,tc3,di3,td3,te3,tf3,pp3,&
-           nxmsize,nymsize,nzmsize,ph1,ph3,ph4,1)       
+           nxmsize,nymsize,nzmsize,ph1,ph3,ph4,1)
 
-      !POISSON Z-->Z 
+      if (iimplicit.eq.2) then
+         hx1=0.; hy1=0.; hz1=0.;
+         call gradp(hx1,hy1,hz1,di1,td2,tf2,ta2,tb2,tc2,di2,&
+              ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3)
+         hx1=px1-0.5*xnu*dt*hx1
+         hy1=py1-0.5*xnu*dt*hy1
+         hz1=pz1-0.5*xnu*dt*hz1
+      endif
+
+      !POISSON Z-->Z
       call decomp_2d_poisson_stg(pp3,bcx,bcy,bcz)
-if (iimplicit.eq.2) then
-   call derx (ta1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
-   call transpose_x_to_y(ta1,ta2)
-   call transpose_x_to_y(uy1,uy2)
-   call transpose_x_to_y(uz1,uz2)
-   call dery (tb2,uy2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
-   ta2=ta2+tb2;
-   call transpose_y_to_z(ta2,ta3)
-   call transpose_y_to_z(uz2,uz3)
-   call derz (tb3,uz3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
-   ta3=ta3+tb3;
-   call transpose_z_to_y(ta3,ta2)
-   call transpose_y_to_x(ta2,ta1)
-   call derx (tb1,ta1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
-   hx1=px1-0.5*xnu*dt*tb1
-   call dery (tb2,ta2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
-   call transpose_y_to_x(tb2,tb1)
-   hy1=py1-0.5*xnu*dt*tb1
-   call derz (tb3,ta3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
-   call transpose_z_to_y(tb3,ta2)
-   call transpose_y_to_x(ta2,ta1)
-   hz1=pz1-0.5*xnu*dt*ta1
-endif
+
       !Z-->Y-->X
       call gradp(px1,py1,pz1,di1,td2,tf2,ta2,tb2,tc2,di2,&
            ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3)
 
       !X PENCILS
       call corgp(ux1,ux2,uy1,uz1,px1,py1,pz1)
-if (iimplicit.eq.2) then
-   px1=px1+hx1
-   py1=py1+hy1
-   pz1=pz1+hz1
-endif
+
+      if (iimplicit.eq.2) then
+         px1=px1+hx1
+         py1=py1+hy1
+         pz1=pz1+hz1
+      endif
+
      !does not matter -->output=DIV U=0 (in dv3)
       call divergence (ux1,uy1,uz1,ep1,ta1,tb1,tc1,di1,td1,te1,tf1,&
            td2,te2,tf2,di2,ta2,tb2,tc2,ta3,tb3,tc3,di3,td3,te3,tf3,dv3,&

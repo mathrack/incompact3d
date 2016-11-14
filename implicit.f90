@@ -716,7 +716,7 @@ if ((iimplicit.eq.1).and.(nscheme==4)) then
 endif
 
 if (iimplicit.eq.2) then
-   ! equation (1.3) in doi:10.1016/j.apnum.2005.11.011
+   ! equation (1.5) in doi:10.1016/j.apnum.2005.11.011
    if ((itime.eq.1).and.(ilit.eq.0)) then
       !uhat
       td1 = gdt(itr)*ta1
@@ -729,59 +729,62 @@ if (iimplicit.eq.2) then
    endif
 endif
 
-call transpose_x_to_y(ux1,ux2)
-call transpose_x_to_y(uy1,uy2)
-call transpose_x_to_y(uz1,uz2)
-call transpose_y_to_z(ux2,ux3)
-call transpose_y_to_z(uy2,uy3)
-call transpose_y_to_z(uz2,uz3)
+if (iimplicit.eq.1) then
+   call transpose_x_to_y(ux1,ux2)
+   call transpose_x_to_y(uy1,uy2)
+   call transpose_x_to_y(uz1,uz2)
+   call transpose_y_to_z(ux2,ux3)
+   call transpose_y_to_z(uy2,uy3)
+   call transpose_y_to_z(uz2,uz3)
 
-! DIFFUSIVE TERMS IN Z
-iimplicit=-iimplicit
-call derzz (ta3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
-call derzz (tb3,uy3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
-call derzz (tc3,uz3,di3,sz,sfz ,ssz ,swz ,zsize(1),zsize(2),zsize(3),0)
-call transpose_z_to_y(ta3,ta2)
-call transpose_z_to_y(tb3,tb2)
-call transpose_z_to_y(tc3,tc2)
-!DIFFUSIVE TERMS IN Y
-call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-call deryy (te2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
-call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
-if (istret.ne.0) then
-   do k=1,ysize(3)
-   do j=1,ysize(2)
-   do i=1,ysize(1)
-      td2(i,j,k)=td2(i,j,k)*pp2y(j)
-   enddo
-   enddo
-   enddo
-   do k=1,ysize(3)
-   do j=1,ysize(2)
-   do i=1,ysize(1)
-      te2(i,j,k)=te2(i,j,k)*pp2y(j)
-   enddo
-   enddo
-   enddo
-   do k=1,ysize(3)
-   do j=1,ysize(2)
-   do i=1,ysize(1)
-      tf2(i,j,k)=tf2(i,j,k)*pp2y(j)
-   enddo
-   enddo
-   enddo
+   ! DIFFUSIVE TERMS IN Z
+   iimplicit=-iimplicit
+   call derzz (ta3,ux3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+   call derzz (tb3,uy3,di3,sz,sfzp,sszp,swzp,zsize(1),zsize(2),zsize(3),1)
+   call derzz (tc3,uz3,di3,sz,sfz ,ssz ,swz ,zsize(1),zsize(2),zsize(3),0)
+   call transpose_z_to_y(ta3,ta2)
+   call transpose_z_to_y(tb3,tb2)
+   call transpose_z_to_y(tc3,tc2)
+   !DIFFUSIVE TERMS IN Y
+   call deryy (td2,ux2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
+   call deryy (te2,uy2,di2,sy,sfy,ssy,swy,ysize(1),ysize(2),ysize(3),0)
+   call deryy (tf2,uz2,di2,sy,sfyp,ssyp,swyp,ysize(1),ysize(2),ysize(3),1)
+   if (istret.ne.0) then
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         td2(i,j,k)=td2(i,j,k)*pp2y(j)
+      enddo
+      enddo
+      enddo
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         te2(i,j,k)=te2(i,j,k)*pp2y(j)
+      enddo
+      enddo
+      enddo
+      do k=1,ysize(3)
+      do j=1,ysize(2)
+      do i=1,ysize(1)
+         tf2(i,j,k)=tf2(i,j,k)*pp2y(j)
+      enddo
+      enddo
+      enddo
+   endif
+   ta2 = td2 + ta2;
+   tb2 = te2 + tb2;
+   tc2 = tf2 + tc2;
+   call transpose_y_to_x(ta2,ta1)
+   call transpose_y_to_x(tb2,tb1)
+   call transpose_y_to_x(tc2,tc1)
+   !DIFFUSIVE TERMS IN X
+   call derxx (tg1,ux1,di1,sx,sfx ,ssx ,swx ,xsize(1),xsize(2),xsize(3),0)
+   call derxx (th1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+   call derxx (ti1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
+   iimplicit=-iimplicit
 endif
-ta2 = td2 + ta2;
-tb2 = te2 + tb2;
-tc2 = tf2 + tc2;
-call transpose_y_to_x(ta2,ta1)
-call transpose_y_to_x(tb2,tb1)
-call transpose_y_to_x(tc2,tc1)
-!DIFFUSIVE TERMS IN X
-call derxx (tg1,ux1,di1,sx,sfx ,ssx ,swx ,xsize(1),xsize(2),xsize(3),0)
-call derxx (th1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
-call derxx (ti1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
-iimplicit=-iimplicit
+
 ! Total RHS with diffusion + current velocity
 ta1=td1+dt*xnu*(ta1+tg1)+ux1
 tb1=te1+dt*xnu*(tb1+th1)+uy1
