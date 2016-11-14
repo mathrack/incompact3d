@@ -783,12 +783,18 @@ if (iimplicit.eq.1) then
    call derxx (th1,uy1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
    call derxx (ti1,uz1,di1,sx,sfxp,ssxp,swxp,xsize(1),xsize(2),xsize(3),1)
    iimplicit=-iimplicit
+
+   ! Update RHS with diffusion
+   td1=td1+dt*xnu*(ta1+tg1)
+   te1=te1+dt*xnu*(tb1+th1)
+   tf1=tf1+dt*xnu*(tc1+ti1)
+
 endif
 
-! Total RHS with diffusion + current velocity
-ta1=td1+dt*xnu*(ta1+tg1)+ux1
-tb1=te1+dt*xnu*(tb1+th1)+uy1
-tc1=tf1+dt*xnu*(tc1+ti1)+uz1
+! Total RHS with current velocity
+ta1=td1+ux1
+tb1=te1+uy1
+tc1=tf1+uz1
 
 ! X pencil inversion
 call xmultmatrix7(td1,ta1,ux1,0,di1)
