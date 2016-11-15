@@ -149,18 +149,24 @@ do itime=ifirst,ilast
               td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
               ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
       elseif (iimplicit==2) then
+         ! equation (1.5) in doi:10.1016/j.apnum.2005.11.011
+         ! Backup RHS
          hx1=ta1
          hy1=tb1
          hz1=tc1
+         ! First prediction
          call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
               td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
               ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
+         ! Update convection-diffusion
          call convdiff(ux1,uy1,uz1,ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1,&
               ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,tj2,di2,&
               ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3)
+         ! Update RHS
          ta1=(ta1-hx1)/2.
          tb1=(tb1-hy1)/2.
          tc1=(tc1-hz1)/2.
+         ! Second prediction
          call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
               td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
               ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)

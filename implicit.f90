@@ -716,7 +716,7 @@ if ((iimplicit.eq.1).and.(nscheme==4)) then
 endif
 
 if (iimplicit.eq.2) then
-   ! equation (1.5) in doi:10.1016/j.apnum.2005.11.011
+
    if ((itime.eq.1).and.(ilit.eq.0)) then
       px1 = 0.
       py1 = 0.
@@ -727,13 +727,15 @@ if (iimplicit.eq.2) then
    tf1 = gdt(itr)*tc1 - pz1
 endif
 
+! We need this for correct RHS estimations in *multmatrix7
+call transpose_x_to_y(ux1,ux2)
+call transpose_x_to_y(uy1,uy2)
+call transpose_x_to_y(uz1,uz2)
+call transpose_y_to_z(ux2,ux3)
+call transpose_y_to_z(uy2,uy3)
+call transpose_y_to_z(uz2,uz3)
+
 if (iimplicit.eq.1) then
-   call transpose_x_to_y(ux1,ux2)
-   call transpose_x_to_y(uy1,uy2)
-   call transpose_x_to_y(uz1,uz2)
-   call transpose_y_to_z(ux2,ux3)
-   call transpose_y_to_z(uy2,uy3)
-   call transpose_y_to_z(uz2,uz3)
 
    ! DIFFUSIVE TERMS IN Z
    iimplicit=-iimplicit

@@ -288,7 +288,7 @@ else
 
 endif
 
-!if (nrank==1) print *,'WARNING rotating channel',itime
+!if (nrank==0) print *,'WARNING rotating channel',itime
 !tg1(:,:,:)=tg1(:,:,:)-2./18.*uy1(:,:,:)
 !th1(:,:,:)=th1(:,:,:)-2./18.*ux1(:,:,:)
 
