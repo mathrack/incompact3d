@@ -43,6 +43,7 @@ USE IBM
 USE derivX
 USE derivZ
 use user_specific
+use checksum
 
 implicit none
 
@@ -105,6 +106,8 @@ else
 endif
 
 call module_user_init(phG,ph1,ph2,ph3,ph4)
+
+call init_chksum(di1,di2,di3)
 
 call test_speed_min_max(ux1,uy1,uz1)
 if (iscalar==1) call test_scalar_min_max(phi1)
@@ -185,7 +188,6 @@ do itime=ifirst,ilast
            nxmsize,nymsize,nzmsize,ph1,ph3,ph4,1)
 
       if (iimplicit.eq.2) then
-         hx1=0.; hy1=0.; hz1=0.;
          call gradp(hx1,hy1,hz1,di1,td2,tf2,ta2,tb2,tc2,di2,&
               ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3)
          hx1=px1-0.5*xnu*dt*hx1

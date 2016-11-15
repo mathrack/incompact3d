@@ -562,6 +562,7 @@ USE variables
 USE decomp_2d
 use derivY
 use matinv
+use checksum
 
 implicit none
 
@@ -728,12 +729,9 @@ if (iimplicit.eq.2) then
 endif
 
 ! We need this for correct RHS estimations in *multmatrix7
-call transpose_x_to_y(ux1,ux2)
-call transpose_x_to_y(uy1,uy2)
-call transpose_x_to_y(uz1,uz2)
-call transpose_y_to_z(ux2,ux3)
-call transpose_y_to_z(uy2,uy3)
-call transpose_y_to_z(uz2,uz3)
+call equal_chksum(ux1, ux2, ux3)
+call equal_chksum(uy1, uy2, uy3)
+call equal_chksum(uz1, uz2, uz3)
 
 if (iimplicit.eq.1) then
 
