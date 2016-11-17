@@ -66,6 +66,7 @@ call init_variables
 !DEVELOPPEMENT A PLACER DANS incompact3d.prm
 iimplicit=2
 if (nrank.eq.0) print *,'Parametre implicite : ',iimplicit
+if (iimplicit.eq.2) iadvance_time = 2
 
 call schemes()
 
@@ -103,6 +104,7 @@ if (ilit.eq.1) then
         px1,py1,pz1,phis1,hx1,hy1,hz1,phiss1,phG,0)
 else
    call init(ux1,uy1,uz1,ep1,phi1,gx1,gy1,gz1,phis1,hx1,hy1,hz1,phiss1)  
+   px1 = 0.; py1 = 0.; pz1 = 0.
 endif
 
 call module_user_init(phG,ph1,ph2,ph3,ph4)
@@ -137,7 +139,7 @@ do itime=ifirst,ilast
          if(iimplicit==0) then
             call scalar(ux1,uy1,uz1,phi1,phis1,phiss1,di1,tg1,th1,ti1,td1,&
                  uy2,uz2,phi2,di2,ta2,tb2,tc2,td2,uz3,phi3,di3,ta3,tb3,ep1)
-         else
+         elseif ((iimplicit==1).or.((iimplicit==2).and.(itr==1))) then
             call scalarimp(ux1,uy1,uz1,phi1,phis1,phiss1,di1,tg1,th1,ti1,td1,&
                  uy2,uz2,phi2,di2,ta2,tb2,tc2,td2,uz3,phi3,di3,ta3,tb3)
          endif
@@ -147,32 +149,15 @@ do itime=ifirst,ilast
       if(iimplicit==0) then
          call intt (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1) 
          call pre_correc(ux1,uy1,uz1)
-      elseif (iimplicit==1) then
+      elseif ((iimplicit==1).or.(iimplicit==2)) then
          call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
               td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
               ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
-      elseif (iimplicit==2) then
-         ! equation (1.5) in doi:10.1016/j.apnum.2005.11.011
-         ! Backup RHS
-         hx1=ta1
-         hy1=tb1
-         hz1=tc1
-         ! First prediction
-         call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
-              td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
-              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
-         ! Update convection-diffusion
-         call convdiff(ux1,uy1,uz1,ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1,&
-              ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,tj2,di2,&
-              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3)
-         ! Update RHS
-         ta1=(ta1-hx1)/2.
-         tb1=(tb1-hy1)/2.
-         tc1=(tc1-hz1)/2.
-         ! Second prediction
-         call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
-              td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
-              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
+      else
+         if (nrank.eq.0) print *,'This value of iimplicit is not valid. Abort simulation.'
+         call decomp_2d_finalize
+         CALL MPI_FINALIZE(code)
+         call exit(0)
       endif
 
       if (ivirt==1) then !solid body old school

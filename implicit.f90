@@ -718,14 +718,28 @@ endif
 
 if (iimplicit.eq.2) then
 
-   if ((itime.eq.1).and.(ilit.eq.0)) then
-      px1 = 0.
-      py1 = 0.
-      pz1 = 0.
+   ! Total RHS with pressure gradient
+   td1=dt*ta1-px1
+   te1=dt*tb1-py1
+   tf1=dt*tc1-pz1
+   ! equation (1.5) in doi:10.1016/j.apnum.2005.11.011
+   if (itr==1) then
+      ! Backup total RHS
+      gx=td1
+      gy=te1
+      gz=tf1
+   elseif (itr==2) then
+      ! Update RHS
+      td1=(td1-gx)/2.
+      te1=(te1-gy)/2.
+      tf1=(tf1-gz)/2.
+   else
+      if (nrank.eq.0) print *,'This value of itr is not valid when iimplicit=2. Abort simulation.'
+      call decomp_2d_finalize
+      CALL MPI_FINALIZE(code)
+      call exit(0)
    endif
-   td1 = gdt(itr)*ta1 - px1
-   te1 = gdt(itr)*tb1 - py1
-   tf1 = gdt(itr)*tc1 - pz1
+
 endif
 
 ! We need this for correct RHS estimations in *multmatrix7

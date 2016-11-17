@@ -15,4 +15,4 @@
 integer,parameter :: nx=128,ny=129,nz=84
 integer,parameter :: nstat=1,nvisu=1
 integer,parameter :: p_row=4,p_col=4
-integer,parameter :: nxm=nx,nym=ny-1,nzm=nz 
+integer,parameter :: nxm=nx,nym=ny-1,nzm=nz
