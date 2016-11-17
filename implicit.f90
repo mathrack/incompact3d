@@ -718,21 +718,27 @@ endif
 
 if (iimplicit.eq.2) then
 
-   ! Total RHS with pressure gradient
-   td1=dt*ta1-px1
-   te1=dt*tb1-py1
-   tf1=dt*tc1-pz1
    ! equation (1.5) in doi:10.1016/j.apnum.2005.11.011
+   ! or section 4 (A 2-stage stabilizing correction scheme)
+   ! in doi:10.1016/S0168-9274(01)00152-0
    if (itr==1) then
-      ! Backup total RHS
-      gx=td1
-      gy=te1
-      gz=tf1
+      ! Backup Y0 - RHSn/2 = Un + RHSn/2
+      ! Here RHS without the pressure : RHSn = dt*(-conv+diff)
+      gx=ux1+dt*ta1/2.
+      gy=uy1+dt*tb1/2.
+      gz=uz1+dt*tc1/2.
+   endif
+   if (itr==1) then
+      ! Final RHS is Y0 = Un + RHSn = Un + dt*(-conv+diff) - gradPn
+      ta1=ux1+dt*ta1-px1
+      tb1=uy1+dt*tb1-py1
+      tc1=uz1+dt*tc1-pz1
    elseif (itr==2) then
-      ! Update RHS
-      td1=(td1-gx)/2.
-      te1=(te1-gy)/2.
-      tf1=(tf1-gz)/2.
+      ! Final RHS is Y0 - RHSn/2 + RHS~/2 = Un + (RHSn+RHS~)/2 
+      ! Except for pressure
+      ta1=gx+dt*ta1/2.-px1
+      tb1=gy+dt*tb1/2.-py1
+      tc1=gz+dt*tc1/2.-pz1
    else
       if (nrank.eq.0) print *,'This value of itr is not valid when iimplicit=2. Abort simulation.'
       call decomp_2d_finalize
