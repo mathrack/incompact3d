@@ -727,8 +727,6 @@ if (iimplicit.eq.2) then
       gx=ux1+dt*ta1/2.
       gy=uy1+dt*tb1/2.
       gz=uz1+dt*tc1/2.
-   endif
-   if (itr==1) then
       ! Final RHS is Y0 = Un + RHSn = Un + dt*(-conv+diff) - gradPn
       ta1=ux1+dt*ta1-px1
       tb1=uy1+dt*tb1-py1
