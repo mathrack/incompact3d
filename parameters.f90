@@ -190,21 +190,18 @@ endif
 !
 !******************************************************************
 
-adt(:)=0. ; bdt(:)=0. ; cdt(:)=0. ; gdt(:)=0.
-if (nscheme==0) then !
+if (nscheme==0) then
    iimplicit=2
    nscheme=1
-elseif (nscheme==-1) then
+elseif (nscheme.le.-1) then
    iimplicit=1
-   nscheme=1
-elseif (nscheme==-4) then
-   iimplicit=1
-   nscheme=4
+   nscheme=-nscheme
 else
    iimplicit=0
 endif
 if (nrank==0) print *,'Parametre implicite : ',iimplicit
 
+adt(:)=0. ; bdt(:)=0. ; cdt(:)=0. ; gdt(:)=0.
 if (nscheme==1) then !AB2
    iadvance_time=1+max(0,iimplicit-1)
    adt(1)=1.5*dt
