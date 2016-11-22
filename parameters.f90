@@ -130,10 +130,10 @@ write(*,1102) nclx,ncly,nclz
 write(*,1104) u1,u2 
 write(*,1105) re
 write(*,1106) dt
-if (nscheme.eq.1) print *,'Temporal scheme   : Adams-bashforth 2'
+if (abs(nscheme).eq.1) print *,'Temporal scheme   : Adams-bashforth 2'
 if (nscheme.eq.2) print *,'Temporal scheme   : Runge-Kutta 3'
 if (nscheme.eq.3) print *,'Temporal scheme   : Runge-Kutta 4'
-if (nscheme.eq.4) print *,'Temporal scheme   : Adams-bashforth 3'
+if (abs(nscheme).eq.4) print *,'Temporal scheme   : Adams-bashforth 3'
 if (iscalar.eq.0) print *,'Passive scalar    : off'
 if (iscalar.eq.1) then
    print *,'Passive scalar : on'
@@ -191,8 +191,22 @@ endif
 !******************************************************************
 
 adt(:)=0. ; bdt(:)=0. ; cdt(:)=0. ; gdt(:)=0.
-if (nscheme==1) then!AB2
-   iadvance_time=1 
+if (nscheme==0) then !
+   iimplicit=2
+   nscheme=1
+elseif (nscheme==-1) then
+   iimplicit=1
+   nscheme=1
+elseif (nscheme==-4) then
+   iimplicit=1
+   nscheme=4
+else
+   iimplicit=0
+endif
+if (nrank==0) print *,'Parametre implicite : ',iimplicit
+
+if (nscheme==1) then !AB2
+   iadvance_time=1+max(0,iimplicit-1)
    adt(1)=1.5*dt
    bdt(1)=-0.5*dt
    gdt(1)=adt(1)+bdt(1)
@@ -228,8 +242,7 @@ if (nscheme==3) then !RK4 Carpenter and Kennedy
    gdt(4)=0.33602636754*dt
    gdt(5)=0.041717869325*dt
 endif
-
-if (nscheme==4) then!AB3
+if (nscheme==4) then !AB3
    iadvance_time=1
    adt(1)= (23./12.)*dt
    bdt(1)=-(16./12.)*dt

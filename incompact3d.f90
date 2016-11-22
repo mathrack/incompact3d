@@ -63,11 +63,6 @@ call parameter()
 
 call init_variables
 
-!DEVELOPPEMENT A PLACER DANS incompact3d.prm
-iimplicit=2
-if (nrank.eq.0) print *,'Parametre implicite : ',iimplicit
-if (iimplicit.eq.2) iadvance_time = 2
-
 call schemes()
 
 if (nclx==0) then
