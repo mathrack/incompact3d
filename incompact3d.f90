@@ -169,7 +169,7 @@ do itime=ifirst,ilast
 
       if (iimplicit.eq.2) then
          call gradp(hx1,hy1,hz1,di1,td2,tf2,ta2,tb2,tc2,di2,&
-              ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3)
+              ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3,2)
          hx1=px1-0.5*xnu*dt*hx1
          hy1=py1-0.5*xnu*dt*hy1
          hz1=pz1-0.5*xnu*dt*hz1
@@ -180,7 +180,7 @@ do itime=ifirst,ilast
 
       !Z-->Y-->X
       call gradp(px1,py1,pz1,di1,td2,tf2,ta2,tb2,tc2,di2,&
-           ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3)
+           ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3,0)
 
       !X PENCILS
       call corgp(ux1,ux2,uy1,uz1,px1,py1,pz1)

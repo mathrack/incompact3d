@@ -1584,6 +1584,18 @@ call ludecomp7(zaam0,zbbm0,zccm0,zddm0,zeem0,zqqm0,zggm0,zhhm0,zssm0,zrrm0,&
 !! FIN MATRICE M2 TIME IMPLICIT    !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+! module implicit correction term coefficients
+! Y-interpol coefficients, size = nym-1 = ny-2
+   imp_ciby6=(/(3./10.,j=1,ny-4),1.,0./)
+   imp_cicy6=1.
+   imp_cifyp6=(/1.,(3./10.,j=2,ny-3),0./)
+   call prepare(imp_ciby6,imp_cicy6,imp_cifyp6,imp_cisyp6,imp_ciwyp6,ny-2)
+! Y-derivation coefficients, size = ny
+   imp_cbi6y=(/1./22.,(9./62.,j=2,ny-3),1./22.,-1.,0./)
+   imp_cci6y=1.
+   imp_cfip6y=(/-1.,1./22.,(9./62.,j=3,ny-2),1./22.,0./)
+   call prepare (imp_cbi6y,imp_cci6y,imp_cfip6y,imp_csip6y,imp_cwip6y,ny)
+
 end subroutine implicit_schemes
 
 !************************************************************

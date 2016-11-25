@@ -101,6 +101,9 @@ real(mytype), dimension(nz) :: zaam11,zbbm11,zccm11,zddm11,zeem11,zggm11,zhhm11,
 real(mytype), dimension(nz) :: zrrm11,zqqm11,zvvm11,zssm11 !!TIME IMPLICIT (with HPL), ncl=1, npaire=1
 real(mytype), dimension(nz) :: zaam0,zbbm0,zccm0,zddm0,zeem0,zggm0,zhhm0,zwwm0,zzzm0 !!TIME IMPLICIT, ncl=0
 real(mytype), dimension(nz) :: zrrm0,zqqm0,zvvm0,zssm0,zl1m,zl2m,zl3m,zu1m,zu2m,zu3m !!TIME IMPLICIT (with HPL), ncl=0
+!module implicit correction term coefficients
+real(mytype), dimension(ny-2), save :: imp_ciby6,imp_cicy6,imp_cifyp6,imp_cisyp6,imp_ciwyp6 ! interpol
+real(mytype), dimension(ny), save :: imp_cbi6y,imp_cci6y,imp_cfip6y,imp_csip6y,imp_cwip6y ! derivation
 
 !module pressure
 real(mytype), save, allocatable, dimension(:,:) :: dpdyx1,dpdyxn,dpdzx1,dpdzxn
@@ -223,6 +226,8 @@ use decomp_2d, only : mytype
   real(mytype) :: cs1y,ds1y,alsa2y,as2y,alsany,asny,bsny,csny,dsny,alsamy
   real(mytype) :: asmy,alsajy,asjy,bsjy,csjy,alsa3y,as3y,bs3y,alsaty,asty,bsty 
   real(mytype) :: alsajyt,asjyt,bsjyt,csjyt
+  real(mytype), parameter :: imp_aiciy6 = ( 75.+ 70.*3./10.)/128.
+  real(mytype), parameter :: imp_biciy6 = (-25.+126.*3./10.)/256.
 end module derivY
 
 module derivZ

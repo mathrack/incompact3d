@@ -818,7 +818,7 @@ end subroutine divergence
 !********************************************************************
 !
 subroutine gradp(ta1,tb1,tc1,di1,td2,tf2,ta2,tb2,tc2,di2,&
-     ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3)
+     ta3,tc3,di3,pp3,nxmsize,nymsize,nzmsize,ph2,ph3,iswitch)
 !
 !********************************************************************
 
@@ -828,6 +828,7 @@ USE variables
 
 implicit none
 
+integer, intent(in) :: iswitch
 TYPE(DECOMP_INFO) :: ph2,ph3
 integer :: i,j,k,ijk,nxmsize,nymsize,nzmsize,code
 integer, dimension(2) :: dims, dummy_coords
@@ -858,12 +859,16 @@ call deciz6(tc3,pp3,di3,sz,cfip6z,csip6z,cwip6z,cfz6,csz6,cwz6,&
 call transpose_z_to_y(ta3,ta2,ph3) !nxm nym nz
 call transpose_z_to_y(tc3,tc2,ph3)
 
-call interiy6(tb2,ta2,di2,sy,cifip6y,cisip6y,ciwip6y,cify6,cisy6,ciwy6,&
-     (ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3),1)
-call deciy6(td2,ta2,di2,sy,cfip6y,csip6y,cwip6y,cfy6,csy6,cwy6,ppy,&
-     (ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3),1)
-call interiy6(tf2,tc2,di2,sy,cifip6y,cisip6y,ciwip6y,cify6,cisy6,ciwy6,&
-     (ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3),1)
+if ((iswitch.eq.2).and.(ncly.eq.2)) then
+  call interpol(ta2,tc2,tb2,td2,tf2,di2,(ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3))
+else
+  call interiy6(tb2,ta2,di2,sy,cifip6y,cisip6y,ciwip6y,cify6,cisy6,ciwy6,&
+       (ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3),1)
+  call deciy6(td2,ta2,di2,sy,cfip6y,csip6y,cwip6y,cfy6,csy6,cwy6,ppy,&
+       (ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3),1)
+  call interiy6(tf2,tc2,di2,sy,cifip6y,cisip6y,ciwip6y,cify6,cisy6,ciwy6,&
+       (ph3%yen(1)-ph3%yst(1)+1),nymsize,ysize(2),ysize(3),1)
+endif
 
 !WORK X-PENCILS
 
@@ -1226,3 +1231,42 @@ endif
 
 return
 end subroutine pre_correc
+
+!****************************************************************************
+!
+subroutine interpol(ta2,tc2,tb2,td2,tf2,di2,nxm,nym,ny,nz)
+
+use decomp_2d, only : mytype
+use variables, only : yp, sy, ppy, imp_cifyp6,imp_cisyp6,imp_ciwyp6,&
+                                   imp_cfip6y,imp_csip6y,imp_cwip6y
+use param, only : dy
+
+implicit none
+
+! in / out variables
+integer, intent(in) :: nxm, nym, ny, nz
+real(mytype), dimension(nxm,nym,nz), intent(in) :: ta2,tc2 ! ta2 = div(u*) / tc2 = derz(div(u*))
+real(mytype), dimension(nxm,ny,nz), intent(out) :: tb2,td2,tf2,di2 ! tb2 = interpol(ta2) / td2 = derive(ta2) / tf2 = interpol(tc2)
+
+! temporary interpolated value
+integer :: j
+real(mytype), dimension(nxm,nym-1,nz) :: tmp
+
+! Compute tf2 = interpol(tc2)
+call intery6(tmp,tc2,di2,sy,imp_cifyp6,imp_cisyp6,imp_ciwyp6,nxm,nym,nym-1,nz,2)
+tf2(:,2:ny-1,:)=tmp
+   ! Reconstruct boundary value using derivative
+   call deciy6(td2,tf2,di2,sy,imp_cfip6y,imp_csip6y,imp_cwip6y,imp_cfip6y,imp_csip6y,imp_cwip6y,ppy,nxm,nym,ny,nz,2)
+   tf2(:,1,:)  = tf2(:,2,:)    - (yp(2) -yp(1)   )*(td2(:,1,:) +td2(:,2,:)   )/2.
+   tf2(:,ny,:) = tf2(:,ny-1,:) + (yp(ny)-yp(ny-1))*(td2(:,ny,:)+td2(:,ny-1,:))/2.
+
+! Compute tb2 = interpol(ta2)
+call intery6(tmp,ta2,di2,sy,imp_cifyp6,imp_cisyp6,imp_ciwyp6,nxm,nym,nym-1,nz,2)
+tb2(:,2:ny-1,:)=tmp
+   ! Reconstruct boundary value using derivative
+   ! Value of td2 obtained here is used as output
+   call deciy6(td2,ta2,di2,sy,imp_cfip6y,imp_csip6y,imp_cwip6y,imp_cfip6y,imp_csip6y,imp_cwip6y,ppy,nxm,nym,ny,nz,2)
+   tb2(:,1,:)  = tb2(:,2,:)    - (yp(2) -yp(1)   )*(td2(:,1,:) +td2(:,2,:)   )/2.
+   tb2(:,ny,:) = tb2(:,ny-1,:) + (yp(ny)-yp(ny-1))*(td2(:,ny,:)+td2(:,ny-1,:))/2.
+
+end subroutine interpol
