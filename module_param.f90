@@ -228,6 +228,7 @@ use decomp_2d, only : mytype
   real(mytype) :: alsajyt,asjyt,bsjyt,csjyt
   real(mytype), parameter :: imp_aiciy6 = ( 75.+ 70.*3./10.)/128.
   real(mytype), parameter :: imp_biciy6 = (-25.+126.*3./10.)/256.
+  real(mytype), allocatable, dimension(:,:,:), save :: ydiff_bc
 end module derivY
 
 module derivZ
