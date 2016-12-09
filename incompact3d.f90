@@ -147,7 +147,7 @@ do itime=ifirst,ilast
       elseif ((iimplicit==1).or.(iimplicit==2)) then
          call inttimp (ux1,uy1,uz1,gx1,gy1,gz1,hx1,hy1,hz1,ta1,tb1,tc1,px1,py1,pz1,&
               td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
-              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
+              ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3,ph1)
       else
          if (nrank.eq.0) print *,'This value of iimplicit is not valid. Abort simulation.'
          call decomp_2d_finalize

@@ -554,7 +554,7 @@ end module matinv
 !
 subroutine inttimp(ux1,uy1,uz1,gx,gy,gz,hx,hy,hz,ta1,tb1,tc1,px1,py1,pz1,&
      td1,te1,tf1,tg1,th1,ti1,di1,ux2,uy2,uz2,ta2,tb2,tc2,td2,te2,tf2,di2,&
-     ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3)
+     ux3,uy3,uz3,ta3,tb3,tc3,td3,te3,tf3,di3,ph1)
 ! 
 !********************************************************************
 USE param
@@ -582,6 +582,10 @@ real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,tc3
 real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: td3,te3,tf3,di3
 real(mytype) :: x, y, z
 
+TYPE(DECOMP_INFO), intent(in) :: ph1
+real(mytype), dimension(ph1%xsz(1),xsize(2),xsize(3)) :: mytd1
+real(mytype), dimension(ph1%ysz(1),ysize(2),ysize(3)) :: mytd2,myta2,mytb2
+
 td1=0.;te1=0.;tf1=0.;tg1=0.;th1=0.;ti1=0.;di1=0.
 ta2=0.;tb2=0.;tc2=0.;td2=0.;te2=0.;tf2=0.;di2=0.
 ta3=0.;tb3=0.;tc3=0.;td3=0.;te3=0.;tf3=0.;di3=0.
@@ -594,6 +598,11 @@ if ((nscheme.eq.2).or.(nscheme.eq.3)) then
    CALL MPI_FINALIZE(code)
    call exit(0)
 endif
+
+! We need this for correct RHS estimations in *multmatrix7
+call equal_chksum(ux1, ux2, ux3)
+call equal_chksum(uy1, uy2, uy3)
+call equal_chksum(uz1, uz2, uz3)
 
 !!!!!!!!!!!!!
 !! CN2+AB2 !!
@@ -745,11 +754,6 @@ if (iimplicit.eq.2) then
    endif
 
 endif
-
-! We need this for correct RHS estimations in *multmatrix7
-call equal_chksum(ux1, ux2, ux3)
-call equal_chksum(uy1, uy2, uy3)
-call equal_chksum(uz1, uz2, uz3)
 
 if (iimplicit.eq.1) then
 
@@ -907,6 +911,57 @@ call transpose_y_to_x(uy2,uy1)
 call transpose_y_to_x(uz2,uz1)
 
 if (iimplicit.eq.2) then
+
+   if (.not.allocated(ydiff_bc)) then
+      allocate(ydiff_bc(ph1%ysz(1),6,ysize(3)))
+   endif
+   call transpose_y_to_z(ux2,ux3)
+   call transpose_y_to_z(uy2,uy3)
+   call transpose_y_to_z(uz2,uz3)
+
+   ! Compute div u
+   call derx (ta1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
+   call transpose_x_to_y(ta1,ta2)
+   call dery (tb2,uy2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+   ta2=ta2+tb2
+   call transpose_y_to_z(ta2,ta3)
+   call derz (tb3,uz3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
+   ta3=ta3+tb3
+   
+   ! Compute its grad
+   call derz (tc3,ta3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
+   call transpose_z_to_y(ta3,ta2)
+   call transpose_z_to_y(tc3,tc2)
+   call dery (tb2,ta2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+   call transpose_y_to_x(ta2,ta1)
+   call transpose_y_to_x(tb2,tb1)
+   call transpose_y_to_x(tc2,tc1)
+   call derx (td1,ta1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
+
+   ! X => ydiff_bc
+   call inter6(mytd1,td1,di1,sx,cifxp6,cisxp6,ciwxp6,xsize(1),ph1%xsz(1),xsize(2),xsize(3),1)
+   call transpose_x_to_y(mytd1,myta2,ph1)
+   ydiff_bc(:,1,:)=myta2(:,1,:)
+   ydiff_bc(:,2,:)=myta2(:,ysize(2),:)
+
+   ! Y => ydiff_bc
+   call inter6(mytd1,tb1,di1,sx,cifxp6,cisxp6,ciwxp6,xsize(1),ph1%xsz(1),xsize(2),xsize(3),1)
+   call transpose_x_to_y(mytd1,myta2,ph1)
+   ydiff_bc(:,3,:)=myta2(:,1,:)
+   ydiff_bc(:,4,:)=myta2(:,ysize(2),:)
+
+   ! Z => ydiff_bc
+   call inter6(mytd1,tc1,di1,sx,cifxp6,cisxp6,ciwxp6,xsize(1),ph1%xsz(1),xsize(2),xsize(3),1)
+   call transpose_x_to_y(mytd1,myta2,ph1)
+   ydiff_bc(:,5,:)=myta2(:,1,:)
+   ydiff_bc(:,6,:)=myta2(:,ysize(2),:)
+
+   ! This could be moved to the subroutine deciy6 in derive.f90
+   if (istret.ne.0) then
+      ydiff_bc(:,3,:)=ydiff_bc(:,3,:)/ppy(1)
+      ydiff_bc(:,4,:)=ydiff_bc(:,4,:)/ppy(ysize(2))
+   endif
+
    return
 endif
 
@@ -1586,9 +1641,9 @@ call ludecomp7(zaam0,zbbm0,zccm0,zddm0,zeem0,zqqm0,zggm0,zhhm0,zssm0,zrrm0,&
 
 ! module implicit correction term coefficients
 ! Y-interpol coefficients, size = nym-1 = ny-2
-   imp_ciby6=(/(3./10.,j=1,ny-4),1.,0./)
+   imp_ciby6=(/(3./10.,j=1,ny-4),0.,0./)
    imp_cicy6=1.
-   imp_cifyp6=(/1.,(3./10.,j=2,ny-3),0./)
+   imp_cifyp6=(/0.,(3./10.,j=2,ny-3),0./)
    call prepare(imp_ciby6,imp_cicy6,imp_cifyp6,imp_cisyp6,imp_ciwyp6,ny-2)
 ! Y-derivation coefficients, size = ny
    imp_cbi6y=(/1./22.,(9./62.,j=2,ny-3),1./22.,0.,0./)

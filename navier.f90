@@ -760,28 +760,6 @@ call intery6(ta2,td2,di2,sy,cifyp6,cisyp6,ciwyp6,(ph1%yen(1)-ph1%yst(1)+1),ysize
 call decy6(tb2,te2,di2,sy,cfy6,csy6,cwy6,ppyi,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),nymsize,ysize(3),0)
 call intery6(tc2,tf2,di2,sy,cifyp6,cisyp6,ciwyp6,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),nymsize,ysize(3),1)
 
-! Compute viscous stress at the wall
-if (nlock==1) then
-   if (.not.allocated(ydiff_bc)) then
-      allocate(ydiff_bc(ph1%yst(1):ph1%yen(1),ysize(2),ysize(3)))
-   endif
-   if (istret.ne.0) then 
-      call deryy (td2,te2,di2,sy,sfy,ssy,swy,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),ysize(3),0)
-      call dery (tf2,te2,di2,sy,ffy,fsy,fwy,ppy,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),ysize(3),0)
-      do j=1,ysize(2)
-         td2(:,j,:)=td2(:,j,:)*pp2y(j)-pp4y(j)*tf2(:,j,:)
-      enddo
-   else
-      call deryy (td2,te2,di2,sy,sfy,ssy,swy,(ph1%yen(1)-ph1%yst(1)+1),ysize(2),ysize(3),0) 
-   endif
-   ydiff_bc(:,1,:)=td2(:,1,:)
-   ydiff_bc(:,2,:)=td2(:,ysize(2),:)
-   if (istret.ne.0) then
-      ydiff_bc(:,1,:)=ydiff_bc(:,1,:)/ppy(1)
-      ydiff_bc(:,2,:)=ydiff_bc(:,2,:)/ppy(ysize(2))
-   endif
-endif
-
 call transpose_y_to_z(ta2,ta3,ph3)!->NXM NYM NZ
 call transpose_y_to_z(tb2,tb3,ph3)
 call transpose_y_to_z(tc2,tc3,ph3)
@@ -1262,6 +1240,7 @@ use decomp_2d, only : mytype
 use variables, only : yp, sy, ppy, imp_cifyp6,imp_cisyp6,imp_ciwyp6,&
                                    imp_cfip6y,imp_csip6y,imp_cwip6y
 use param, only : dy
+use derivY, only : ydiff_bc
 
 implicit none
 
@@ -1277,17 +1256,16 @@ real(mytype), dimension(nxm,nym-1,nz) :: tmp
 ! Compute tf2 = interpol(tc2)
 call intery6(tmp,tc2,di2,sy,imp_cifyp6,imp_cisyp6,imp_ciwyp6,nxm,nym,nym-1,nz,2)
 tf2(:,2:ny-1,:)=tmp
-   ! Parity assumption
-   tf2(:,1,:)  = tf2(:,2,:)
-   tf2(:,ny,:) = tf2(:,ny-1,:)
+tf2(:,1,:)  = ydiff_bc(:,5,:)
+tf2(:,ny,:) = ydiff_bc(:,6,:)
+
+! Compute td2 = derive(ta2)
+call deciy6(td2,ta2,di2,sy,imp_cfip6y,imp_csip6y,imp_cwip6y,imp_cfip6y,imp_csip6y,imp_cwip6y,ppy,nxm,nym,ny,nz,2)
 
 ! Compute tb2 = interpol(ta2)
 call intery6(tmp,ta2,di2,sy,imp_cifyp6,imp_cisyp6,imp_ciwyp6,nxm,nym,nym-1,nz,2)
 tb2(:,2:ny-1,:)=tmp
-   ! Reconstruct boundary value using derivative
-   ! Value of td2 obtained here is used as output
-   call deciy6(td2,ta2,di2,sy,imp_cfip6y,imp_csip6y,imp_cwip6y,imp_cfip6y,imp_csip6y,imp_cwip6y,ppy,nxm,nym,ny,nz,2)
-   tb2(:,1,:)  = tb2(:,2,:)    - (yp(2) -yp(1)   )*(td2(:,1,:) +td2(:,2,:)   )/2.
-   tb2(:,ny,:) = tb2(:,ny-1,:) + (yp(ny)-yp(ny-1))*(td2(:,ny,:)+td2(:,ny-1,:))/2.
+tb2(:,1,:)  = ydiff_bc(:,1,:)!tb2(:,2,:)    - (yp(2) -yp(1)   )*(td2(:,1,:) +td2(:,2,:)   )/2.
+tb2(:,ny,:) = ydiff_bc(:,2,:)!tb2(:,ny-1,:) + (yp(ny)-yp(ny-1))*(td2(:,ny,:)+td2(:,ny-1,:))/2.
 
 end subroutine interpol

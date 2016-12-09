@@ -2160,12 +2160,12 @@ if ((ncly==1).or.(ncly==2)) then
       enddo
    elseif (npaire==2) then
       ! Experimental term for implicit time scheme
-      ty(:,1,:)=(uy(:,1,:)+2*uy(:,2,:)+uy(:,3,:))/2. ! alpha = 1
+      ty(:,1,:)=(uy(:,1,:)+uy(:,2,:))/2. ! alpha = 0 (uy(:,1,:)+2*uy(:,2,:)+uy(:,3,:))/2. ! alpha = 1
       do j=2,nym-1
          ty(:,j,:)=(uy(:,j+1,:)+uy(:,j  ,:))*imp_aiciy6 &
                   +(uy(:,j+2,:)+uy(:,j-1,:))*imp_biciy6 ! alpha = 3/10
       enddo
-      ty(:,nym,:)=(uy(:,ny,:)+2*uy(:,nym,:)+uy(:,nym-1,:))/2. ! alpha = 1
+      ty(:,nym,:)=(uy(:,ny,:)+uy(:,nym,:))/2. ! alpha = 0 (uy(:,ny,:)+2*uy(:,nym,:)+uy(:,nym-1,:))/2. ! alpha = 1
       do j=2,nym
          ty(:,j,:)=ty(:,j,:)-ty(:,j-1,:)*cisy6(j)
       enddo
@@ -2646,14 +2646,14 @@ if ((ncly==1).or.(ncly==2)) then
       enddo
    elseif (npaire==2) then
       ! Experimental term for implicit time scheme
-      ty(:,1,:)=ydiff_bc(:,1,:)
+      ty(:,1,:)=ydiff_bc(:,3,:)
       ty(:,2,:)=(12./11.)*(uy(:,2,:)-uy(:,1,:))/dy ! alpha = 1/22
       do j=3,ny-2
          ty(:,j,:)=aciy6*(uy(:,j  ,:)-uy(:,j-1,:))&
                   +bciy6*(uy(:,j+1,:)-uy(:,j-2,:))
       enddo
       ty(:,ny-1,:)=(12./11.)*(uy(:,ny-1,:)-uy(:,ny-2,:))/dy ! alpha = 1/22
-      ty(:,ny,:)=ydiff_bc(:,2,:)
+      ty(:,ny,:)=ydiff_bc(:,4,:)
       do j=2,ny
          ty(:,j,:)=ty(:,j,:)-ty(:,j-1,:)*csi6y(j)
       enddo
