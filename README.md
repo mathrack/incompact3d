@@ -1,4 +1,4 @@
-The present data and the associated source code are freely available under the GNU GPL v3 licence. Below are direct links to the different cases, followed by links to websites and publications related to the present work.
+The present data and the associated source code are freely available under the GNU GPL v3 licence, EXCEPT for the *tex* file in the folder [IJHFF](/IJHFF/). Below are direct links to the different cases, followed by links to websites and publications related to the present work.
 
 # Direct access to data and associated source code
 
@@ -41,10 +41,15 @@ The statistics are directly available in xls files but it is recommended to visi
 
 We have identified 2 minor typos in our publication in IJHFF:
 
-- $`G_2`$ is said to be the ratio of fluid-to-solid thermal conductivities while it is the ratio of solid-to-fluid thermal conductivities. This typo is reltively minor as this ratio is equal to one in the publication
+- $`G_2`$ is said to be the ratio of fluid-to-solid thermal conductivities while it is the ratio of solid-to-fluid thermal conductivities. Anyway, this ratio is equal to one in the publication.
 - After equation (14), the values given for $`R`$ are erroneous as they were obtained using the dissipation rate of the temperature variance, $`\varepsilon_\theta`$, which includes the Prandtl number. Both number given should be multiplied by $`\sqrt{Pr} = \sqrt{0.71}`$. The resulting values are close to $`0.13`$, not $`0.16`$.
 
-TODO: create a dedicated repo with the python scripts used to generate the figures in the publication.
+The [repository](/IJHFF/) contains:
+
+- All the python scripts used to generate the figures in the publication.
+- The *tex* and *bib* files used to obtain the preprint of the publication.
+- A *jpg* picture sketching the computational domain.
+- Several *xls* and *xlsx* files containing our results. Most of them are only symbolic links.
 
 # Bibliography
 

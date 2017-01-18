@@ -1,0 +1,480 @@
+\documentclass[review]{elsarticle}
+
+\usepackage{amsmath,amssymb}
+\usepackage{lineno,hyperref}
+\usepackage{color}
+\usepackage[normalem]{ulem}
+\modulolinenumbers[5]
+
+\journal{International Journal of Heat and Fluid Flow}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Elsevier bibliography styles
+%%%%%%%%%%%%%%%%%%%%%%%
+%% To change the style, put a % in front of the second line of the current style and
+%% remove the % from the second line of the style you would like to use.
+%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Numbered
+%\bibliographystyle{model1-num-names}
+
+%% Numbered without titles
+%\bibliographystyle{model1a-num-names}
+
+%% Harvard
+%\bibliographystyle{model2-names.bst}\biboptions{authoryear}
+
+%% Vancouver numbered
+%\usepackage{numcompress}\bibliographystyle{model3-num-names}
+
+%% Vancouver name/year
+%\usepackage{numcompress}\bibliographystyle{model4-names}\biboptions{authoryear}
+
+%% APA style
+%\bibliographystyle{model5-names}\biboptions{authoryear}
+
+%% AMA style
+%\usepackage{numcompress}\bibliographystyle{model6-num-names}
+
+%% `Elsevier LaTeX' style
+\bibliographystyle{elsarticle-num}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{DNS of turbulent channel flow with conjugate heat transfer: effect of thermal boundary conditions on the second moments and budgets}
+%\tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
+
+%% Group authors per affiliation:
+%\author{Elsevier\fnref{myfootnote}}
+%\address{Radarweg 29, Amsterdam}
+%\fntext[myfootnote]{Since 1880.}
+
+%% or include affiliations in footnotes:
+\author[mymainaddress]{Flageul C\'edric\corref{mycorrespondingauthor}}
+\cortext[mycorrespondingauthor]{Corresponding author}
+%\ead[url]{http://code.google.com/p/incompact3d/}
+\ead{cedric.flageul@gmail.com}
+
+\author[mymainaddress]{Benhamadouche Sofiane}
+\author[mysecondaryaddress]{Lamballais \'Eric}
+\author[mymainaddress,mythirdaddress]{Laurence Dominique}
+
+\address[mymainaddress]{EDF R\&D, Fluid Mechanics, Energy and Environment Dept. 6 Quai Wattier, 78401 Chatou, France}
+\address[mysecondaryaddress]{Institute PPRIME, Department of Fluid Flow, Heat Transfer and Combustion, Universit\'e de Poitiers, CNRS, ENSMA, T\'el\'eport 2 - Bd. Marie et Pierre Curie B.P. 30179, 86962 Futuroscope Chasseneuil Cedex, France}
+\address[mythirdaddress]{School of Mechanical, Aerospace and Civil Engineering, The University of Manchester, Sackville Street, Manchester M13 9PL, UK}
+
+\begin{abstract}
+Budgets of turbulent heat fluxes and temperature variance  obtained from the Direct Numerical Simulation of an incompressible periodic channel flow with a Reynolds number of $150$ (based on friction velocity) and a Prandtl number of $0.71$ are presented and analysed for four cases: \textcolor{red}{locally} imposed temperature at the wall (\textcolor{red}{constant Dirichlet}), \textcolor{red}{locally} imposed heat flux (\textcolor{red}{constant Neumann}), heat exchange coefficient (Robin) and 3D conjugate heat transfer. The dissipation rate associated with the temperature variance is strongly impacted by the thermal boundary condition. For non-conjugate cases, a \textcolor{red}{straightforward} analytical analysis establishes the connection between the boundary condition, the temperature variance and the wall-normal part of the thermal dissipation rate at the wall. For the conjugate case, the two-point correlations of the thermal field in the solid domain confirms the existence of very large scale thermal structures.
+\end{abstract}
+
+\begin{keyword}
+Direct Numerical Simulation \sep Channel flow \sep Robin \sep Conjugate heat transfer \sep second-moment closures \sep budgets
+\MSC[2010] 00-01\sep  99-00
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
+
+\section{Introduction}
+More than 40 years ago, Direct Numerical Simulation \textcolor{red}{(DNS)} started with the pioneering work of Orszag (\cite{Orszag1970analytical}) and is now widely used as a powerful workbench to study turbulence \textcolor{red}{but more rarely heat and mass transfer}.
+As a generic turbulent wall flow, the channel flow configuration has been extensively investigated by DNS while including the near-wall heat transfer through the consideration of a passive scalar (Kasagi et al. (\cite{kasagi1992direct}), Tiselj et al. (\cite{Tiselj2001dns}), Kawamura et al. (\cite{kawamura1998dns})).
+Most of the DNS performed with a passive scalar are based on an imposed temperature at the wall as an isothermal, \textcolor{red}{i.e., constant Dirichlet boundary condition for the temperature} (Kasagi et al. (\cite{kasagi1992direct}), Kawamura et al. (\cite{kawamura1998dns})).
+When the temperature is imposed at the wall, there is a close similarity between thermal and momentum streaks (Abe et al. (\cite{abe2009near})).
+For a temperature subjected to such a boundary condition, the near-wall correlation between the streamwise velocity and the temperature is high, leading to a strong correlation between the scalar dissipation rate and the enstrophy (Abe et al. (\cite{abe2009correlation})).
+
+In a significantly more reduced number of previous DNS, a constant heat flux is imposed at the wall, \textcolor{red}{i.e., constant Neumann boundary condition for the temperature} (Tiselj et al. (\cite{Tiselj2001dns}), (\cite{tiselj2001effect})).
+Although these previous DNS studies were very helpful to investigate the physical mechanisms responsible of heat transfer, it is widely recognized that neither isothermal nor isoflux boundary conditions can realistically mimic the actual heat transfer in real life, especially when the thermal diffusivity of the solid and the fluid are of the same order of magnitude.
+In this situation, the thermal interaction between the fluid and the solid must be described.
+When such a coupling is explicitly considered, it is common to refer to conjugate heat transfer.
+Tiselj et al. (\cite{Tiselj2001dns}) were the first to investigate by DNS the influence of the thermal boundary condition through direct comparisons between conjugate heat transfer, imposed temperature and imposed heat flux at the wall.
+
+Conjugate heat transfer simulations are required in industrial applications where fluctuating thermal stresses are a concern, e.g. in case of a severe emergency cooling or long-term ageing of materials.
+High Reynolds RANS and LES simulations rely on wall-modeling as the viscous sub-layer is not resolved.
+DNS is a valuable tool for understanding the flow physics of such complex phenomena and providing fine data in order to improve RANS and LES \textcolor{red}{modelling}.
+
+In this paper, budgets of turbulent heat-fluxes and temperature variance are presented for three different boundary conditions (\textcolor{red}{locally} imposed temperature (isoT), \textcolor{red}{locally} imposed heat flux (isoQ) and heat exchange coefficient (Robin)) as well as for conjugate heat-transfer (Conjug). For the conjugate simulation, the thermal properties are identical for both the solid and the fluid. For the Robin boundary condition, the heat exchange coefficient was designed specifically to mimic an intermediate situation in between the imposed temperature and imposed heat flux cases as explained section \ref{sec_num_set}.
+
+\section{\textcolor{red}{Governing equations} and numerical setup} \label{sec_num_set}
+Present simulations are based on the open-source software Incompact3d developed at Universit\'e de Poitiers  and  Imperial  College  London by Laizet et al. (\cite{LaizetJCP2009},\cite{LaizetLi2011}).
+Sixth-order compact schemes are used on a Cartesian grid stretched in the wall-normal direction.
+The pressure is computed with a direct solver on a staggered grid while velocity components and temperature are collocated.
+The time-advancement used is a second-order hybrid explicit/implicit  Adams–-Bashforth / Crank-–Nicolson scheme implemented by Dairay et al. (\cite{Dairay2014}).
+
+\textcolor{red}{The mass and momentum equations read
+\begin{eqnarray}
+\partial_i u_i & = & 0 \nonumber \\
+\partial_t u_i & = & - \frac{\partial_j \left( u_i u_j \right) + u_j \partial_j u_i}{2} - \partial_i p + \frac{1}{Re} \partial_{jj} u_i + f \delta_{i,x}
+\end{eqnarray}
+where $\delta_{i,x}$ is the Kronecker symbol and $x$ stands for the streamwise direction.
+The convective term is computed using the skew-symetric formulation.
+The source term driving the channel flow ($f \delta_{i,x}$) is present only in the streamwise direction: it is a constant in space and time, fitted so that the averaged bulk velocity is $1$.
+The Reynolds number ($Re$) based on the averaged bulk velocity and the channel half-height ($h=1$) is $2280$.}
+
+\textcolor{red}{The passive scalar conservation equation in the fluid domain reads
+\begin{equation}
+\partial_t T = - \partial_j \left( T u_j \right) + \frac{1}{Re Pr} \partial_{jj} T + f_T u_x
+\end{equation}
+The Prandtl number ($Pr$) is equal to 0.71.
+The scalar equation contains a source term ($f_T u_x$) as defined by Kasagi et al. (\cite{kasagi1992direct}).
+In case of conjugate heat transfer, the passive scalar conservation equation in the solid domain is given by
+\begin{equation}
+\partial_t T_s = \frac{1}{G Re Pr} \partial_{jj} T_s
+\end{equation}
+The ratio of fluid-to-solid thermal diffusivities ($G$) is $1$ in the present simulations.
+As pointed out by Tiselj et al. (\cite{tiselj2013double}), a source term can be introduced in the solid domain but its impact is limited to the averaged temperature: it has no influence on the temperature fluctuations.
+In addition to the scalar conservation equations, the continuity of the scalar and its flux at the interface between both domains reads
+\begin{equation}
+T_s=T \mbox{ and } \partial_y T_s = G_2 \partial_y T
+\end{equation}
+The ratio of fluid-to-solid thermal conductivities ($G_2$) is $1$ in the present simulation.}
+
+Table \ref{table1} gives a comparison for the main parameters between present simulations and their reference counterparts: Kasagi et al. (\cite{kasagi1992direct}) for the imposed temperature case and Tiselj et al. (\cite{Tiselj2001dns}) for the imposed heat flux case.
+In order to ensure a satisfactory statistical convergence deep inside the solid domain for the conjugate heat transfer case, the present statistics already averaged by longitudinal and spanwise average have been also accumulated in time over an interval that is significantly longer than in previous studies (about five times longer).
+In order to allow comparison with same level of convergence for velocity statistics, every DNS presented in this paper has been performed with the same duration.
+The statistics are gathered on the fly during the simulation using each time step ($1.5 \times 10^6$ samples), except for the autocorrelations that were obtained a posteriori using $75 \times 10^3$ samples (one sample every $20$ time steps).
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}[htbp]{|l|c|c|c|}
+\hline
+          & Present & Kasagi et al. (\cite{kasagi1992direct}) & Tiselj et al. (\cite{Tiselj2001dns}) \\ \hline
+Domain                     & [25.6,2,8.52] & [5$\pi$,2,2$\pi$] & [5$\pi$,2,$\pi$] \\ \hline
+Grid                       & [256,193,256] & [128,97,128] & [128,97,65] \\ \hline
+$Re_\tau$                  & 149 & 150 & 150 \\ \hline
+$\Delta y^+$               & [0.49,4.8] & [0.08,4.9] & [0.08,4.9] \\ \hline
+$[\Delta_x^+, \Delta_z^+]$ & [14.8,5.1] & [18.4,7.36] & [18.4,7.4] \\ \hline
+$\Delta t^+$               & 0.02 & 0.12 & 0.12 \\ \hline
+Duration                   & 29000 & 2100 & 6000 \\ \hline
+\end{tabular}
+\end{center}
+\caption{Simulation parameters.}
+\label{table1}
+\end{table}
+
+\textcolor{red}{At the end of the simulation, the averaged quantities are normalized using the friction velocity ($u_\tau$), the channel half-height ($h=1$), the kinematic viscosity ($\nu = \tfrac{1}{Re}$) and the friction temperature ($T_\tau$).
+The friction velocity and temperature are estimated using the $y$ derivative of the averaged streamwise velocity and temperature at the wall, respectively.
+These derivatives have been computed using the same collocated compact finite difference scheme as the one used in the code to solve the governing equations.}
+The set of coefficients used in the fluid domain with compact finite difference schemes for the collocated derivatives ($\partial_c^1$,$\partial_c^2$), the staggered derivation ($\partial_s$) and the staggered interpolation ($I_s$) are recalled in table \ref{table2} using the notations of Lele et al. \cite{lele1992compact}.
+Only approximated values are given here for the second derivative $\partial_c^2$ (sixth order scheme in \cite{lamballais2011straightforward} with $k_c^{"}\Delta x^2 = 4 \pi^2$).
+In the solid domain, the finite difference scheme used for $\partial_c^2$ is identical to the fluid one.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}[htbp]{|l|c|c|c|c|}
+\hline
+ & $\partial_c^1$ & $\partial_c^2$ & $\partial_s^1$ & $I_s$ \\ \hline
+$\alpha$ & 1/3 & 0.478 & 9/62 & 3/10 \\ \hline
+a & 14/9 & 0.421 & 63/62 & 3/2 \\ \hline
+b & 1/9 & 1.70 & 17/62 & 1/10 \\ \hline
+c & 0 & -0.164 & 0 & 0 \\ \hline
+\end{tabular}
+\end{center}
+\caption{Finite difference coefficients.}
+\label{table2}
+\end{table}
+
+\paragraph{Conjugate heat transfer} As already stated, the conjugate heat transfer simulations were performed with the same thermal properties for the fluid and solid domains.
+The solid domain is on top ($[0,2,0] \leq [x,y,z] \leq [25.6,3,8.52]$) and on the bottom ($[0,-1,0] \leq [x,y,z] \leq [25.6,0,8.52]$) of the fluid domain, as illustrated in figure \ref{sketch}.
+The thermal solver for the solid domain uses the same finite difference schemes as Incompact3d for the wall-parallel diffusion and a spectral method for the wall-normal one.
+The boundary condition at the outer wall is an imposed heat flux, equal to the one imposed in the isoQ case.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./domaine.jpg}
+\caption{Sketch of the domain.}
+\label{sketch}
+\end{figure}
+
+The thermal coupling between both solvers is performed as follows.
+First, the fluid temperature is subjected to a Dirichlet boundary condition: $T_{fluid}^{n+1}=\frac{1}{2}\left(T_{solid}^n+T_{fluid}^n\right)$ where the superscript refers to the time-step number and the temperatures are taken at the wall.
+Then, the solid temperature is subjected to a Neumann boundary condition: $\lambda_{solid} \partial_n T_{solid}^{n+1}=\lambda_{fluid} \partial_n T_{fluid}^{n+1}$ with $\lambda_{solid} = \lambda_{fluid}$ for the present computation.
+\textcolor{red}{Following the work of M.B. Giles (\cite{giles1997stability}), this approach is stable} and first-order accurate in time: the resulting temperature field is slightly discontinuous at the interface while the heat flux is continuous through the Neumann boundary condition.
+
+\paragraph{Impact of the thermal boundary condition} One considers the general linear boundary condition with constant coefficients.% (\ref{general_bc}).
+
+\begin{equation}\label{general_bc}A T + B \partial_y T = C \mbox{ at the wall} \end{equation}
+
+When $B=0$, this is a Dirichlet boundary condition (imposed temperature). When $A=0$, this is a Neumann boundary condition (imposed heat flux). When $AB \neq 0$, this is a Robin boundary condition. When $B$ is equal to the thermal conductivity of the fluid, the parameter $A$ is the heat exchange coefficient.% often written $h$. 
+
+As a consequence of the general boundary condition (\ref{general_bc}), it is easy to show that the temperature statistics must satisfy the following linear system %(\ref{system}) where $\overline{T}$ and $T'$ are the mean and fluctuating parts of $T$ respectively.
+\begin{equation}\label{system}\begin{pmatrix}
+\overline{T} & \partial_y\overline{T} & -1 \\
+\overline{T'^2} & \tfrac{1}{2}\partial_y \overline{T'^2}  & 0 \\
+\tfrac{1}{2}\partial_y \overline{T'^2} & \overline{\partial_y T' \partial_y T'} & 0
+\end{pmatrix}
+\begin{pmatrix}
+A \\
+B \\
+C
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 \\
+0 \\
+0
+\end{pmatrix}\end{equation}
+where $\overline{T}$ and $T'$ are the mean and fluctuating parts of the instantaneous $T$, respectively.
+
+The determinant of the matrix must vanish, otherwise, the coefficients $A$, $B$ and $C$ are all zero. This condition provides a compatibility condition given by %(\ref{determinant}) that connects the temperature variance and its derivative at the wall with the wall-normal part of $\epsilon_\theta$, the dissipation rate of the temperature variance.
+\begin{equation}\label{determinant}\overline{T'^2} \times \overline{\partial_y T' \partial_y T'} = \left( \tfrac{1}{2}\partial_y \overline{T'^2} \right)^2\end{equation}
+that connects the temperature variance and its derivative at the wall with the wall-normal part of the dissipation rate of the temperature variance ($\epsilon_\theta$).
+Dirichlet (Neumann) boundary condition imposes the lack of wall fluctuations for the temperature (heat flux).
+As a consequence, the temperature variance derivative must vanish at the wall for both boundary conditions as shown by the compatibility condition (\ref{determinant}).
+This is obviously not the case for the more general Robin boundary condition.
+Considering the sub-system of the last 2 lines of (\ref{system}), one can notice that the statistics of the fluctuating temperature field are not directly subjected by $C$.
+Assuming $AB \neq 0$, only one degree of freedom remains: the ratio $\tfrac{A}{B}$%, as expressed equation (\ref{ratio}).
+
+\begin{equation}\label{ratio}\frac{A}{B} = \frac{\partial_y \overline{T'^2}}{2\overline{T'^2}} = 2 \frac{\overline{\partial_y T' \partial_y T'}}{\partial_y \overline{T'^2}} \Rightarrow A^2 \overline{T'^2} = B^2 \overline{\partial_y T' \partial_y T'} \end{equation}
+
+This condition can be used to define a specific Robin boundary condition where the couple of parameters $(A,B)$ are chosen here using the temperature variance obtained in the isoQ case and the wall-normal part of $\epsilon_\theta$ obtained with the isoT case in the r.h.s. of equation (\ref{ratio}).
+
+\section{Validation}
+
+In order to check that the DNS accuracy is ensured in the present study, an extensive comparison with reference results has been carried out for the conventional IsoT and isoQ cases. An excellent agreement was found, as shown for instance in figure \ref{isotq_ut_vt_tt} for the turbulent heat fluxes and temperature variance. The same level of agreement is recovered for corresponding budgets, as illustrated in figures \ref{isot_bud_ut_vt} and \ref{isot_bud_tt} for the isoT case.
+
+\begin{figure}[h!]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./isot_ut_vt_tt_lin.pdf} & 
+\includegraphics[width=0.5\textwidth]{./isot_ut_vt_tt_log.pdf} \\
+\includegraphics[width=0.5\textwidth]{./isoq_ut_vt_tt_lin.pdf} & 
+\includegraphics[width=0.5\textwidth]{./isoq_ut_vt_tt_log.pdf}
+\end{tabular}
+\caption{Turbulent heat fluxes and variance of temperature. Line: present. Symbol: (\cite{kasagi1992direct}) or (\cite{Tiselj2001dns}). Top: isoT. Bottom: isoQ. Left: linear scale. Right: logarithmic scale}
+\label{isotq_ut_vt_tt}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./isot_bud_ut.pdf} & 
+\includegraphics[width=0.5\textwidth]{./isot_bud_vt.pdf}
+\end{tabular}
+\caption{Budgets of turbulent heat fluxes with an imposed temperature at the wall. Line: present, isoT. Symbol: (\cite{kasagi1992direct}), isoT. Left: streamwise turbulent heat flux. Right: Wall-normal turbulent heat flux.}
+\label{isot_bud_ut_vt}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./isot_bud_tt.pdf}
+\caption{Budgets of the temperature variance with an imposed temperature at the wall. Line: present, isoT. Symbol: (\cite{kasagi1992direct}), isoT.}
+\label{isot_bud_tt}
+\end{figure}
+
+The main conclusion of this brief validation section is that the present high-order numerical methods (compact finite differences) enable us to provide results with accuracy similar to the reference data obtained using a pseudo-spectral method. The same spatial resolution and physical parameters have been used for all the calculations presented in this paper, thus, an equivalent accuracy is expected for the new results obtained with the Robin boundary conditions and the conjugate heat transfer. However, as reported in section \ref{section_results}, a specific requirement has been observed for this last case that was found more demanding in terms of numerical resolution. In the rest of the present paper, an extensive comparison between the four cases (referred as isoT, isoQ, Robin and Conjug) is presented with a focus on the effects of these different sets of boundary conditions on temperature statistics.
+
+\section{Results} \label{section_results}
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_ttcht_linlog.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_ttcht_lin.pdf}
+\end{tabular}
+\caption{Temperature variance with the four boundary conditions.}
+\label{all_tt}
+\end{figure}
+
+In figure \ref{all_tt}, the strong impact of the thermal boundary condition on the temperature variance is visible in the near-wall layer. As already reported in the literature, this zone of impact is limited to $y^+ \lesssim 20$ when the Prandtl number is around unity. Present results also suggest that the location and the amplitude of the peak in the temperature variance is impacted by the thermal boundary condition. This behaviour is consistent with the observations of Tiselj et al. (\cite{Tiselj2001dns}). It is remarkable that the present Robin boundary condition gives almost exactly the same temperature variance as the conjugate case. This agreement suggests that the equal weighting of the temperature variance (for the isoQ case) and the wall-normal part of $\epsilon_\theta$ (for the isoT case) in equation (\ref{ratio}) enables a simplified Robin boundary condition to mimic a clearly more complex situation involving a thermal solid/fluid interaction.  
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_vtcht_log.pdf} &
+\includegraphics[width=0.5\textwidth]{./corr_vtcht.pdf}
+\end{tabular}
+\caption{Left: Wall-normal turbulent heat flux ($<v'T'>$). Right: Associated one point correlation coefficient.}
+\label{all_vt}
+\end{figure}
+
+The one point correlation coefficient associated with the wall-normal turbulent heat flux $<v'T'>$ is $\frac{<v' T'>}{T_{rms} v_{rms}}$.
+From figure \ref{all_vt}, the wall-normal turbulent heat flux obtained with the Robin boundary condition and the conjugate case are very close, as it is the case for the temperature variance.
+The same similarity can be observed for the associated one point correlation coefficient, except at the wall where the small difference between the turbulent heat fluxes becomes more visible.
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_utcht_log.pdf} &
+\includegraphics[width=0.5\textwidth]{./corr_utcht.pdf}
+\end{tabular}
+\caption{Left: Streamwise turbulent heat flux ($<u'T'>$). Right: Associated one point correlation coefficient.}
+\label{all_ut}
+\end{figure}
+
+In figure \ref{all_ut}, the streamwise turbulent heat flux obtained with the Robin boundary condition and the conjugate case are closer to the isoQ case. Here again, the one point correlation coefficient emphasizes the small difference in the turbulent heat flux. The one point correlation coefficient for the Robin boundary condition is very close to the isoT case. The one point correlation coefficient for the conjugate case, is closer to the isoT one for $y^+ \geq 10$ and closer to the isoQ one at the wall.
+
+The obtained one point correlation coefficients suggest that there is a fundamental difference between conjugate and non-conjugate heat-transfer, as discussed in the next section.
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_bud_utcht.pdf} & 
+\includegraphics[width=0.5\textwidth]{./all_bud_vtcht.pdf}
+\end{tabular}
+\caption{Budgets of the turbulent heat fluxes. Line: Conjugate. Line+Symbol: isoT(+), isoQ(x) and Robin(o). Left: streamwise turbulent heat flux. Right: Wall-normal turbulent heat flux.}
+\label{all_bud_ut_vt}
+\end{figure}
+
+In figure \ref{all_bud_ut_vt}, the budgets of the streamwise turbulent heat flux is strongly impacted by the thermal boundary condition, in particular in the near wall region. The dissipation rate and the viscous diffusion are in equilibrium at the wall and are impacted symmetrically, which is normal, as they are the dominating terms in equilibrium in the near-wall region. Here again, the Robin and the conjugate cases are very close.
+The impact of the thermal boundary condition on the budgets of the wall-normal turbulent heat flux is less visible. A non-zero correlation is found between the temperature and the pressure gradient for the isoQ, Robin and conjugate cases, as reported by Tiselj et al. (\cite{Tiselj2001dns}) for the isoQ case.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./all_bud_ttcht.pdf}
+\caption{Budgets of the temperature variance. Line: conjugate. Line+symbol: isoT}
+\label{all_bud_tt}
+\end{figure}
+
+In figure \ref{all_bud_tt}, the budgets of temperature variance obtained for the conjugate case have a significant imbalance that is maximum at $y^+ \simeq 40$. The instantaneous temperature fields for the conjugate case are flawed by spurious oscillations. This point can be quantitatively confirmed by the examination of temperature two-point correlation (see figure \ref{all_autocorr_y150}) for which spurious oscillation are only visible in the streamwise direction. Despite the low amplitude of these oscillations, their dominant small-scale component can produce an artificial over-estimation of the dissipation $\epsilon_\theta$. The authors speculate that those oscillations are generated by the centred scheme used for the convective term in the temperature equation. The non-stationary and inhomogeneous Dirichlet boundary condition imposed at the wall when the fluid temperature is updated may be the trigger of those oscillations.
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_autocorr_x_y150.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_autocorr_z_y150.pdf}
+\end{tabular}
+\caption{Autocorrelation of the temperature at $y^+=150$. Left: Streamwise autocorrelation. Right: Spanwise autocorrelation.}
+\label{all_autocorr_y150}
+\end{figure}
+
+Due to the type of the numerical schemes used here, which are high-order and weakly dissipative only at very small scale, the only option to avoid these spurious oscillations is to increase the spatial resolution in the longitudinal direction for the conjugate case. In order to check this point, an additional simulation has been performed using twice the number of cells in the streamwise and spanwise directions. For this extra simulation, the budgets of the temperature variance becomes correctly balanced without spurious oscillations on the temperature fields. Another option to obtain satisfactory temperature variance budgets is to keep the same spatial resolution while increasing the numerical dissipation through the use of spectral vanishing viscosity (of fourth-order accuracy) as reported in (\cite{lamballais2011straightforward}) but only in the streamwise direction. Comparisons between results from the three simulations (normal resolution, high resolution, spectral vanishing viscosity) have confirmed that the spurious oscillations only have a significant effect on the dissipation rate of the temperature variance with negligible impact on the temperature variance itself and on the turbulent heat fluxes including their budget. \textcolor{red}{Following the work of Galantucci et al. (\cite{galantucci2010very}), it is established that the accurate resolution of the scalar evolution equation is very demanding in terms of grid spacing: they recommend $\Delta_x^+=\Delta_z^+=1$ to obtain an accurate evaluation of $\epsilon_\theta$ for the isoT case. However, the present excitation of small-scale temperature fluctuations in the conjugate case with a grid spacing similar to the canonical ones (Kasagi et al. (\cite{kasagi1992direct}), Tiselj et al. (\cite{Tiselj2001dns}), Kawamura et al. (\cite{kawamura1998dns})) was unexpected in this study, suggesting a careful analysis of the data in this more demanding situation to ensure the DNS accuracy.}
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_bud_ttcht2.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_bud_ttcht3.pdf}
+\end{tabular}
+\caption{Budgets of the temperature variance. Line: Conjugate. Line+Symbol: isoT(+), isoQ(x) and Robin(o). Left: blended fourth/sixth order scheme for the scalar diffusion on the regular grid. Right: sixth order scheme for the scalar diffusion on the refined grid.}
+\label{all_bud_tt2}
+\end{figure}
+
+In figure \ref{all_bud_tt2}, the budgets of the temperature variance are suitably balanced and the impact of the thermal boundary condition is significant. Present results for the isoQ case confirm the impact of the thermal boundary condition on the dissipation rate and on the molecular diffusion predicted by Kasagi et al. \cite{kasagi1989numerical} with an unsteady 2D synthetic turbulence model. The results for the Robin case and for the conjugate one are closer to the isoQ case for the dominant terms at the wall (dissipation rate and molecular diffusion). Further away from the wall, the thermal boundary condition impact is lighter. For instance, at $y^+ \simeq 10$, the thermal dissipation rate in the Robin and conjugate cases is closer to the isoT result.
+
+\section{Analysis of the thermal field in the solid domain.}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./all_tttotcht_log.pdf}
+\caption{Temperature variance. Fluid domain: $y^+ \ge 0 $. Solid domain: $y^+ \le 0$}
+\label{all_tt_tot}
+\end{figure}
+
+In the solid domain, the source of temperature fluctuations is located at the fluid/solid interface. Then, the deeper one goes in the solid domain (i.e. farther from the fluid) obviously as it contains no source of fluctuations, the lower the temperature variance. This behaviour, already reported by Tiselj et al. (\cite{Tiselj2001dns}), is well recovered here as shown in figure \ref{all_tt_tot}. Naturally, the spatial damping of temperature fluctuations across the solid is strongly dependent on the time and spatial scales involved in the heat conduction process. This selective damping can be easily exhibited through a Fourier and Laplace analysis of an idealized problem.
+
+\paragraph{Fourier and Laplace analysis of the solid heat conduction} One considers a solid domain, infinite in $x$ and $z$ directions and semi-infinite in the $y$ direction, subjected to a thermal load at $y=0$, which is statistically stationary and homogeneous in $x$ and $z$ directions. Applying Fourier transform in time and in the homogeneous directions to the solid heat diffusion equation leads to %equation (\ref{fourier}) (hereafter, the temperature in the Fourier space is noted $T_s$ and $[k_x,k_z,k_t]$ are the wavenumbers associated with the Fourier transforms in $X$, $Z$ and in time respectively).
+\begin{equation}\label{fourier}
+ik_t \frac{\rho C_p}{\lambda} \widehat{T_s} = \partial_{yy} \widehat{T_s} - \left( k_x^2 + k_z^2 \right) \widehat{T_s}
+\end{equation}
+(hereafter, the temperature in the Fourier space is denoted as $\widehat{T_s}$ and $[k_x,k_z,k_t]$ are the wavenumbers associated with the Fourier transforms in $x$, $z$ and in time, respectively).
+
+Applying a Laplace transform (denoted by an overbar hereafter) in $y$ direction to equation (\ref{fourier}) leads to %equation (\ref{foulap}). Hereafter, the complex variable $r$ is the frequency associated with the coordinate $y$ after the Laplace transform.
+\begin{eqnarray}\label{foulap}
+\overline{\partial_{yy} \widehat{T_s}} & = & r^2 \overline{\widehat{T_s}}\left( r \right) - r \widehat{T_s}\left( y=0 \right) - \partial_y \widehat{T_s} \left( y=0 \right) \nonumber \\
+\overline{\widehat{T_s}} & = & \frac{r \widehat{T_s}\left( y=0 \right) + \partial_y \widehat{T_s} \left( y=0 \right)}{r^2 - \left( k_x^2 + k_z^2 \right) - ik_t \frac{\rho C_p}{\lambda}}
+\end{eqnarray}
+Hereafter, the complex variable $r$ is the frequency associated with the coordinate $y$ after the Laplace transform.
+
+The denominator can be expressed as $r^2 - R^2$ with $R^2=k_x^2 + k_z^2 + ik_t \frac{\rho C_p}{\lambda}$. Applying partial fraction decomposition and an inverse Laplace transform leads to the temperature in the Fourier space%, as expressed equation (\ref{invlap}).
+\begin{eqnarray}\label{invlap}
+\widehat{T_s}  & = &  \frac{\partial_y \widehat{T_s} \left( y=0 \right) + R \widehat{T_s}\left( y=0 \right) }{2R} e^{yR} \nonumber \\
+     & - & \frac{\partial_y \widehat{T_s} \left( y=0 \right) - R \widehat{T_s}\left( y=0 \right) }{2R} e^{-yR}
+\end{eqnarray}
+
+In this equation, one term corresponds to an exponential growth and the other to an exponential decay. As the physical solution of the present heat conduction equation is not unbounded, there is a compatibility condition connecting the heat flux and the temperature at the wall: $\partial_y \widehat{T_s} \pm R \widehat{T_s} = 0$ (the sign depends on the sign of the real part of $R$). This compatibility condition is a product in Fourier space, which is equivalent to a convolution in the physical space. Such a boundary condition is non-local in time and space. It is a way to understand why a Robin boundary condition with constant coefficients cannot mimick perfectly conjugate heat-transfer as it can not reproduce those non-local effects.
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_autocorr_x_sol.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_autocorr_z_sol.pdf}
+\end{tabular}
+\caption{Autocorrelation of the temperature in the solid domain. Left: Streamwise autocorrelation. Right: Spanwise autocorrelation.}
+\label{all_autocorr_solid}
+\end{figure}
+
+Assuming this compatibility condition is satisfied, one can conclude that there is an exponential decay of temperature fluctuations in the semi-infinite solid domain. The characteristic penetration depth is $\delta$ (the inverse of the real part of $R$) with $$\frac{1}{\delta^4} \propto \left( k_x^2+k_z^2 \right)^2 + \left( \frac{\rho C_p}{\lambda}k_t \right)^2$$ The implication of such a relation is that only large-scale structures with a long lifetime are able to penetrate deeply inside the solid domain. This conclusion is supported by figure \ref{all_autocorr_solid} where a high autocorrelation value of the temperature field is found deeply inside the solid domain, even at large separations. This is the signature of very large-scale thermal structures.
+\textcolor{red}{As the solid heat diffusion equation is linear, those thermal structures, observed deeply inside the solid domain, must be also present at the fluid-solid interface.
+Therefore, very large-scale thermal structures should be present in the fluid domain, at least in the vicinity of the wall.}
+On the one hand, our domain is not infinite and the periodic boundary condition may artificially promote very large-scale thermal structures.
+On the other hand, these very large structures deep inside the solide actually have very low amplitudes as the previous graphs are normalised by the variance at the same depth.
+For $y^+=-77$, this temperature variance is reduced by a factor $10^{-3}$ compared to the fluid layer value as seen from figure \ref{all_tt_tot}, so that the temperature variance in the fluid domain, the turbulent heat fluxes and the associated budgets can be assumed to be weakly impacted by the limited extension of the computational domain.
+
+The present analytical analysis exhibits clearly the link between thermal structures highly localized in space/time (that can be associated with high wavenumbers/frequencies) and the thermal constraint subjected to the solid near the solid/fluid interface. This link can explain the trend for one-dimensional model of solid heat diffusion (i.e. that does not account for the lateral heat condition with $k_x=k_z=0$ in equation (\ref{fourier})) to overestimate the penetration depth $\delta$ while underestimating the associated thermal constraint in the fluid/solid interface region.
+
+\textcolor{red}{While the focus was on the solid domain, the obtained compatibility condition can be expressed with the fluid temperature and different thermal properties in the fluid and solid domains.
+Using the continuity of temperature and heat flux at the \textit{fluid-solid interface} leads to
+\begin{eqnarray}
+\widehat{T_s} = \pm \frac{1}{R} \partial_y \widehat{T_s} & \Longleftrightarrow  & \widehat{T_f} = \pm \frac{1}{R} \frac{\lambda_f}{\lambda_s} \partial_y \widehat{T_f} \mbox{ with } R^2=k_x^2 + k_z^2 + i k_t G Re Pr \nonumber \\
+& \Longleftrightarrow  & R \frac{\lambda_s}{\lambda_f} \widehat{T_f} = \pm \partial_y \widehat{T_f}
+\end{eqnarray}
+Hereafter, the temperature in the fluid domain (at the wall) and in the Fourier space is noted $\widehat{T_f}$.
+The impact of the fluid-to-solid thermal diffusivity ratio can not be isolated easily: $R$ depends only on the solid thermal diffusivity and is involved in a convolution.
+The analysis is easier for the fluid-to-solid conductivity ratio.
+When the solid is infinitely conductive ($\lambda_s \gg \lambda_f$), the temperature variance vanishes at the wall and the case can be idealised as an imposed temperature case.
+Oppositely, when the solid consists of insulation ($\lambda_s \ll \lambda_f$), the variance of the wall-normal temperature derivative vanishes and the case can be idealised as an imposed heat flux case.
+Indeed, following the Parseval theorem, a Fourier transform conserves the quadratic norm ($L_2$).
+If the dependence of $R$ on $k_x$, $k_z$ and $k_t$ was neglected, the quadratic norm of the spectral compatibility condition would be
+\begin{equation}
+T'^2 = \frac{1}{R^2} \frac{\lambda_f^2}{\lambda_s^2} \left( \partial_y T' \right)^2
+\end{equation}
+where $T'^2$ is the temperature variance at the wall and $\left( \partial_y T' \right)^2$ is the value at the wall of the wall-normal part of $\epsilon_\theta$.
+This equation is directly connected to the compatibility condition (\ref{ratio}) associated with the Robin boundary condition.
+Therefore, the assumption that $R$ is constant in the spectral space leads to a direct connection between $R$, the thermal conductivity ratio and the coefficients used in the Robin boundary condition ($A$ and $B$):
+\begin{equation}
+\frac{B^2}{A^2} = \frac{1}{R^2} \frac{\lambda_f^2}{\lambda_s^2}
+\end{equation}}
+
+\textcolor{red}{The Robin boundary condition obtained using $T'^2$ from the isoQ case and $\left( \partial_y T' \right)^2$ from the isoT case leads to $R \approx 0.154$ while the statistics from the conjugate case lead to $R \approx 0.165$. The authors estimate that the relative small difference between those values ($6.9\%$) explains the good agreement between the Robin and conjugate cases considered in this study.}
+
+%Assuming $k_x = k_t = 0$, the ratio $T'^2$ over $\left( \partial_y T' \right)^2$ at the wall can be used to estimate $\lambda_z = \tfrac{2 \pi}{k_z}$. For the conjugate and Robin cases, $\lambda_z$ is $38$ and $41$, respectively. The ratio $T'^2$ over $\partial_y \left( T'^2 \right)$ for the conjugate and Robin cases leads to $71$ and $49$ , respectively.
+
+\paragraph{Autocorrelation of the temperature field in the fluid domain}
+
+In figure \ref{all_autocorr_y515}, the autocorrelation of the temperature at $y^+=15$ does not suggest a significant impact of the thermal boundary condition. This impact is more visible at $y^+=5$, especially for the streamwise autocorrelation.
+
+In figure \ref{all_autocorr_y0}, the situation is similar at the wall. The streamwise autocorrelation of the temperature at the wall decreases faster in the Robin case: small-scale structures are more dominant in the Robin case compared with the conjugate one. Oppositely, for the wall-normal heat flux, small-scale structures are more dominant in the conjugate case compared with the Robin case. The Robin boundary condition with constant coefficients leads to the same autocorrelation for the temperature and wall-normal heat flux at the wall. This is obviously not the case for conjugate heat transfer. Those evidences support the conclusion of the previous analytical analysis: a Robin boundary condition with constant coefficients cannot mimick faithfully the non-local feature of conjugate heat-transfer. \textcolor{red}{The situation is similar for the spanwise autocorrelations. The contours of the $2D$ autocorrelation in figure \ref{all_autocorr_y0} show that near-wall thermal structures are severely impacted by the thermal boundary condition. The contours of the temperature fluctuations at the wall indicate that large-scale structures are more dominant in the conjugate case. Oppositely, the contours of the wall-normal temperature derivative at the wall show that small-scale structures are more dominant in the conjugate case. In addition, for both the temperature and wall-normal heat flux, the dashed contour (value of -0.1) of the conjugate case crosses the Robin one, which is evidence of large deviations of near-wall thermal structures between both cases.}
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{ll}
+\includegraphics[width=0.5\textwidth]{./all_autocorr_x_y15.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_autocorr_z_y15.pdf} \\
+\includegraphics[width=0.5\textwidth]{./all_autocorr_x_y5.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_autocorr_z_y5.pdf}
+\end{tabular}
+\caption{Autocorrelation of the temperature. Left: Streamwise autocorrelation. Right: Spanwise autocorrelation. Top: $y^+=15$. Bottom: $y^+=5$}
+\label{all_autocorr_y515}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{tabular}[htbp]{cc}
+$T'$ & $\partial_y T'$ \\
+\includegraphics[width=0.5\textwidth]{./all_autocorr_x_y0.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_autocorrQ_x_y0.pdf} \\
+\includegraphics[width=0.5\textwidth]{./all_autocorr_z_y0.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_autocorrQ_z_y0.pdf} \\
+\includegraphics[width=0.5\textwidth]{./autocorr_T_y0.pdf} &
+\includegraphics[width=0.5\textwidth]{./autocorr_Q_y0.pdf}
+\end{tabular}
+\caption{Autocorrelation at the wall. Left: Temperature. Right: Wall-normal heat flux. Top: $1D$ streamwise autocorrelation. Middle: $1D$ spanwise autocorrelation. Bottom: Contour of $2D$ autocorrelation, solid (dashed) line for contour at 0.1 (-0.1)}
+\label{all_autocorr_y0}
+\end{figure}
+
+\section{Conclusion}
+
+Our results demonstrate the sensitivity of the dissipation rate associated with the temperature variance to the thermal boundary condition.
+We have also investigated the ability of a specific Robin boundary condition with constant coefficients to mimic conjugate heat-transfer.
+Regarding the case of conjugate heat-transfer considered here (same physical properties in the fluid and solid domain), the present Robin boundary condition produces statistics close to the conjugate ones for the turbulent heat fluxes, temperature variance and their budgets.
+Some analytical evidences suggest that very large scale thermal structures are intrinsic to conjugate heat-transfer.
+However, it is not yet clear whether the large thermal structures observed in the simulation confirm this fact or are the consequence of a periodic boundary condition.
+The compatibility condition obtained from the analytical analysis (a convolution in space and time) emphasizes the non-local aspects of conjugate heat-transfer, which can not be mimicked by a Robin boundary condition with constant coefficients.
+
+The impact of the thermal boundary condition at the outer wall has not been investigated: further simulations should be performed with an imposed temperature or a heat exchange coefficient at the outer wall.
+It would also be interesting to study cases with different thermal properties in the fluid and solid domain.
+
+\section{Acknowledgements}
+
+The authors thank Pr. I. Tiselj for providing results and assistance. We also thank the French National Research Agency and EDF R\&D for funding the study (CIFRE 2012/0047) and providing computational time on Zumbrota supercomputer (IBM - Blue-geneQ).
+
+%Here are two sample references: %\cite{Feynman1963118,Dirac1953888}.
+
+\section*{References}
+
+\bibliography{biblio}
+
+\end{document}
