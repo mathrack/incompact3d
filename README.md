@@ -4,38 +4,38 @@ The present data and the associated source code are freely available under the G
 
 ## Imposed temperature case
 
-The statistics are directly available in a [excel file](/diric/diric.xls) but it is recommended to visit the [directory](/diric/) to obtain a more detailed description of the case.
+The statistics are directly available in a [excel file](/../raw/master/diric/diric.xls) but it is recommended to visit the [directory](/diric/) to obtain a more detailed description of the case.
 
 ## Imposed heat flux case
 
-The statistics are directly available in a [excel file](/diric/diric.xls) but it is recommended to visit the [directory](/diric/) to obtain a more detailed description of the case.
+The statistics are directly available in a [excel file](/../raw/master/neuma/neuma.xls) but it is recommended to visit the [directory](/neuma/) to obtain a more detailed description of the case.
 
 ## Conjugate heat-transfer cases
 
 The statistics are directly available in excel files but it is recommended to visit the associated directories to obtain a more detailed description of the cases:
 
 - Cases with the same thermal properties in the fluid and solid domains:
-    - Regular grid: [excel file](/g1a1i_od6/g1a1_od6.xls) and [repository](/g1a1_od6/)
+    - Regular grid: [excel file](/../raw/master/g1a1i_od6/g1a1_od6.xls) and [repository](/g1a1_od6/)
     - Regular grid with spectral vanishing viscosity on the scalar: [excel file](/g1a1/g1a1.xls) and [repository](/g1a1/)
-    - Finer grid: [excel file](/g1a1_refined/g1a1_refined.xls) and [repository](/g1a1_refined/)
+    - Finer grid: [excel file](/../raw/master/g1a1_refined/g1a1_refined.xls) and [repository](/g1a1_refined/)
 - Cases with different thermal properties in the fluid and solid domains:
     - This [repository](/gxay/) contains the cases and their description.
-    - [Excel](/gxay/g05a2/g05a2.xls) file for $`G=\frac{1}{2}`$ and $`G_2=\frac{1}{2}`$
-    - [Excel](/gxay/g05a1/g05a1.xls) file for $`G=\frac{1}{2}`$ and $`G_2=1`$
-    - [Excel](/gxay/g05a05/g05a05.xls) file for $`G=\frac{1}{2}`$ and $`G_2=2`$
-    - [Excel](/gxay/g1a2/g1a2.xls) file for $`G=1`$ and $`G_2=\frac{1}{2}`$
-    - [Excel](/gxay/g1a05/g1a05.xls) file for $`G=1`$ and $`G_2=2`$
-    - [Excel](/gxay/g2a2/g2a2.xls) file for $`G=2`$ and $`G_2=\frac{1}{2}`$
-    - [Excel](/gxay/g2a1/g2a1.xls) file for $`G=2`$ and $`G_2=1`$
-    - [Excel](/gxay/g2a05/g2a05.xls) file for $`G=2`$ and $`G_2=2`$
+    - [Excel](/../raw/master/gxay/g05a2/g05a2.xls) file for $`G=\frac{1}{2}`$ and $`G_2=\frac{1}{2}`$
+    - [Excel](/../raw/master/gxay/g05a1/g05a1.xls) file for $`G=\frac{1}{2}`$ and $`G_2=1`$
+    - [Excel](/../raw/master/gxay/g05a05/g05a05.xls) file for $`G=\frac{1}{2}`$ and $`G_2=2`$
+    - [Excel](/../raw/master/gxay/g1a2/g1a2.xls) file for $`G=1`$ and $`G_2=\frac{1}{2}`$
+    - [Excel](/../raw/master/gxay/g1a05/g1a05.xls) file for $`G=1`$ and $`G_2=2`$
+    - [Excel](/../raw/master/gxay/g2a2/g2a2.xls) file for $`G=2`$ and $`G_2=\frac{1}{2}`$
+    - [Excel](/../raw/master/gxay/g2a1/g2a1.xls) file for $`G=2`$ and $`G_2=1`$
+    - [Excel](/../raw/master/gxay/g2a05/g2a05.xls) file for $`G=2`$ and $`G_2=2`$
 
 ## Cases with a Robin boundary condition
 
 The statistics are directly available in excel files but it is recommended to visit the associated directories to obtain a more detailed description of the cases:
 
-- Robin case reproducing the case $`K=\frac{1}{\sqrt{2}}`$: [excel file](/robin_27/robin_27.xls) and [repository](/robin_27/)
-- Robin case reproducing the case $`G=1`$ and $`G_2=1`$: [excel file](/robin_19/robin_19.xls) and [repository](/robin_19/)
-- Robin case reproducing the case $`K=\sqrt{2}`$: [excel file](/robin_14/robin_14.xls) and [repository](/robin_14/)
+- Robin case reproducing the case $`K=\frac{1}{\sqrt{2}}`$: [excel file](/../raw/master/robin_27/robin_27.xls) and [repository](/robin_27/)
+- Robin case reproducing the case $`G=1`$ and $`G_2=1`$: [excel file](/../raw/master/robin_19/robin_19.xls) and [repository](/robin_19/)
+- Robin case reproducing the case $`K=\sqrt{2}`$: [excel file](/../raw/master/robin_14/robin_14.xls) and [repository](/robin_14/)
 
 ## Data associated with our publication in [International Journal of Heat and Fluid Flow](http://dx.doi.org/10.1016/j.ijheatfluidflow.2015.07.009)
 
