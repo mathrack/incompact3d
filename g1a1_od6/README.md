@@ -6,7 +6,7 @@ The present repository contains:
 - A *raw* folder with raw statistics (1D text files). Our code outputs statistics averaged in the streamwise direction in a binary format. The statistics in the raw folder are averaged spanwise and preprocessed. As a result, the file *vphim1d.dat* contains $`\overline{v \phi} - \overline{v} \overline{\phi}`$.
 - A scilab script (.sce) that reads the raw statistics and output quantities in wall-units.
 - A *csv* folder with statistics in wall-units.
-- A *xls* file with statistics in wall-units.
+- A [xls file](/../raw/master/g1a1_od6/g1a1_od6.xls) with statistics in wall-units.
 - The present README.md
 
 # Configuration of the turbulent channel flow, dynamic part.
@@ -41,7 +41,7 @@ The scalar conservation equation in the fluid domain reads:
 ```
 The value of the Prandtl number is $`0.71`$. At the fluid-solid interfaces, the scalar satisfies:
 ```math
-\phi = \phi_s \mbox{ and \partial_y \phi = G_2 \partial_y \phi_s}
+\phi = \phi_s \mbox{ and } \partial_y \phi = G_2 \partial_y \phi_s
 ```
 Where $`G_2`$ is the ratio of solid-to-fluid thermal conductivities and $`\phi_s`$ the scalar in the solid domain. There, the scalar conservation equation reads:
 ```math

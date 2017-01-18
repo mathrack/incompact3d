@@ -6,7 +6,7 @@ The present repository contains:
 - A *raw* folder with raw statistics (1D text files). Our code outputs statistics averaged in the streamwise direction in a binary format. The statistics in the raw folder are averaged spanwise and preprocessed. As a result, the file *vphim1d.dat* contains $`\overline{v \phi} - \overline{v} \overline{\phi}`$.
 - A scilab script (.sce) that reads the raw statistics and output quantities in wall-units.
 - A *csv* folder with statistics in wall-units.
-- A *xls* file with statistics in wall-units.
+- A [xls file](/../raw/master/robin_27/robin_27.xls) with statistics in wall-units.
 - The present README.md
 
 # Configuration of the turbulent channel flow, dynamic part.
