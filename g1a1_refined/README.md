@@ -41,7 +41,7 @@ The scalar conservation equation in the fluid domain reads:
 ```
 The value of the Prandtl number is $`0.71`$. At the fluid-solid interfaces, the scalar satisfies:
 ```math
-\phi = \phi_s \mbox{ and } \partial_y \phi = G_2 \partial_y \phi_s
+\phi = \phi_s \textstyle{ and } \partial_y \phi = G_2 \partial_y \phi_s
 ```
 Where $`G_2`$ is the ratio of solid-to-fluid thermal conductivities and $`\phi_s`$ the scalar in the solid domain. There, the scalar conservation equation reads:
 ```math
