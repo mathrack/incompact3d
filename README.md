@@ -15,8 +15,8 @@ The statistics are directly available in a [excel file](/../raw/master/neuma/neu
 The statistics are directly available in excel files but it is recommended to visit the associated directories to obtain a more detailed description of the cases:
 
 - Cases with the same thermal properties in the fluid and solid domains:
-    - Regular grid: [excel file](/../raw/master/g1a1i_od6/g1a1_od6.xls) and [repository](/g1a1_od6/)
-    - Regular grid with spectral vanishing viscosity on the scalar: [excel file](/g1a1/g1a1.xls) and [repository](/g1a1/)
+    - Regular grid: [excel file](/../raw/master/g1a1_od6/g1a1_od6.xls) and [repository](/g1a1_od6/)
+    - Regular grid with spectral vanishing viscosity on the scalar: [excel file](/../raw/master/g1a1/g1a1.xls) and [repository](/g1a1/)
     - Finer grid: [excel file](/../raw/master/g1a1_refined/g1a1_refined.xls) and [repository](/g1a1_refined/)
 - Cases with different thermal properties in the fluid and solid domains:
     - This [repository](/gxay/) contains the cases and their description.
@@ -34,7 +34,7 @@ The statistics are directly available in excel files but it is recommended to vi
 The statistics are directly available in excel files but it is recommended to visit the associated directories to obtain a more detailed description of the cases:
 
 - Robin case reproducing the case $`K=\frac{1}{\sqrt{2}}`$: [excel file](/../raw/master/robin_27/robin_27.xls) and [repository](/robin_27/)
-- Robin case reproducing the case $`G=1`$ and $`G_2=1`$: [excel file](/../raw/master/robin_19/robin_19.xls) and [repository](/robin_19/)
+- Robin case reproducing the case $`G=1`$ and $`G_2=1`$: [excel file](/../raw/master/robin_19/robin.xls) and [repository](/robin_19/)
 - Robin case reproducing the case $`K=\sqrt{2}`$: [excel file](/../raw/master/robin_14/robin_14.xls) and [repository](/robin_14/)
 
 ## Data associated with our publication in [International Journal of Heat and Fluid Flow](http://dx.doi.org/10.1016/j.ijheatfluidflow.2015.07.009)
