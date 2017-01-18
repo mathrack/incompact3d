@@ -15,7 +15,7 @@ Here, $`[x,y,z]`$ and $`[1,2,3]`$ will be used for the streamwise, wall-normal a
 
 ---
 
-The domain is a parallelepiped: $`[0,0,0] \leq [x,y,z] \leq [25.6, 2, 8.52]`$. The mesh is streched in the wall-normal direction (`istret = 2` and `beta = 0.225`). Periodic boundary conditions are used in the directions $`x`$ and $`z`$. At $`y=0`$ and $`y=2`$, the velocity is null and the pressure satisfies an homogeneous Neumann boundary condition.
+The fluid domain is a parallelepiped: $`[0,0,0] \leq [x,y,z] \leq [25.6, 2, 8.52]`$. The mesh is streched in the wall-normal direction (`istret = 2` and `beta = 0.225`). Periodic boundary conditions are used in the directions $`x`$ and $`z`$. At $`y=0`$ and $`y=2`$, the velocity is null and the pressure satisfies an homogeneous Neumann boundary condition. The number of nodes in the $`[x,y,z]`$ directions is $`[256, 193, 256]`$.
 
 ---
 

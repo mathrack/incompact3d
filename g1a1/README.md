@@ -19,6 +19,10 @@ The fluid domain is a parallelepiped: $`[0,0,0] \leq [x,y,z] \leq [25.6, 2, 8.52
 
 ---
 
+The solid domains are parallelepipeds located on top and on bottom of the fluid domain : $`[0,2,0] \leq [x,y,z] \leq [25.6, 3, 8.52]`$ and $`[0,-1,0] \leq [x,y,z] \leq [25.6, 0, 8.52]`$. In the streamwise and spanwise directions, the grid in the solid domain is identical to the fluid one. In the wall-normal direction, a Chebyshev grid with $`129`$ interior nodes is used.
+
+---
+
 The momentum equation solved reads:
 ```math
 \partial_t u_i = - \frac{\partial_j \left( u_i u_j \right) + u_j \partial_j u_i}{2} - \partial_i p + \nu \partial_{jj} u_i + f_i
@@ -31,8 +35,18 @@ The time step is $`0.002`$. After the flow reached a statistically steady state,
 
 # Configuration of the turbulent channel flow, thermal part.
 
-The scalar conservation equation reads:
+The scalar conservation equation in the fluid domain reads:
 ```math
 \partial_t \phi = - \partial_j \left( \phi u_j \right) + \frac{\nu}{Pr} \partial_{jj} \phi + \frac{\nu}{Pr} u_x
 ```
-The value of the Prandtl number is $`0.71`$. At $`y=0`$, $`19 \phi - \partial_y \phi = -1`$. At $`y=2`$, $`19 \phi + \partial_y \phi = -1`$.
+The value of the Prandtl number is $`0.71`$. At the fluid-solid interfaces, the scalar satisfies:
+```math
+\phi = \phi_s \mbox{ and \partial_y \phi = G_2 \partial_y \phi_s}
+```
+Where $`G_2`$ is the ratio of solid-to-fluid thermal conductivities and $`\phi_s`$ the scalar in the solid domain. There, the scalar conservation equation reads:
+```math
+\partial_t \phi_s = \frac{\nu}{G Pr} \partial_{jj} \phi_s
+```
+Where $`G`$ is the ratio of fluid-to-solid thermal diffusivity. At $`y=-1`$, $`\partial_y \phi_s = G_2`$. At $`y=3`$, $`\partial_y \phi_s = -G_2`$.
+
+Here, $`G = 1`$ and $`G_2 = 1`$.
