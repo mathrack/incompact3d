@@ -1,3 +1,8 @@
+##################################################################
+# Flageul et al.
+# http://dx.doi.org/10.1016/j.ijheatfluidflow.2015.07.009
+# Reads xls(x) files and generates figures
+##################################################################
 from numpy import *
 from pylab import *
 import xlrd

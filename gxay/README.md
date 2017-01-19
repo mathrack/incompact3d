@@ -2,7 +2,7 @@
 
 The present repository contains our results for the conjugate cases. The folder g1a1 present here is a symbolic link to the folder [g1a1](/g1a1/) found in the master tree.
 
-The folder are named gXaY. $`X`$ is $`G`$, the fluid-to-solid thermal diffusivity ratio. $`Y`$ is $`\frac{1}{G_2}`$, the fluid-to-solid thermal conductivity ratio.
+The folders are named gXaY. $`X`$ is $`G`$, the fluid-to-solid thermal diffusivity ratio. $`Y`$ is $`\frac{1}{G_2}`$, the fluid-to-solid thermal conductivity ratio.
 
 The folder [g1a1](/g1a1/) contains:
 - The source code used to run the simulation (Makefile, .f90 and .prm files)

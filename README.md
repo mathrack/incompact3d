@@ -73,7 +73,7 @@ Semi-implicit version of the code available here was originally implemented by T
 
 ## Our work
 
-I have applied some modifications to the code during my PhD. All the publications associated with our work are available [online](https://framagit.org/CFLAG/incompact3d):
+I have applied some modifications to the code during my PhD. All the publications associated with our work are available [online](https://hal.archives-ouvertes.fr/search/index/q/*/authIdHal_s/cedric-flageul):
 
 - [DNS of turbulent channel flow with conjugate heat transfer: Effect of thermal boundary conditions on the second moments and budgets](http://dx.doi.org/10.1016/j.ijheatfluidflow.2015.07.009)
 - [DNS of turbulent channel flow: can we imitate conjugate heat-transfer with a Robin boundary condition?](https://hal.archives-ouvertes.fr/hal-01323794v1)
