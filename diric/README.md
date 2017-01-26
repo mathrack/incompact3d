@@ -43,7 +43,7 @@ Statistics in the *xls* file and in the *csv* folder are in wall-units. The conv
 
 At the wall $`y=0`$, the friction velocity $`u_\tau`$ verifies:
 ```math
-u_\tau = \sqrt{\frac{\partial_y \overline{U_x} \left( y=0 \right }}{Re}}
+u_\tau = \sqrt{\frac{\partial_y \overline{U_x} \left( y=0 \right }{Re}}
 ```
 
 And the friction temperature $`T_\tau`$ verifies:
