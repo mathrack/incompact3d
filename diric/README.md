@@ -43,7 +43,10 @@ Statistics in the *xls* file and in the *csv* folder are in wall-units. The conv
 
 At the wall $`y=0`$, the friction velocity $`u_\tau`$ and the friction temperature $`T_\tau`$ verify:
 ```math
-u_tau = \sqrt{\frac{\partial_y \overline{U_x \left( y=0 \right) }}{Re}} T_\tau = \frac{\overline{q_w}}{\rho C_p u_\tau} = \frac{\partial_y \overline{\phi \left( y=0 \right)}}{Re Pr u_\tau}
+u_\tau = \sqrt{\frac{\partial_y \overline{U_x} \left( y=0 \right }}{Re}}
+```
+```math
+T_\tau = \frac{\overline{q_w}}{\rho \; C_p \; u_\tau} = \frac{\partial_y \overline{\phi} \left( y=0 \right)}{Re \; Pr \; u_\tau}
 ```
 
 The velocity in converted to wall-units when divided by $`u_\tau`$. The temperature is converted to wall-units when divided by $`T_\tau`$. Distances are converted to wall-units when multiplied by $`Re u_\tau`$. Application of dimensional analysis should easily allow one to convert time or pressure to wall-units
