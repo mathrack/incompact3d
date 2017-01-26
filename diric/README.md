@@ -41,10 +41,12 @@ The value of the Prandtl number is $`0.71`$. At $`y=0`$ and $`y=2`$, $`\phi = 0`
 
 Statistics in the *xls* file and in the *csv* folder are in wall-units. The conversion from computational units to wall-units is performed in the scilab script (.sce). This conversion is briefly described here. For further details, please consult a good book on Turbulence and (Computational) Fluid Mechanics. For instance *Turbulent flows* by S. B. Pope, *The theory of homogeneous turbulence* by G. K. Batchelor or *A first course in turbulence* by H. Tennekes and J. L. Lumley.
 
-At the wall $`y=0`$, the friction velocity $`u_\tau`$ and the friction temperature $`T_\tau`$ verify:
+At the wall $`y=0`$, the friction velocity $`u_\tau`$ verifies:
 ```math
 u_\tau = \sqrt{\frac{\partial_y \overline{U_x} \left( y=0 \right }}{Re}}
 ```
+
+And the friction temperature $`T_\tau`$ verifies:
 ```math
 T_\tau = \frac{\overline{q_w}}{\rho \; C_p \; u_\tau} = \frac{\partial_y \overline{\phi} \left( y=0 \right)}{Re \; Pr \; u_\tau}
 ```
