@@ -43,21 +43,21 @@ Statistics in the *xls* file and in the *csv* folder are in wall-units. The conv
 
 At the wall $`y=0`$, the friction velocity $`u_\tau`$ verifies:
 ```math
-u_\tau = \sqrt{\frac{\partial_y \overline{U_x} \left( y=0 \right) }{Re}}
+u_\tau = \sqrt{ \nu \partial_y \overline{U_x} \left( y=0 \right) }
 ```
 
 And the friction temperature $`T_\tau`$ verifies:
 ```math
-T_\tau = \frac{\overline{q_w}}{\rho \; C_p \; u_\tau} = \frac{\partial_y \overline{\phi} \left( y=0 \right)}{Re \; Pr \; u_\tau}
+T_\tau = \frac{\overline{q_w}}{\rho \; C_p \; u_\tau} = \nu \frac{\partial_y \overline{\phi} \left( y=0 \right)}{Pr \; u_\tau}
 ```
 
-The velocity in converted to wall-units when divided by $`u_\tau`$. The temperature is converted to wall-units when divided by $`T_\tau`$. Distances are converted to wall-units when multiplied by $`Re u_\tau`$. Application of dimensional analysis should easily allow one to convert time or pressure to wall-units
+The velocity is converted to wall-units when divided by $`u_\tau`$. The temperature is converted to wall-units when divided by $`T_\tau`$. Distances are converted to wall-units when multiplied by $`\frac{u_\tau}{\nu}`$. Application of dimensional analysis should easily allow one to convert time or pressure to wall-units.
 
 For the budgets of the Reynolds stresses, please see equation (1) in [Mansour, Kim and Moin](https://doi.org/10.1017/S0022112088002885)
 
 For the budgets of the turbulent heat fluxes, please see equation (12) in [Kozuka, Seki and Kawamura](http://dx.doi.org/10.1016/j.ijheatfluidflow.2009.02.023)
 
-For the budget of the temperature variance, some look at the budget of $`\overline{\phi'^2}`$ and some look at the budget of $`\frac{\overline{\phi'^2}}{2}`$, by analogy with $`k`$, the turbulent kinetic energy, which also contains a factor 2. Below is the budget equation of the latter:
+For the budget of the temperature variance, some look at the budget of $`\overline{\phi^2}`$ and some look at the budget of $`\frac{\overline{\phi'^2}}{2}`$, by analogy with $`k`$, the turbulent kinetic energy, which also contains a factor 2. Below is the budget equation of the latter:
 ```math
 \partial_t \frac{\overline{\phi'^2}}{2} + \partial_k \left( \overline{u_k} \frac{\overline{\phi'^2}}{2} \right) = - \overline{u'_k \phi'} \partial_k \overline{\phi} -\partial_k \left( \overline{u'_k \frac{\phi'^2}{2}}\right) + \frac{1}{Pr} \partial_{kk} \frac{\overline{\phi'^2}}{2} - \frac{1}{Pr} \overline{\partial_k \phi' \partial_k \phi'}
 ```
