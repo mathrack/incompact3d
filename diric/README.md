@@ -59,5 +59,5 @@ For the budgets of the turbulent heat fluxes, please see equation (12) in [Kozuk
 
 For the budget of the temperature variance, some look at the budget of $`\overline{{\phi'}^2}`$ and some look at the budget of $`\frac{\overline{{\phi'}^2}}{2}`$, by analogy with $`k`$, the turbulent kinetic energy, which also contains a factor 2. Below is the budget equation of the latter:
 ```math
-\partial_t \frac{\overline{{\phi'}^2}}{2} + \partial_k \left( \overline{u_k} \frac{\overline{{\phi'}^2}}{2} \right) = - \overline{u'_k \phi'} \partial_k \overline{\phi} -\partial_k \left( \overline{u'_k \frac{{\phi'}^2}{2}}\right) + \frac{1}{Pr} \partial_{kk} \frac{\overline{{\phi'}^2}}{2} - \frac{1}{Pr} \overline{\partial_k \phi' \partial_k \phi'}
+\partial_t \frac{\overline{{\phi'}^2}}{2} + \partial_k \left( \overline{u_k} \frac{\overline{{\phi'}^2}}{2} \right) = - \overline{u'_k \phi'} \partial_k \overline{\phi} -\partial_k \left( \overline{u'_k \frac{{\phi'}^2}{2}}\right) + \frac{1}{Pr} \partial_{kk} \left( \frac{\overline{{\phi'}^2}}{2} \right) - \frac{1}{Pr} \overline{\partial_k \phi' \partial_k \phi'}
 ```
