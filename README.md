@@ -73,7 +73,7 @@ Semi-implicit version of the code available here was originally implemented by T
 
 ## Our work
 
-I have applied some modifications to the code during my PhD. All the publications associated with our work are available [online](https://hal.archives-ouvertes.fr/search/index/q/*/authIdHal_s/cedric-flageul):
+I have applied some modifications to the code during my PhD. All the publications associated with our work are available [online](https://hal.archives-ouvertes.fr/search/index/q/*/authFullName_s/C%C3%A9dric+Flageul):
 
 - [On the Discontinuity of $`\varepsilon_\theta`$ -the Dissipation Rate Associated with the Temperature Variance- at the Fluid-Solid Interface for Cases with Conjugate Heat Transfer.](https://hal.archives-ouvertes.fr/hal-01456930)
 - [DNS of turbulent channel flow with conjugate heat transfer: Effect of thermal boundary conditions on the second moments and budgets.](http://dx.doi.org/10.1016/j.ijheatfluidflow.2015.07.009)
