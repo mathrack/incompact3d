@@ -88,4 +88,4 @@ The module for the statistics would probably look much better if a derived type 
 
 # Acknowledgements
 
-The author and coworkers thank the French National Research Agency and EDF R&D for funding the study (CIFRE 2012/0047) and providing computational time on Zumbrota supercomputer (IBM - Blue-geneQ). We also thank Framasoft and the Institut Jo\v{z}ef Stefan for providing the gitlab services that host the present project at [https://repo.ijs.si/CFLAG/incompact3d](https://repo.ijs.si/CFLAG/incompact3d) and [https://framagit.org/CFLAG/incompact3d](https://framagit.org/CFLAG/incompact3d).
+The author and coworkers thank the French National Research Agency and EDF R&D for funding the study (CIFRE 2012/0047) and providing computational time on Zumbrota supercomputer (IBM - Blue-geneQ). We also thank Framasoft and the Institut Jozef Stefan for providing the gitlab services that host the present project at [https://repo.ijs.si/CFLAG/incompact3d](https://repo.ijs.si/CFLAG/incompact3d) and [https://framagit.org/CFLAG/incompact3d](https://framagit.org/CFLAG/incompact3d).
