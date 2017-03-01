@@ -55,9 +55,7 @@ The [repository](/IJHFF/) contains:
 
 ## Our roots
 
-The present source code was first downloaded from the website of Incompact3d [the 2016-05-26 at 10:12 CEST = 08:12 UTC](http://www.incompact3d.com/uploads/5/8/7/2/58724623/channel.tar)
-
------
+The present source code was first downloaded from the website of Incompact3d [the 2016-05-26 at 10:12 CEST = 08:12 UTC](http://www.incompact3d.com/uploads/5/8/7/2/58724623/channel.tar).
 
 If using the software, you are kindly asked to cite:
 - [High-order compact schemes for incompressible flows: A simple and efficient method with quasi-spectral accuracy](http://dx.doi.org/10.1016/j.jcp.2009.05.010)
@@ -90,4 +88,4 @@ The module for the statistics would probably look much better if a derived type 
 
 # Acknowledgements
 
-The author and coworkers thank the French National Research Agency and EDF R&D for funding the study (CIFRE 2012/0047) and providing computational time on Zumbrota supercomputer (IBM - Blue-geneQ). We also thank the association Framasoft for providing the service framagit that host the present project.
+The author and coworkers thank the French National Research Agency and EDF R&D for funding the study (CIFRE 2012/0047) and providing computational time on Zumbrota supercomputer (IBM - Blue-geneQ). We also thank Framasoft and the Institut Jo\v{z}ef Stefan for providing the gitlab services that host the present project at [https://repo.ijs.si/CFLAG/incompact3d](https://repo.ijs.si/CFLAG/incompact3d) and [https://framagit.org/CFLAG/incompact3d](https://framagit.org/CFLAG/incompact3d).
