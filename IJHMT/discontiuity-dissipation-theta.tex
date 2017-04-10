@@ -1,0 +1,467 @@
+\documentclass[review]{elsarticle}
+
+\usepackage{lineno,hyperref,multirow,textcomp}
+\usepackage{color}
+\modulolinenumbers[5]
+
+\journal{International journal of heat and mass transfer}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Elsevier bibliography styles
+%%%%%%%%%%%%%%%%%%%%%%%
+%% `Elsevier LaTeX' style
+\bibliographystyle{elsarticle-num}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{On the discontinuity of the dissipation rate associated with the temperature variance at the fluid-solid interface for cases with conjugate heat transfer.}
+%\tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
+
+%% Group authors per affiliation:
+%\author{Elsevier\fnref{myfootnote}}
+%\address{Radarweg 29, Amsterdam}
+%\fntext[myfootnote]{Since 1880.}
+
+%% or include affiliations in footnotes:
+\author[myaddress,mymainaddress]{Flageul C\'edric\corref{mycorrespondingauthor}}
+\cortext[mycorrespondingauthor]{Corresponding author}
+%\ead[url]{http://code.google.com/p/incompact3d/}
+\ead{cedric.flageul@gmail.com}
+
+\author[mymainaddress]{Benhamadouche Sofiane}
+\author[mysecondaryaddress]{Lamballais \'Eric}
+\author[mythirdaddress,mymainaddress]{Laurence Dominique}
+
+\address[myaddress]{Institut Jo\v{z}ef Stefan, R4 Division, Jamova cesta 39, SI-1000 Ljubljana, Slovenia}
+\address[mymainaddress]{EDF R\&D, Fluid Mechanics, Energy and Environment Dept. 6 Quai Wattier, 78401 Chatou, France}
+\address[mysecondaryaddress]{Institute PPRIME, Department of Fluid Flow, Heat Transfer and Combustion, Universit\'e de Poitiers, CNRS, ENSMA, T\'el\'eport 2 - Bd. Marie et Pierre Curie B.P. 30179, 86962 Futuroscope Chasseneuil Cedex, France}
+\address[mythirdaddress]{School of Mechanical, Aerospace and Civil Engineering, The University of Manchester, Sackville Street, Manchester M13 9PL, UK}
+
+\begin{abstract}
+In the case of conjugate heat transfer, the dissipation rate associated with the temperature variance is discontinuous at the fluid-solid interface. The discontinuity satisfies a compatibility condition involving the fluid-solid thermal diffusivity and conductivity ratios and the relative contribution to the dissipation rate of its wall-normal part. The present analysis is supported by the Direct Numerical Simulations of an incompressible channel flow at a Reynolds number, based on the friction velocity, of $150$, a Prandtl number of $0.71$ and several values of fluid-solid thermal diffusivity and conductivity ratios.
+\end{abstract}
+
+\begin{keyword}
+Conjugate heat transfer \sep Dissipation rate \sep RANS \sep Direct Numerical Simulation \sep Turbulent channel flow
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
+
+\section{Introduction}
+Conjugate heat transfer describes the thermal coupling between a fluid and a solid.
+It is of prime importance in industrial applications where fluctuating thermal stresses are a concern, e.g. in case of a severe emergency cooling or long-term ageing of materials.
+For such complex applications, investigations often rely on experiments, high Reynolds RANS (Reynolds-averaged Navier-Stokes) or wall-modelled LES (Large Eddy Simulation).
+However, experimental data on conjugate heat transfer are scarce.
+Walls in lab rigs are often made of plexiglas and the transported scalar studied is often a dye.
+{\color{red} These common experimental configurations cannot be used to study conjugate heat-transfer as the dye does not penetrate into the wall.}
+Analytical analysis and DNS (Direct Numerical Simulation) are valuable tools for understanding the flow physics of such complex phenomena and providing reliable data in order to improve RANS and LES modelling.
+
+Numerical study on conjugate heat transfer started with the 2D synthetic turbulence study of Kasagi et al. (\cite{kasagi1989numerical}).
+Some experimental and analytical studies have been performed prior to this study, in particular Polyakov (\cite{poliakov1974wall}) and Geshev (\cite{geshev1978influence}), as documented by \cite{kasagi1989numerical}.
+The first DNS with conjugate heat transfer was a turbulent channel flow, performed by Tiselj et al. (\cite{Tiselj2001dns}).
+Following those studies, the authors (Flageul et al. (\cite{flageul2015dns})) have also performed DNS of the turbulent channel flow with conjugate heat transfer, with a post-processing designed to produce validation data for RANS models.
+
+The development of RANS approaches for conjugate heat transfer is relatively recent and was pioneered by Craft et al. (\cite{craft2010towards}).
+In order to allow an accurate estimation of the fatigue, (U)RANS models adapted to conjugate heat transfer should enable the simulation of at least a few minutes of operation in realistic conditions, in order to include as much high stress amplitude events as possible, knowing they generally are low probability events (Costa Garrido et al. (\cite{garrido2016uncertainties})).
+
+The structure of the paper is as follows.
+In the second section, it is established that in case of conjugate heat transfer, the dissipation rate associated with the temperature variance is discontinuous at the fluid-solid interface.
+This discontinuity satisfies a compatibility condition involving the fluid-solid thermal diffusivity and conductivity ratios and the relative contribution to the dissipation rate of its wall-normal part.
+In the third section, the case and numerical setup are described: $9$ DNS of incompressible channel flow with conjugate heat transfer are presented.
+In the fourth section, the corresponding results are presented and the discontinuity of the dissipation rate $\varepsilon_\theta$ at the fluid-solid interface is highlighted.
+{\color{red} In the fifth section, our results are further discussed alongside with the consequences for RANS and LES modeling.}
+
+\section{Governing equations and discontinuity of $\varepsilon_\theta$}
+
+In the fluid domain ($\Omega_f$), the mass and momentum equations read:
+\begin{eqnarray}
+\partial_i u_i & = & 0 \nonumber \\
+\partial_t u_i & = & - \frac{\partial_j \left( u_i u_j \right) + u_j \partial_j u_i}{2} - \frac{\partial_i p}{\rho} + \nu \partial_{jj} u_i + f_i
+\end{eqnarray}
+where $\rho$ is the density, $\nu$ is the kinematic viscosity, the convective term is expressed using the skew-symetric formulation and $f_i$ is a source term.
+
+In case of conjugate heat transfer, the energy equations read:
+\begin{eqnarray} \label{eq_governing_equations}
+\partial_t T_f & = & - \partial_j \left( T_f u_j \right) + \alpha_f \partial_{jj} T_f + f_{T_f} \mbox{ in } \Omega_f \nonumber \\
+\partial_t T_s & = & \alpha_s \partial_{jj} T_s + f_{T_s} \mbox{ in } \Omega_s \nonumber \\
+T_f & = & T_s \mbox{ on } \partial \Omega_f \cap \partial \Omega_s \nonumber \\
+\lambda_f \partial_n T_f & = & \lambda_s \partial_n T_s \mbox{ on } \partial \Omega_f \cap \partial \Omega_s
+\end{eqnarray}
+where $\Omega_f$ ($\Omega_s$), $T_f$ ($T_s$), $\alpha_f$ ($\alpha_s$) and $\lambda_f$ ($\lambda_s$) are the fluid (solid) domain, temperature, thermal diffusivity and thermal conductivity, respectively, $f_{T_f}$ and $f_{T_s}$ are source terms and $\partial_n T = \nabla \left( T \right) . \textbf{n}$ is the wall-normal derivative of the temperature with $\textbf{n}$ a unit vector normal to the fluid-solid interface surface ($\partial \Omega_f \cap \partial \Omega_s$), $\nabla$ being the gradient operator.
+The last $2$ lines in equation (\ref{eq_governing_equations}) express the continuity of temperature and heat flux at the fluid-solid interface.
+
+Within this context, the dissipation rate $\varepsilon_{\theta,f}$ ($\varepsilon_{\theta,s}$) associated with the temperature variance in the fluid (solid) domain can be defined:
+\begin{eqnarray}
+\varepsilon_{\theta,f} & = & 2 \alpha_f \overline{ \nabla \left( T'_f \right) . \nabla \left( T'_f \right) } \mbox{ in } \Omega_f \nonumber \\
+\varepsilon_{\theta,s} & = & 2 \alpha_s \overline{ \nabla \left( T'_s \right) . \nabla \left( T'_s \right) } \mbox{ in } \Omega_s
+\label{eq_def_diff_flu_sol}
+\end{eqnarray}
+where $T'$ and the overline are the fluctuating part of the temperature $T$ and the averaging operator, respectively. Using the continuity of temperature and heat flux at the fluid-solid interface, it is straightforward to show that the dissipation rates satisfy the following relation:
+\begin{eqnarray} \label{eq_discontinuity_dim}
+\frac{\varepsilon_{\theta,f}}{2 \alpha_f} - \frac{\varepsilon_{\theta,s}}{2 \alpha_s} & = & \overline{ \partial_n T'_f \partial_n T'_f } - \overline{ \partial_n T'_s \partial_n T'_s } \mbox{ on } \partial \Omega_f \cap \partial \Omega_s \nonumber \\
+& = & \overline{ \partial_n T'_f \partial_n T'_f } \left[ 1 - \left( \frac{\lambda_f}{\lambda_s} \right)^2 \right] \mbox{ on } \partial \Omega_f \cap \partial \Omega_s
+\end{eqnarray}
+
+Using the thermal properties $\alpha$ and $\lambda$, dimensionless numbers can be derived. Following Flageul et al. (\cite{flageul2015dns}), one defines $G$ as the fluid-to-solid thermal diffusivity ratio and $G_2$ as the solid-to-fluid thermal conductivity ratio:
+\begin{eqnarray}
+G = \frac{\alpha_f}{\alpha_s} & , & G_2 = \frac{\lambda_s}{\lambda_f}
+\end{eqnarray}
+Combining $G$ and $G_2$, one may obtain the thermal activity ratio $K$ ($\frac{1}{K} = G_2 \sqrt{G}$) as defined by Geshev (\cite{geshev1978influence}) and Tiselj et al. (\cite{Tiselj2001dns}), which is also the fluid-to-solid thermal effusivity ratio.
+On this basis, equation (\ref{eq_discontinuity_dim}), combined with the definition of $\varepsilon_{\theta,f}$ in equation (\ref{eq_def_diff_flu_sol}) turns to:
+\begin{eqnarray} \label{eq_discontinuity_adim}
+1 - G \frac{\varepsilon_{\theta,s}}{\varepsilon_{\theta,f}} & = & \frac{ \overline{ \partial_n T'_f \partial_n T'_f } }{ \overline{ \nabla T'_f . \nabla T'_f } } \left[ 1 - \frac{1}{G_2^2} \right] \nonumber \\
+\Longleftrightarrow \frac{1}{G} - \frac{\varepsilon_{\theta,s}}{\varepsilon_{\theta,f}} & = & \frac{ \overline{ \partial_n T'_f \partial_n T'_f } }{ \overline{ \nabla T'_f . \nabla T'_f } } \left[ \frac{1}{G} - K^2 \right] \nonumber \\
+\Longleftrightarrow \frac{\varepsilon_{\theta,s}}{\varepsilon_{\theta,f}} & = & \frac{ \overline{ \partial_n T'_f \partial_n T'_f } }{ \overline{ \nabla T'_f . \nabla T'_f } } K^2 + \left(1 - \frac{ \overline{ \partial_n T'_f \partial_n T'_f } }{ \overline{ \nabla T'_f . \nabla T'_f } } \right) \frac{1}{G}
+\end{eqnarray}
+It is important to stress that $\textbf{n}$ is locally well-defined as long as the fluid-solid interface surface is flat or curved but becomes ill-defined for instance at the edge of a corner.
+Therefore, in case of conjugate heat transfer, the dissipation rate $\varepsilon_\theta$ at the fluid-solid interface satisfies the compatibility condition (\ref{eq_discontinuity_adim}) for any smooth interface.
+
+In the following, any ratio $\frac{\varepsilon_{\theta,s}}{\varepsilon_{\theta,f}} \neq 1$ corresponds to a discontinuity of the the dissipation rate $\varepsilon_\theta$ across the fluid-solid interface.
+It is important to stress that the relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$ is bounded in $[0,1]$.
+Therefore, equation (\ref{eq_discontinuity_adim}) is a convex combination between $\frac{1}{G}$ and $K^2$.
+
+On the one hand, if the conjugate case is close to an imposed temperature one (conducting solid, $G_2 \gg 1$), then the wall-normal contribution in $\varepsilon_{\theta,f}$ dominates at the interface and the discontinuity scales with the squared thermal activity ratio $K$.
+On the other, if the conjugate case is close to an imposed heat flux one (insulating solid, $G_2 \ll 1$), then the wall-parallel contribution in $\varepsilon_{\theta,f}$ dominates at the interface and the discontinuity scales with the inverse of the thermal diffusivity ratio $G$.
+For the other cases, the discontinuity is bounded by $\frac{1}{G}$ and $K^2$.
+This range may be quite extended, for instance, considering pressurized water as the fluid and steel as the solid, approximate values are $K^2 \approx 0.01$ and $1/G \approx 60$.
+
+\section{Case and numerical setup}
+Present simulations are based on the open-source software Incompact3d developed at Universit\'e de Poitiers  and  Imperial  College  London by Laizet et al. (\cite{LaizetJCP2009},\cite{LaizetLi2011}).
+Sixth-order compact schemes are used on a Cartesian grid stretched in the wall-normal direction.
+The pressure is computed with a direct solver on a staggered grid while velocity components and temperature are collocated.
+
+In the present study, $x$, $y$ and $z$ stand for the streamwise, wall-normal and spanwise directions, respectively, as sketched in figure \ref{fig-sketch}.
+{\color{red} Periodic boundary conditions are used in the streamwise and spanwise directions.}
+The source term driving the channel flow is present only in the streamwise direction: it is a constant in space and time fitted so that the averaged bulk velocity is $1$.
+{\color{red} This source term physically represents the mean pressure gradient compensating the viscous friction at the wall in order to reach a statistically steady state.}
+The channel half-height is also $1$, and the Reynolds number based on those quantities is $2280$, while the Prandtl number is $0.71$ and the density is $1$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./domaine.jpg}
+\caption{Sketch of the computational domain.}
+\label{fig-sketch}
+\end{figure}
+
+The main simulation parameters are recalled in table \ref{tab-table1} and compared with reference ones (Kasagi et al. (\cite{kasagi1992direct}) and Tiselj et al. (\cite{Tiselj2001dns})).
+As described in Flageul et al. (\cite{flageul2015dns}), the scalar diffusion scheme used is $4^{th}$ order accurate in the streamwise direction and $6^{th}$ order accurate in the others.
+{\color{red} Compared to the simulation from Kasagi et al. (\cite{kasagi1992direct}), our domain is 63 \% longer, 35 \% wider  while we use cells of a similar size.
+In addition, the duration of our simulation is almost 14 times longer while our time step is 6 times smaller.
+This point is further discussed in the appendix A.
+It is the result of a trade-off between the necessity to represent large scale fluctuations, with a long lifetime, which are present deep inside the solid domain and the smaller fluctuations, with a shorter lifetime, which are present in the fluid and are related to the distinctive intermittent character of the passive scalar, as reported by Galantucci and Quadrio (\cite{galantucci2010very}).}
+
+The scalar conservation equation in the fluid domain contains a source term proportional to the streamwise velocity, as defined by Kasagi et al. (\cite{kasagi1992direct}).
+{\color{red} If we consider an infinite channel flow constantly heated, the bulk temperature increases linearly with $x$.
+A change of variable is used, to compensate this linear increase and to allow periodicity in the streamwise direction.
+This gives rise to the source terms: $f_{T_f} = \alpha_f u_x$ and $f_{T_s} = 0$.
+The similar case of a channel flow constantly heated at one wall and cooled at the other which does not give rise to a source term was studied firstly by Kim and Moin (\cite{kim1989transport}).
+As it was established by Kawamura et al. \cite{kawamura2000dns} that both cases present similar statistics in the near-wall region, this heat source/sink term has no effect on the statistics around the fluid-solid interface.}
+
+The case and simulation setup are similar to the ones detailed in \cite{flageul2015dns}, except for the thermal properties ratios $G$ and $G_2$.
+{\color{red} The thickness of the top and bottom walls is half the thickness of the fluid domain.
+Tiselj et al. (\cite{Tiselj2001dns}) performed similar simulations using solid domains at least 3 times thinner and reported that as the wall get thinner, the conjugate cases get closer to the imposed heat flux one.
+This is the natural behaviour when the boundary condition at the outer wall is an imposed heat flux, as in their study and herein.
+In this study, we consider that the solid domain is thick enough for the boundary condition imposed at the outer wall to have no significant impact on the statistics at the fluid-solid interface.}
+
+In the present study, the DNS performed with conjugate heat transfer are labelled $CHT_{ij}$.
+As indicated in table \ref{tab-table2}, the index $i$ and $j$ stand for the ratio of thermal diffusivity and conductivity, respectively. The indexes can be equal to $0$, $1$ or $2$, the corresponding thermal properties ratios being $0.5$, $1$ and $2$, respectively.
+The results obtained with conjugate heat transfer are compared with the non-conjugate cases of locally imposed temperature ($isoT$) and locally imposed heat flux ($isoQ$) at the fluid boundary.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}[htbp]{|l|c|c|c|}
+\hline
+          & Present & Kasagi et al. (\cite{kasagi1992direct}) & Tiselj et al. (\cite{Tiselj2001dns}) \\ \hline
+Domain                     & [25.6,2,8.52] & [5$\pi$,2,2$\pi$] & [5$\pi$,2,$\pi$] \\ \hline
+Grid                       & [256,193,256] & [128,97,128] & [128,97,65] \\ \hline
+$Re_\tau$                  & 149 & 150 & 150 \\ \hline
+$\Delta y^+$               & [0.49,4.8] & [0.08,4.9] & [0.08,4.9] \\ \hline
+$[\Delta_x^+, \Delta_z^+]$ & [14.8,5.1] & [18.4,7.36] & [18.4,7.4] \\ \hline
+$\Delta t^+$               & 0.02 & 0.12 & 0.12 \\ \hline
+Duration                   & 29000 & 2100 & 6000 \\ \hline
+\end{tabular}
+\end{center}
+\caption{Simulation parameters.}
+\label{tab-table1}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|c|c|c|c|}
+\multicolumn{2}{c}{} & \multicolumn{3}{c}{$G_2$} \\ \cline{3-5}
+\multicolumn{2}{c|}{} & $0.5$ & $1$ & $2$ \\ \cline{2-5}
+\multirow{3}{*}{$G$} & $0.5$ & $CHT_{00} / 8$ & $CHT_{01} / 2$ & $CHT_{02} / 0.5$ \\ \cline{2-5}
+& $1$ & $CHT_{10} / 4$ & $CHT_{11} / 1$ & $CHT_{12} / 0.25$ \\ \cline{2-5}
+& $2$ & $CHT_{20} / 2$ & $CHT_{21} / 0.5$ & $CHT_{22} / 0.125$ \\ \cline{2-5}
+\end{tabular}
+\caption{Case labels and associated squared thermal activity ratio $CHT_{ij} / K^2$ depending on the thermal properties ratios $G$ and $G_2$.} \label{tab-table2}
+\end{table}
+
+\section{Results}
+
+For the channel flow configuration, at the present Reynolds and Prandtl numbers, it is established (Tiselj et al. (\cite{Tiselj2001dns}), Flageul et al. (\cite{flageul2015dns})) that the boundary condition used for the passive scalar has an impact in the fluid domain limited to the vicinity of the wall ($y^+ < 20$).
+In the following, the fluid-solid interface is located at $y^+=0$, the fluid (solid) domain corresponding to $y^+ > 0$ ($y^+ < 0$).
+As we focus on the discontinuity of $\varepsilon_\theta$ at the fluid-solid interface, the present results are plotted only for $-10 < y^+ < 10$.
+
+In figure \ref{fig-ttutvt} (top row), the temperature variance is continuous across the interface.
+This is a direct consequence of the continuity of the instantaneous temperature at the interface.
+However, the derivative of the temperature variance can be discontinuous across the interface.
+Using the continuity of the heat flux across the interface, one obtains:
+\begin{equation}
+\partial_y {T'_f}^2 = G_2 \partial_y {T'_s}^2
+\end{equation}
+For the present results, the discontinuity in the slope of the temperature variance at the fluid-solid interface is clearly visible for the case $CHT_{22}$.
+Compared with the $isoT$ and $isoQ$ cases, for the conjugate cases studied, in the fluid domain, \textit{the higher $G$ or $G_2$, the closer to the $isoT$ case}.
+
+This simple trend, can not be transposed to the solid domain: one can notice that the temperature variance curves cross each other in the solid domain for some of the cases.
+For instance, cases $CHT_{21}$ and $CHT_{02}$ cross around $y^+ \approx -2$.
+This highlights the complex behaviour of the present conjugate cases where the thermal properties ratio $G$ and $G_2$ are close to unity.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.\textwidth]{./all_tt.pdf}
+\begin{tabular}{cc}
+\includegraphics[width=0.5\textwidth]{./all_ut.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_vt.pdf} \\
+\includegraphics[width=0.5\textwidth]{./all_ut_corr.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_vt_corr.pdf}
+\end{tabular}
+\caption{Top: Temperature variance. Logarithmic scaling for $\overline{T'^2}$ and $y^+$, except for $-1<y^+<1$: linear scaling for $y^+$. Middle: Turbulent heat fluxes. Bottom: One-point correlation coefficients associated with the turbulent heat fluxes.}
+\label{fig-ttutvt}
+\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=1.\textwidth]{./all_tt.pdf}
+%\caption{Temperature variance. Logarithmic scaling for $\overline{T'^2}$ and $y^+$, except for $-1<y^+<1$: linear scaling for $y^+$.}
+%\label{fig-tt}
+%\end{figure}
+
+In the middle row of figure \ref{fig-ttutvt}, the trend observed for the temperature variance in the fluid domain (the higher $G$ or $G_2$, the closer to the $isoT$ case) is recovered for the turbulent heat fluxes.
+As they vanish at the wall, it is less visible, even using logarithmic axis scaling.
+In the bottom row of figure \ref{fig-ttutvt}, the one-point correlation coefficients associated with the turbulent heat fluxes show this trend in a much more visible way.
+For the one-point correlation coefficients, this trend is present only in the upper part of the viscous sublayer: the conjugate cases studied all collapse towards the $isoQ$ case deep inside the viscous sublayer.
+From this integral perspective involving only $2^{nd}$ order moments, it is clear that conjugate heat transfer can not be easily reduced to a simple imposed temperature or heat flux, at least for the present conjugate cases with ratios of thermal properties around unity.
+Furthermore, the collapse of the one-point correlation coefficient towards the $isoQ$ case at the wall seems to hold for ratios of fluid-solid thermal diffusivity further away from unity, according to Orlandi et al. (\cite{orlandi2016dns}).
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.5\textwidth]{./all_ut.pdf}
+%\caption{Streamwise turbulent heat flux. Lines and symbols as in figure~\ref{fig-tt}.}
+%\label{fig-ut}
+%\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.5\textwidth]{./all_vt.pdf}
+%\caption{Wall-normal turbulent heat flux. Lines and symbols as in figure~\ref{fig-tt}.}
+%\label{fig-vt}
+%\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.5\textwidth]{./all_ut_corr.pdf}
+%\caption{One-point correlation coefficient associated with the streamwise turbulent heat flux. Lines and symbols as in figure~\ref{fig-tt}.}
+%\label{fig-utcorr}
+%\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.5\textwidth]{./all_vt_corr.pdf}
+%\caption{One-point correlation coefficient associated with the wall-normal turbulent heat flux. Lines and symbols as in figure~\ref{fig-tt}.}
+%\label{fig-vtcorr}
+%\end{figure}
+
+In figure \ref{fig-diss}, the discontinuity of the dissipation rate $\varepsilon_\theta$ across the fluid-solid interface is visible.
+The case $CHT_{11}$ is the only one with a continuous dissipation rate, as expected from equation (\ref{eq_discontinuity_adim}).
+The trend observed in figure \ref{fig-ttutvt} for the temperature variance in the fluid domain (the higher $G$ or $G_2$, the closer to the $isoT$ case) is well recovered for the dissipation rate in the fluid domain.
+The main trend visible at the interface is for the cases with a relatively low dissipation $\varepsilon_{\theta,f}$, such as $CHT_{*0}$, which tend to have a relatively high dissipation $\varepsilon_{\theta,s}$.
+
+\begin{figure}[htbp]
+\centering
+\begin{tabular}{cc}
+\includegraphics[width=0.5\textwidth]{./all_diss_g2_05.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_diss_g2_05_zoom.pdf} \\
+\includegraphics[width=0.5\textwidth]{./all_diss_g2_1.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_diss_g2_1_zoom.pdf} \\
+\includegraphics[width=0.5\textwidth]{./all_diss_g2_2.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_diss_g2_2_zoom.pdf}
+\end{tabular}
+\caption{Dissipation rate $\varepsilon_\theta$ around the fluid-solid interface. Lines and symbols as in figure~\ref{fig-ttutvt}. Top: $G_2=0.5$. Middle : $G_2=1$. Bottom : $G_2=2$}
+\label{fig-diss}
+\end{figure}
+
+In figure \ref{fig-Kdiss}, the dissipation rate $\varepsilon_\theta$ around the fluid-solid interface and the relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$ is plotted for the conjugate cases with the same thermal activity ratio ($K=1/\sqrt{2}$ and $K=\sqrt{2}$).
+It is remarkable that for a given thermal activity ratio $K$, the present conjugate cases with different fluid-solid properties ratios lead to similar dissipation rates in the fluid domain, but not in the solid one.
+It is also observed that, for a given thermal activity ratio $K$, the relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$ at the wall depends on the fluid-solid thermal properties ratios.
+Therefore, for conjugate cases with $G$ and $G_2$ around unity, it seems that, in the fluid domain, the amplitude of the fluctuating temperature gradient depends only on the thermal activity ratio $K$ while the associated anisotropy has a more complex behaviour.
+This behaviour, combined with different thermal properties ratios, lead to different dissipation rates in the solid domain for a given thermal activity ratio $K$.
+
+\begin{figure}[htbp]
+\centering
+\begin{tabular}{cc}
+$K=1/\sqrt{2}$ & $K=\sqrt{2}$ \\
+\includegraphics[width=0.5\textwidth]{./all_diss_K12.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_diss_K2.pdf} \\
+\includegraphics[width=0.5\textwidth]{./all_diss_K12_zoom.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_diss_K2_zoom.pdf} \\
+\includegraphics[width=0.5\textwidth]{./all_ydiss_K12.pdf} &
+\includegraphics[width=0.5\textwidth]{./all_ydiss_K2.pdf}
+\end{tabular}
+\caption{Dissipation rate $\varepsilon_\theta$ around the fluid-solid interface (top and middle) and relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$ (bottom). Lines and symbols as in figure~\ref{fig-ttutvt}. Left: $K=1/\sqrt{2}$. Right : $K=\sqrt{2}$}
+\label{fig-Kdiss}
+\end{figure}
+
+In figure \ref{fig-ydiss}, the relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$ is plotted.
+For this relative contribution, the global trend observed in figure \ref{fig-ttutvt} is well recovered: in the fluid domain, \textit{the higher $G$ or $G_2$, the closer to the $isoT$ case}.
+At the wall, this relative contribution is above $1/2$, and even above $2/3$ for most of the conjugate cases considered here.
+That makes the wall-normal contribution dominant.
+Following that trail, one may conclude that the present conjugate cases are closer to the $isoT$ one.
+However, this is in contradiction with the dissipation rate plotted in figure \ref{fig-diss}: for conjugate cases, at the wall, $\varepsilon_{\theta,f}$ is closer to the $isoQ$ value.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./all_ydiss.pdf}
+\caption{Relative contribution of the wall-normal part in the dissipation rate $\varepsilon_{\theta,f}$. Lines and symbols as in figure~\ref{fig-ttutvt}.}
+\label{fig-ydiss}
+\end{figure}
+
+\section{Discussion}
+
+%{\color{red} In figures \ref{fig-autocorrT} and \ref{fig-autocorrQ}, the two-point correlation of the temperature and its wall-normal derivative in the streamwise direction at $y^+=5$ are plotted. For $T_f$, as observed in \cite{flageul2015dns}, at small separations, the correlation of the conjugate cases are lower than the $isoQ$ one and higher than the $isoT$ one. At larger separations, the correlations of the conjugate cases are closer to the $isoQ$ one. For $\partial_y T_f$, figure \ref{fig-autocorrQ} clearly puts conjugate cases as intermediates between the $isoT$ and $isoQ$ ones.
+
+%For the autocorrelation of $T_f$ at $y^+=5$, the $isoT$ one falls faster and the equivalent Taylor micro-scale is around $95$ wall-units. This corresponds to $6 \Delta_x$. For the autocorrelation of $\partial_y T_f$ at $y^+=5$, the $isoQ$ one falls faster and the equivalent Taylor micro-scale is around $55$ wall-units. This corresponds to $4 \Delta_x$. On the one hand, this may be considered slightly under-resolved, especially due to the intermittency of the passive scalar, characterized by strongly dissipative events highly localized in space. On the other, those small scales correspond to high frequencies and are subjected to a stronger dissipation thanks to the implicit SVV scheme used in the streamwise direction. Those aspects are well balanced in our simulation. However, this balance is probably fragile and may not hold for ratio of thermal properties further away from unity. For such cases, it is likely one will have to either tune the implicit SVV dissipation or run the simulation on a finer grid.}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.5\textwidth]{./all_autocorr_x_y5.pdf}
+%\caption{Two-point correlation of $T_f$ at $y^+=5$ for streamwise separation. Lines and symbols as in figure~\ref{fig-tt}.}
+%\label{fig-autocorrT}
+%\end{figure}
+
+%\begin{figure}[htbp]
+%\centering
+%\includegraphics[width=0.5\textwidth]{./all_autocorrQ_x_y5.pdf}
+%\caption{Two-point correlation of $\partial_y T_f$ at $y^+=5$ for streamwise separation. Lines and symbols as in figure~\ref{fig-tt}.}
+%\label{fig-autocorrQ}
+%\end{figure}
+
+The DNS performed show an agreement with equation (\ref{eq_discontinuity_adim}) within the statistical uncertainty, as shown in table \ref{tab-table3}.
+The complex behaviour of the present conjugate cases has its roots in this equation and in the relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$.
+This quantity is related to the anisotropy of the fluctuating temperature gradient at the wall, a quantity that is not easily accessible for most of the (U)RANS models and LES wall models.
+The present analytical analysis and the accompanying simulations results could provide a solid ground for building new turbulence models better suited for cases with conjugate heat transfer.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|c|c|c|c|}
+\multicolumn{2}{c}{} & \multicolumn{3}{c}{$G_2$} \\ \cline{3-5}
+\multicolumn{2}{c|}{} & $0.5$ & $1$ & $2$ \\ \cline{2-5}
+\multirow{3}{*}{$G$} & $0.5$ & $5.2$ ($2.99$ \textperthousand) & $2.0$ ($1.01$ \textperthousand) & $0.58$ ($0.75$ \textperthousand) \\ \cline{2-5}
+& $1$ & $3.0$ ($2.24$ \textperthousand) & $1.0$ ($1.19$ \textperthousand) & $0.27$ ($0.78$ \textperthousand) \\ \cline{2-5}
+& $2$ & $1.68$ ($1.68$ \textperthousand) & $0.50$ ($1.01$ \textperthousand) & $0.13$ ($0.70$ \textperthousand) \\ \cline{2-5}
+\end{tabular}
+\caption{Computed ratio $\varepsilon_{\theta,s} / \varepsilon_{\theta,f}$ at the fluid-solid interface accompanied by $10^3$ times the relative error between the computed and expected values (expected value obtained using computed $\overline{ \partial_n T'_f \partial_n T'_f } / \overline{ \nabla T'_f . \nabla T'_f }$ and equation (\ref{eq_discontinuity_adim}))} \label{tab-table3}
+\end{table}
+
+Prospects on RANS models for conjugate heat transfer by the authors and co-workers have shown that building a model for the temperature variance and the associated dissipation rate in the solid domain is feasible following Craft et al. \citep{craft2010towards}.
+However, much more work remains to be done to model the relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$ so as to correctly handle the discontinuity of $\varepsilon_\theta$ at the fluid-solid interface.
+{\color{red} As suggested by Wu et al. \citep{wu2017direct2}, a workaround could reside in scalar integral length scales.
+Following Donzis et al. \citep{donzis2005scalar}, they propose a two-point length scale which is continuous across the fluid-solid interface.
+Even though a value for $\varepsilon_\theta$ could be derived from this length scale, this is only a preliminary sketch, and there is currently no RANS model ready for fluid-solid thermal coupling.}
+
+\section{Conclusion}
+An analytical analysis of cases with conjugate heat transfer has been performed and a compatibility condition at the fluid-solid interface have been exhibited, as given by equation (\ref{eq_discontinuity_adim}).
+This compatibility condition is very general and has been verified herein using DNS in the turbulent channel flow configuration ($Re_\tau = 150$ and $Pr = 0.71$).
+It is a step forward towards a better understanding of fluid-solid heat transfer and new models adapted to conjugate heat transfer.
+
+{\color{red} This compatibility condition involves the relative contribution of the wall-normal part in $\varepsilon_{\theta,f}$, a quantity directly related to the anisotropy of the temperature gradient.
+The traditional description of a universal behaviour of the small-scale velocity (Kolmogorov \cite{kolmogorov1941local}) does not apply well to passive scalars for which local isotropy, both at the inertial and dissipation scales, is violated (Sreenivasan \cite{sreenivasan1991local}, Warhaft \cite{warhaft2000passive}).
+This local anisotropy is tightly connected with the intermittency of the scalar, characterized by a strong coupling between large and small scales.
+Those considerations, combined with the discontinuity of $\varepsilon_\theta$ at the fluid-solid interface established here, sketch a modelling challenge, within reach of experimentalists and simulationists (Sreenivasan et al. \citep{sreenivasan1977temperature}, Johansson et al. \cite{johansson2000dns}, Germaine et al. \cite{germaine2014evolution}).
+
+Regarding subgrid-scale (SGS) models and wall-models for LES: even for wall-resolved LES, asymptotic analysis shows that the existence of temperature fluctuations at the wall discards any SGS model based on a constant turbulent Prandtl number for temperature.
+Thus, simpler SGS models for LES, like the combination of the WALE model for momentum and a constant turbulent Prandtl number around unity for temperature, often encountered in semi-academic and industrial applications, may be flawed for conjugate heat-transfer cases.
+
+This theoretical flaw is not specific to conjugate heat-transfer as the dynamics of a passive scalar differs from the dynamics of velocity (Sagaut, (\cite{sagaut2006large})).
+It does not prevent LES based on simpler SGS models from providing reasonably good estimations for quantities like the averaged temperature, its variance, the turbulent heat fluxes, or even the spectrum of the temperature.
+%Taking into account the discretisation often solves this apparent contradiction.
+Thus, the ability of LES SGS models and wall-models to investigate configurations with conjugate heat-transfer should be carefully examined.}
+
+The thermal properties ratio $G$ and $G_2$ are close to unity in the present work.
+A limiting behaviour close to $isoT$ or $isoQ$ should be reached for ratios further away from unity.
+However, it must be stressed that for DNS, statistical convergence is difficult to reach when $Pr \ll 1$ or $Pr \gg 1$: very long domains or very fine grids for the temperature equation have to be used.
+Similar measures may be necessary for simulations with ratios of fluid-solid thermal properties further away from unity.
+
+For the channel flow configuration, it would be very interesting to obtain scalings for the discontinuity: how does it depends on the Reynolds number, on the Prandtl number and on the fluid-solid thermal properties ratios when they are further away from unity?
+Last but not least, it would be exciting to study the ability of wall-resolved LES to compute that discontinuity.
+This would allows us to build a database for the discontinuity that includes higher Reynolds number and complex cases, with the hope to help the development of specific (U)RANS models or LES wall-models adapted to conjugate heat-transfer.
+
+{\color{red} Source code and data associated with the present paper are available at \url{http://dx.doi.org/10.17632/3c7v3cnwvg.1} and \url{https://repo.ijs.si/CFLAG/incompact3d} under the GNU GPL v3 licence.}
+
+\section{Acknowledgements}
+The authors thank the French National Research Agency and EDF R\&D for funding the present study (CIFRE 2012/0047) and providing computational time on Zumbrota supercomputer (IBM - Blue-geneQ).
+
+\appendix
+
+\section{Statistical uncertainty}
+In CFD, the finite extension of computational domains in space and time and the limited number of cells used to discretize the domain lead to statistical uncertainty.
+This uncertainty depends on the variable considered.
+A relatively coarse grid often lead to a good estimation of the averaged velocity but to a bad estimation of Reynolds stresses.
+
+For the turbulent channel flow configuration at $Re_\tau = 160$, considering a passive scalar subjected to a Dirichlet boundary condition with $Pr = 1$, using a pseudo-spectral method, Galantucci and Quadrio (\cite{galantucci2010very}) have established that the accurate estimation of $\varepsilon_\theta$ in the buffer layer ($10 < y^+ < 30$) requires a very fine grid ($\Delta_x^+ = \Delta_z^+ = 1$ and $0.4 < \Delta_y^+ < 2$).
+Fortunately, near the wall ($y^+ < 7$), the grid requirement is less stringent and their simulation on the very fine grid matches the simulation performed on a more classical grid ($\Delta_x^+ = 10$, $\Delta_z^+ = 5$ and $0.9 < \Delta_y^+ < 4$).
+
+In Flageul et al. (\cite{flageul2015dns}), this mesh requirement was assessed and we showed that the present grid was slightly too coarse for the scalar as we observed an over-estimation of $\varepsilon_\theta$ in the buffer-layer.
+We also showed that the present grid, combined with some extra numerical dissipation applied only on the scalar, only in the streamwise direction and only at high frequencies (using implicit Spectral Vanishing Viscosity, see Lamballais et al. (\cite{lamballais2011straightforward})) allowed an accurate estimation of $\varepsilon_\theta$.
+Strictly speaking, this is valid only for the case studied there which uses the same thermal properties in the fluid and solid domains.
+In the present paper, it is considered that the same strategy can be applied to cases with ratios of thermal properties close to unity providing a good estimation of $\varepsilon_\theta$ near the fluid-solid interface.
+
+Another source of uncertainty for statistics is the size of the domain in case of homogeneous directions associated with periodic boundary conditions.
+For the turbulent channel flow configuration, long and large domains are mandatory for developing large-scale fluctuations while keeping 2-point correlations at large separations low.
+What is specific to conjugate heat transfer with thick solid domains is the existence of very large-scale temperature fluctuations with a long lifetime, even though the amplitude of those fluctuations is relatively low.
+Those fluctuations were observed in \cite{flageul2015dns} using 2-point correlations of the temperature field in the solid domain.
+
+For a turbulent channel flow, in case of thermal coupling of the fluid with a semi-infinite solid domain, \cite{flageul2015dns} shows that temperature fluctuations decay exponentially in the solid domain, the characteristic penetration depth $\delta$ satisfying
+$$\frac{1}{\delta^4} \propto \left( k_x^2 + k_z^2 \right)^2 + \left( \frac{\rho C_p}{\lambda} k_t \right)^2 $$
+where $\rho$, $C_p$ and $\lambda$ are the physical properties of the solid and $[k_x, k_z, k_t]$ are the wavenumbers associated with the Fourier transforms in $x$, $z$ and $t$.
+This relation shows that in the solid domain, spatial and temporal fluctuations of the temperature are tightly connected.
+
+The relatively long and wide domain used in the present study combined with the long duration of our simulation was deemed necessary to obtain statistical convergence deep in the solid domain.
+This point is illustrated in figure \ref{fig-convergence}.
+We have plotted the convergence, during the simulation, of $\overline{T'^2}$ at the outer wall for the conjugate case $CHT_{11}$.
+Even though our statistical sample is much larger compared to the reference one, statistical convergence is hardly reached deep inside the solid domain.
+Is seems important to stress that this slow convergence is confined to the outer layers of the solid domains.
+In addition, the amplitude of those large scale fluctuations is very small compared to the fluctuations in the fluid.
+They are thus assumed to have a negligible impact on the statistics around the fluid-solid interface.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{./convergence_t2_solide.pdf}
+\caption{Convergence during the simulation of $\overline{T'^2}$ at the outer wall for the case $CHT_{11}$. Time $t$ and $\overline{T'^2}$ are in computational units.}
+\label{fig-convergence}
+\end{figure}
+
+It must be acknowledged that our simulations were instrumented to obtain the budget of $\varepsilon_\theta$ but also the budget of the dissipation rates associated with the turbulent heat fluxes.
+However, the present grid is probably too coarse and those budgets are not well balanced.
+This is why they are not presented here.
+Considering the relatively coarse grid used, the time step may appear unnecessary small.
+It seems important to recall that in our study, the fluid and solid solvers are distinct and weakly coupled, as reported in \cite{flageul2015dns}.
+Verstraete and Scholl (\cite{verstraete2016stability}) have established that such coupling strategies are subjected to stability constraints.
+They showed that the efficiency and the accuracy of the coupled solver may be lowered when the stability criterion is hardly met.
+
+Within this framework, the small time step used was a guarantee of temporal accuracy.
+While lower accuracy was the drawback of the weak coupling developed, it allowed us to build a plug-and-play module for fluid-solid thermal coupling.
+This module is now used to study more complex semi-academic configurations with conjugate heat-transfer like the jet in crossflow (Wu et al. (\cite{wu2017direct})) and the impinging jet ( Dairay et al. (\cite{dairay2015direct})).
+
+For further investigations of the turbulent channel flow with conjugate heat-transfer, a pseudo-spectral code able to handle several passive scalars with simultaneous solving of the fluid and solid temperature, such as the one in \citep{Tiselj2001dns}, would probably be better fitted.
+
+\section*{References}
+
+\bibliography{biblio}
+
+\end{document}

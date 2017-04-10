@@ -1,4 +1,4 @@
-The present data and the associated source code are freely available under the GNU GPL v3 licence, EXCEPT for the *tex* file in the folder [IJHFF](/IJHFF/). Below are direct links to the different cases, followed by links to websites and publications related to the present work.
+The present data and the associated source code are freely available under the GNU GPL v3 licence, EXCEPT for the *tex* files in the folders [IJHFF](/IJHFF/) and [IJHMT](/IJHMT/). Below are direct links to the different cases, followed by links to websites and publications related to the present work.
 
 # Direct access to data and associated source code
 
@@ -51,6 +51,15 @@ The [repository](/IJHFF/) contains:
 - A *jpg* picture sketching the computational domain.
 - Several *xls* and *xlsx* files containing our results. Most of them are only symbolic links.
 
+## Data associated with our publication in [International Journal of Heat and Mass Transfer](http://dx.doi.org/10.1016/j.ijheatmasstransfer.2017.04.005)
+
+The [repository](/IJHMT/) contains:
+
+- All the python scripts used to generate the figures in the publication.
+- The *tex* and *bib* files used to obtain the preprint of the publication.
+- A *jpg* picture sketching the computational domain. It is a symbolic link to the one in [IJHFF](/IJHFF/)
+- Several *xls* and *xlsx* files containing our results. Most of them are only symbolic links.
+
 # Bibliography
 
 ## Our roots
@@ -73,6 +82,7 @@ Semi-implicit version of the code available here was originally implemented by T
 
 I have applied some modifications to the code during my PhD. All the publications associated with our work are available [online](https://hal.archives-ouvertes.fr/search/index/q/*/authFullName_s/C%C3%A9dric+Flageul):
 
+- [On the discontinuity of the dissipation rate associated with the temperature variance at the fluid-solid interface for cases with conjugate heat transfer.](http://dx.doi.org/10.1016/j.ijheatmasstransfer.2017.04.005)
 - [On the Discontinuity of $`\varepsilon_\theta`$ -the Dissipation Rate Associated with the Temperature Variance- at the Fluid-Solid Interface for Cases with Conjugate Heat Transfer.](https://hal.archives-ouvertes.fr/hal-01456930)
 - [DNS of turbulent channel flow with conjugate heat transfer: Effect of thermal boundary conditions on the second moments and budgets.](http://dx.doi.org/10.1016/j.ijheatfluidflow.2015.07.009)
 - [DNS of turbulent channel flow: can we imitate conjugate heat-transfer with a Robin boundary condition?](https://hal.archives-ouvertes.fr/hal-01323794v1)
